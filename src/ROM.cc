@@ -284,12 +284,12 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	fourScreen = (header[6] & 8) != 0;
 	mapperType = (header[6] >> 4) | (header[7] & 0xF0);
 
-	printf("prog_rom_pages: %lu\n", static_cast<ulong>(romCount));
-	printf("char_rom_pages: %lu\n", static_cast<ulong>(vromCount));
+	printf("prog_rom_pages: %lu\n", static_cast<long>(romCount));
+	printf("char_rom_pages: %lu\n", static_cast<long>(vromCount));
 	printf("mirroring: %d\n", mirroring);
 	printf("is_sram_on: %d\n", batteryRam);
 	printf("is_trainer_on: %d\n", trainer);
-	printf("mapper: %lu\n", static_cast<ulong>(mapperType));
+	printf("mapper: %lu\n", static_cast<long>(mapperType));
 	printf("sha256: %s\n", _sha256.c_str());
 
 	// Battery RAM?

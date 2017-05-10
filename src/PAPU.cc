@@ -21,12 +21,12 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef SDL
 void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 	PAPU* papu = reinterpret_cast<PAPU*>(udata);
-	
+
 	if(!papu->ready_for_buffer_write)
 		return;
 
 	uint32_t mix_len = len > papu->bufferIndex ? papu->bufferIndex : len;
-	SDL_MixAudio(stream, papu->sampleBuffer.data(), mix_len, SDL_MIX_MAXVOLUME);
+	//FIXME: SDL_MixAudio(stream, papu->sampleBuffer.data(), mix_len, SDL_MIX_MAXVOLUME);
 	papu->bufferIndex = 0;
 	//std::fill(papu->sampleBuffer.begin(), papu->sampleBuffer.end(), 0);
 	papu->ready_for_buffer_write = false;
@@ -207,7 +207,7 @@ PAPU::PAPU(NES* nes) {
 	lock_mutex();
 	synchronized_setSampleRate(sampleRate, false);
 	unlock_mutex();
-	
+
 	sampleBuffer = vector<uint8_t>(bufferSize * (stereo ? 4 : 2), 0);
 	ismpbuffer = vector<int>(bufferSize * (stereo ? 2 : 1), 0);
 	bufferIndex = 0;
@@ -228,7 +228,7 @@ PAPU::PAPU(NES* nes) {
 
 	frameIrqCounter = 0;
 	frameIrqCounterMax = 4;
-	
+
 #ifdef SDL
 	// Setup SDL for the format we want
 	SDL_Init(SDL_INIT_AUDIO);
@@ -262,13 +262,13 @@ PAPU::PAPU(NES* nes) {
 		PP_AUDIOSAMPLERATE_44100,
 		desired_sample_frame_count
 	);
-	
+
 	pp::AudioConfig config(
 		this->nes->_salty_nes,
 		PP_AUDIOSAMPLERATE_44100,
 		sample_frame_count_
 	);
-	
+
 	audio_ = pp::Audio(
 		this->nes->_salty_nes,
 		config,
@@ -304,7 +304,7 @@ void PAPU::stateSave(ByteBuffer* buf) {
 void PAPU::synchronized_start() {
 	_is_running = true;
 	bufferIndex = 0;
-	
+
 //		Mixer.Info[] mixerInfo = AudioSystem.getMixerInfo();
 
 //		if(mixerInfo == nullptr || mixerInfo.length == 0) {
@@ -327,7 +327,7 @@ void PAPU::synchronized_start() {
 		#ifdef SDL
 		SDL_PauseAudio(0);
 		#endif
-		
+
 		#ifdef NACL
 		audio_.StartPlayback();
 		#endif
@@ -860,7 +860,7 @@ void PAPU::reset() {
 	lock_mutex();
 	synchronized_setSampleRate(sampleRate, false);
 	unlock_mutex();
-	
+
 	updateChannelEnable(0);
 	masterFrameCounter = 0;
 	derivedFrameCounter = 0;
@@ -939,7 +939,7 @@ void PAPU::synchronized_setSampleRate(int rate, bool restart) {
 
 	if(restart) {
 		stop();
-		
+
 		lock_mutex();
 		synchronized_start();
 		unlock_mutex();
@@ -1083,4 +1083,3 @@ void PAPU::initDACtables() {
 	this->dacRange = max_sqr + max_tnd;
 	this->dcValue = dacRange / 2;
 }
-

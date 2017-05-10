@@ -52,10 +52,10 @@ void InputHandler::update_gamepad(PP_GamepadsSampleData gamepad_data) {
 	// Get current gamepad data
 	for(size_t i=0; i<gamepad_data.length; ++i) {
 		PP_GamepadSampleData& pad = gamepad_data.items[i];
-	
+
 		if(!pad.connected)
 			continue;
-	
+
 		// Check if we are switching to the gamepad from the keyboard
 		for(size_t j=0; j<pad.buttons_length; ++j) {
 			if(pad.buttons[j]) {
@@ -69,7 +69,7 @@ void InputHandler::update_gamepad(PP_GamepadsSampleData gamepad_data) {
 				_is_keyboard_used = false;
 			}
 		}
-		
+
 		// Get the vendor, and product id
 		if(_is_gamepad_used) {
 			char id[128];
@@ -82,7 +82,7 @@ void InputHandler::update_gamepad(PP_GamepadsSampleData gamepad_data) {
 			_gamepad_vendor_id = sid.substr(vendor_pos + strlen("Vendor: "), 4);
 			_gamepad_product_id = sid.substr(product_pos + strlen("Product: "), 4);
 		}
-	
+
 		// Get the key states
 		if(_is_gamepad_used) {
 			for(size_t j=0; j<InputHandler::KEYS_LENGTH; ++j) {
@@ -151,7 +151,7 @@ void InputHandler::mapKey(int padKey, int kbKeycode) {
 void InputHandler::poll_for_key_events() {
 #ifdef SDL
 	int numberOfKeys;
-	uint8_t* keystate = SDL_GetKeyState(&numberOfKeys);
+	uint8_t* keystate = 0;// FIXME: SDL_GetKeyState(&numberOfKeys);
 
 	_keys[_map[InputHandler::KEY_UP]] =     keystate[SDLK_UP];
 	_keys[_map[InputHandler::KEY_DOWN]] =   keystate[SDLK_DOWN];
@@ -180,7 +180,7 @@ void InputHandler::poll_for_key_events() {
 	} else if(_keys[_map[InputHandler::KEY_RIGHT]]) {
 		_keys[_map[InputHandler::KEY_LEFT]] = false;
 	}
-	
+
 	if(_keys[_map[InputHandler::KEY_UP]]) {
 		_keys[_map[InputHandler::KEY_DOWN]] = false;
 	} else if(_keys[_map[InputHandler::KEY_DOWN]]) {
@@ -193,4 +193,3 @@ void InputHandler::reset() {
 	_keys.clear();
 	_keys.resize(size);
 }
-
