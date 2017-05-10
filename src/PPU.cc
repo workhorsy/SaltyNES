@@ -319,7 +319,9 @@ void PPU::defineMirrorRegion(size_t fromStart, size_t toStart, size_t size) {
 }
 
 // Emulates PPU cycles
-void PPU::emulateCycles() {
+bool PPU::emulateCycles() {
+	bool did_render = false;
+
 	//int n = (!requestEndFrame && curX+cycles<341 && (scanline-20 < spr0HitY || scanline-22 > spr0HitY))?cycles:1;
 	for(; cycles > 0; --cycles) {
 
@@ -337,6 +339,7 @@ void PPU::emulateCycles() {
 			if(nmiCounter == 0) {
 				requestEndFrame = false;
 				startVBlank();
+				did_render = true;
 			}
 		}
 
@@ -347,9 +350,8 @@ void PPU::emulateCycles() {
 			endScanline();
 		}
 	}
+	return did_render;
 }
-
-int g_temp_frame_counter = 0;
 
 void PPU::startVBlank() {
 	// Start VBlank period:
@@ -453,16 +455,12 @@ void PPU::startVBlank() {
 	double wait = 0;
 	if(diff < Globals::MS_PER_FRAME) {
 		wait = Globals::MS_PER_FRAME - diff;
-		usleep(wait);
+		//usleep(wait);
 	}
 	
 	// Print the frame rate
 	_ticks_since_second += diff + wait;
 	if(_ticks_since_second >= 1000000.0) {
-		g_temp_frame_counter++;
-		if (g_temp_frame_counter > 10) {
-			nes->getCpu()->stopRunning = true;
-		}
 		printf("FPS: %d\n", frameCounter);
 #ifdef NACL
 		this->nes->_salty_nes->set_fps(frameCounter);

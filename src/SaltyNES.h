@@ -54,6 +54,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifdef SDL
 	#include <SDL/SDL.h>
 	#include <SDL/SDL_audio.h>
+	#include <emscripten.h>
 #endif
 
 using namespace std;
@@ -394,6 +395,34 @@ public:
 	MapperDefault* mmap;
 	vector<uint16_t>* mem;
 
+	// Registers:
+	int REG_ACC;
+	int REG_X;
+	int REG_Y;
+	int REG_STATUS;
+	int REG_PC;
+
+	// Status flags:
+	int F_CARRY;
+	int F_ZERO;
+	int F_INTERRUPT;
+	int F_DECIMAL;
+	int F_NOTUSED;
+	int F_BRK;
+	int F_OVERFLOW;
+	int F_SIGN;
+
+	// Misc. variables
+	int opinf;
+	int opaddr;
+	int addrMode;
+	int addr;
+	int palCnt;
+	int cycleCount;
+	int cycleAdd;
+	int temp;
+	int add;
+
 	// CPU Registers:
 	int REG_ACC_NEW;
 	int REG_X_NEW;
@@ -427,9 +456,9 @@ public:
 	void stateLoad(ByteBuffer* buf);
 	void stateSave(ByteBuffer* buf);
 	void reset();
-	void run();
+	void start();
 	void stop();
-	void emulate();
+	bool emulate();
 	int load(int addr);
 	int load16bit(int addr);
 	void write(int addr, uint16_t val);
@@ -1197,7 +1226,7 @@ public:
 	void init();
 	void setMirroring(int mirroring);
 	void defineMirrorRegion(size_t fromStart, size_t toStart, size_t size);
-	void emulateCycles();
+	bool emulateCycles();
 	void startVBlank();
 	void endScanline();
 	void startFrame();

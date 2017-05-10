@@ -156,17 +156,61 @@ void CPU::reset() {
 
 }
 
-void CPU::run() {
+void CPU::start() {
 	stopRunning = false;
-	emulate();
+
+	// Registers:
+	REG_ACC 	= REG_ACC_NEW;
+	REG_X 		= REG_X_NEW;
+	REG_Y 		= REG_Y_NEW;
+	REG_STATUS 	= REG_STATUS_NEW;
+	REG_PC 		= REG_PC_NEW;
+
+	// Status flags:
+	F_CARRY 	= F_CARRY_NEW;
+	F_ZERO 	= (F_ZERO_NEW==0?1:0);
+	F_INTERRUPT = F_INTERRUPT_NEW;
+	F_DECIMAL 	= F_DECIMAL_NEW;
+	F_NOTUSED   = F_NOTUSED_NEW;
+	F_BRK 	= F_BRK_NEW;
+	F_OVERFLOW 	= F_OVERFLOW_NEW;
+	F_SIGN 	= F_SIGN_NEW;
+
+	// Misc. variables
+	opinf = 0;
+	opaddr = 0;
+	addrMode = 0;
+	addr = 0;
+	palCnt = 0;
+	cycleCount = 0;
+	cycleAdd = 0;
+	temp = 0;
+	add = 0;
 }
 
 void CPU::stop() {
 	stopRunning = true;
+
+	// Save registers:
+	REG_ACC_NEW 	= REG_ACC;
+	REG_X_NEW 	= REG_X;
+	REG_Y_NEW 	= REG_Y;
+	REG_STATUS_NEW 	= REG_STATUS;
+	REG_PC_NEW 	= REG_PC;
+
+	// Save Status flags:
+	F_CARRY_NEW 	= F_CARRY;
+	F_ZERO_NEW 	= (F_ZERO==0?1:0);
+	F_INTERRUPT_NEW = F_INTERRUPT;
+	F_DECIMAL_NEW 	= F_DECIMAL;
+	F_BRK_NEW 	= F_BRK;
+	F_NOTUSED_NEW   = F_NOTUSED;
+	F_OVERFLOW_NEW 	= F_OVERFLOW;
+	F_SIGN_NEW 	= F_SIGN;
 }
 
-// Emulates cpu instructions until stopped.
-void CPU::emulate() {
+// Emulates cpu instructions until screen is drawn.
+bool CPU::emulate() {
 	// NES Memory
 	// (when memory mappers switch ROM banks
 	// this will be written to, no need to
@@ -178,48 +222,16 @@ void CPU::emulate() {
 	PPU* 		 ppu  = nes->ppu;
 	PAPU* 		 papu = nes->papu;
 
-
-	// Registers:
-	int REG_ACC 	= REG_ACC_NEW;
-	int REG_X 		= REG_X_NEW;
-	int REG_Y 		= REG_Y_NEW;
-	int REG_STATUS 	= REG_STATUS_NEW;
-	int REG_PC 		= REG_PC_NEW;
-
-	// Status flags:
-	int F_CARRY 	= F_CARRY_NEW;
-	int F_ZERO 	= (F_ZERO_NEW==0?1:0);
-	int F_INTERRUPT = F_INTERRUPT_NEW;
-	int F_DECIMAL 	= F_DECIMAL_NEW;
-	int F_NOTUSED   = F_NOTUSED_NEW;
-	int F_BRK 	= F_BRK_NEW;
-	int F_OVERFLOW 	= F_OVERFLOW_NEW;
-	int F_SIGN 	= F_SIGN_NEW;
-
-
-	// Misc. variables
-	int opinf=0;
-	int opaddr=0;
-	int addrMode=0;
-	int addr=0;
-	int palCnt=0;
-	int cycleCount;
-	int cycleAdd;
-	int temp;
-	int add;
-
 	bool palEmu = Globals::palEmulation;
 	bool emulateSound = Globals::enableSound;
-	stopRunning = false;
+//	stopRunning = false;
 
 	//int _counter = 0;
-
-	while(!stopRunning) {
 		
 		// Sleep a second if we are paused
 		if(this->nes->_is_paused) {
-			usleep(1000000);
-			continue;
+//			usleep(1000000);
+			return false;
 		}
 
 		// Check interrupts:
@@ -1070,7 +1082,7 @@ void CPU::emulate() {
 				REG_PC = pull();
 				REG_PC += (pull()<<8);
 				if(REG_PC==0xFFFF) {
-					return;
+					return false;
 				}
 				--REG_PC;
 				F_NOTUSED = 1;
@@ -1088,7 +1100,7 @@ void CPU::emulate() {
 				REG_PC += (pull()<<8);
 				
 				if(REG_PC==0xFFFF) {
-					return;
+					return false;
 				}
 				break;
 
@@ -1271,32 +1283,15 @@ void CPU::emulate() {
 		}
 
 		ppu->cycles = cycleCount*3;
-		ppu->emulateCycles();
+		bool did_render = ppu->emulateCycles();
 		
 		if(emulateSound) {
 			papu->clockFrameCounter(cycleCount);
 		}
 		
 		//++_counter;
-	} // End of run loop.
 
-	// Save registers:
-	REG_ACC_NEW 	= REG_ACC;
-	REG_X_NEW 	= REG_X;
-	REG_Y_NEW 	= REG_Y;
-	REG_STATUS_NEW 	= REG_STATUS;
-	REG_PC_NEW 	= REG_PC;
-
-	// Save Status flags:
-	F_CARRY_NEW 	= F_CARRY;
-	F_ZERO_NEW 	= (F_ZERO==0?1:0);
-	F_INTERRUPT_NEW = F_INTERRUPT;
-	F_DECIMAL_NEW 	= F_DECIMAL;
-	F_BRK_NEW 	= F_BRK;
-	F_NOTUSED_NEW   = F_NOTUSED;
-	F_OVERFLOW_NEW 	= F_OVERFLOW;
-	F_SIGN_NEW 	= F_SIGN;
-
+	return did_render;
 }
 
 int CPU::load(int addr) {
