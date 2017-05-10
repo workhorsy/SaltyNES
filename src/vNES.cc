@@ -52,8 +52,8 @@ void vNES::init(string rom_name) {
 }
 #endif
 
-#ifdef NACL
-void vNES::init_data(uint8_t* rom_data, size_t length, SaltyNES* salty_nes) {
+//#ifdef NACL
+void vNES::init_data(uint8_t* rom_data, size_t length) {
 	started = false;
 	_rom_data = rom_data;
 	_rom_data_length = length;
@@ -62,11 +62,13 @@ void vNES::init_data(uint8_t* rom_data, size_t length, SaltyNES* salty_nes) {
 
 	Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
-	nes = new NES(salty_nes);
+	InputHandler* joy1 = new InputHandler(0);
+	InputHandler* joy2 = new InputHandler(1);
+	nes = new NES(joy1, joy2);
 	nes->enableSound(true);
 	nes->reset();
 }
-#endif
+//#endif
 
 void vNES::pre_run_setup(vector<uint16_t>* save_ram) {
 	// Load ROM file:

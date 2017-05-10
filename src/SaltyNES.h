@@ -1363,9 +1363,9 @@ public:
 #ifdef SDL
 	void init(string rom_name);
 #endif
-#ifdef NACL
-	void init_data(uint8_t* rom_data, size_t length, SaltyNES* salty_nes);
-#endif
+//#ifdef NACL
+	void init_data(uint8_t* rom_data, size_t length);
+//#endif
 	void pre_run_setup(vector<uint16_t>* save_ram);
 	void run();
 	void stop();

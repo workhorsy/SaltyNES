@@ -349,6 +349,8 @@ void PPU::emulateCycles() {
 	}
 }
 
+int g_temp_frame_counter = 0;
+
 void PPU::startVBlank() {
 	// Start VBlank period:
 
@@ -457,6 +459,10 @@ void PPU::startVBlank() {
 	// Print the frame rate
 	_ticks_since_second += diff + wait;
 	if(_ticks_since_second >= 1000000.0) {
+		g_temp_frame_counter++;
+		if (g_temp_frame_counter > 10) {
+			nes->getCpu()->stopRunning = true;
+		}
 		printf("FPS: %d\n", frameCounter);
 #ifdef NACL
 		this->nes->_salty_nes->set_fps(frameCounter);
