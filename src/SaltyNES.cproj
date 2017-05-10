@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{361BF6B2-534B-4E22-BCF9-367136CE5D3A}</ProjectGuid>
+    <Target>Bin</Target>
+    <Language>CPP</Language>
+    <Compiler>
+      <Compiler ctype="GppCompiler" />
+    </Compiler>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineSymbols>DEBUG MONODEVELOP SDL</DefineSymbols>
+    <SourceDirectory>.</SourceDirectory>
+    <CompileTarget>Bin</CompileTarget>
+    <OutputName>nes_cpp</OutputName>
+    <Libs>
+      <Libs>
+        <Lib>pthread</Lib>
+        <Lib>SDL</Lib>
+        <Lib>rt</Lib>
+      </Libs>
+    </Libs>
+    <Commandlineparameters>../../../roms/example.nes</Commandlineparameters>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release</OutputPath>
+    <OptimizationLevel>3</OptimizationLevel>
+    <DefineSymbols>MONODEVELOP</DefineSymbols>
+    <SourceDirectory>.</SourceDirectory>
+    <Externalconsole>true</Externalconsole>
+    <OutputName>derp</OutputName>
+    <CompileTarget>Bin</CompileTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="ByteBuffer.cc" />
+    <Compile Include="ChannelDM.cc" />
+    <Compile Include="ChannelNoise.cc" />
+    <Compile Include="ChannelSquare.cc" />
+    <Compile Include="ChannelTriangle.cc" />
+    <Compile Include="Color.cc" />
+    <Compile Include="CPU.cc" />
+    <Compile Include="CpuInfo.cc" />
+    <Compile Include="Globals.cc" />
+    <Compile Include="Mapper001.cc" />
+    <Compile Include="Mapper002.cc" />
+    <Compile Include="Mapper003.cc" />
+    <Compile Include="Mapper004.cc" />
+    <Compile Include="Mapper007.cc" />
+    <Compile Include="MapperDefault.cc" />
+    <Compile Include="Memory.cc" />
+    <Compile Include="Misc.cc" />
+    <Compile Include="NameTable.cc" />
+    <Compile Include="NES.cc" />
+    <Compile Include="PaletteTable.cc" />
+    <Compile Include="PAPU.cc" />
+    <Compile Include="Parameters.cc" />
+    <Compile Include="PPU.cc" />
+    <Compile Include="Raster.cc" />
+    <Compile Include="ROM.cc" />
+    <Compile Include="Tile.cc" />
+    <Compile Include="vNES.cc" />
+    <Compile Include="main_nacl.cc" />
+    <Compile Include="main_sdl.cc" />
+    <Compile Include="sha256sum.cc" />
+    <Compile Include="Logger.cc" />
+    <Compile Include="SaltyNES.cc" />
+    <Compile Include="base64.cc" />
+    <Compile Include="Mapper009.cc" />
+    <Compile Include="InputHandler.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Color.h" />
+    <None Include="..\rscript">
+      <Link>rscript</Link>
+    </None>
+    <None Include="..\raise">
+      <Link>raise</Link>
+    </None>
+    <None Include="..\Makefile">
+      <Link>Makefile</Link>
+    </None>
+    <None Include="..\index.html">
+      <Link>index.html</Link>
+    </None>
+    <None Include="sha256sum.h" />
+    <None Include="SaltyNES.h" />
+    <None Include="base64.h" />
+    <None Include="..\static\game_database.json">
+      <Link>game_database.json</Link>
+    </None>
+    <None Include="..\static\gamepad_database.json">
+      <Link>gamepad_database.json</Link>
+    </None>
+    <None Include="..\static\SaltyNES.js">
+      <Link>SaltyNES.js</Link>
+    </None>
+    <None Include="..\ChangeLog">
+      <Link>ChangeLog</Link>
+    </None>
+    <None Include="..\static\styles.css">
+      <Link>styles.css</Link>
+    </None>
+    <None Include="..\static\Models.js">
+      <Link>Models.js</Link>
+    </None>
+    <None Include="..\static\game_meta_data.json">
+      <Link>game_meta_data.json</Link>
+    </None>
+    <None Include="..\static\downloader.js">
+      <Link>downloader.js</Link>
+    </None>
+  </ItemGroup>
+</Project>
