@@ -151,13 +151,14 @@ void InputHandler::poll_for_key_events() {
 	const bool is_b = EM_ASM_INT({ return g_get_key_b; }, 0) > 0;
 	const bool is_a = EM_ASM_INT({ return g_get_key_a; }, 0) > 0;
 	const bool is_start = EM_ASM_INT({ return g_get_key_start; }, 0) > 0;
+	const bool is_select = EM_ASM_INT({ return g_get_key_select; }, 0) > 0;
 
 	_keys[_map[InputHandler::KEY_UP]] =     is_up;
 	_keys[_map[InputHandler::KEY_DOWN]] =   is_down;
 	_keys[_map[InputHandler::KEY_RIGHT]] =  is_right;
 	_keys[_map[InputHandler::KEY_LEFT]] =   is_left;
 	_keys[_map[InputHandler::KEY_START]] =  is_start;
-	_keys[_map[InputHandler::KEY_SELECT]] = keystate[SDLK_RCTRL];
+	_keys[_map[InputHandler::KEY_SELECT]] = is_select;
 	_keys[_map[InputHandler::KEY_B]] =      is_b;
 	_keys[_map[InputHandler::KEY_A]] =      is_a;
 #endif

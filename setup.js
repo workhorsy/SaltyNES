@@ -6,6 +6,7 @@ let g_get_key_right = 0;
 let g_get_key_b = 0;
 let g_get_key_a = 0;
 let g_get_key_start = 0;
+let g_get_key_select = 0;
 
 function onKeyDown(event) {
 	let code = event.keyCode || event.which;
@@ -19,6 +20,7 @@ function onKeyDown(event) {
 		case 74: g_get_key_b = 1; break;
 		case 75: g_get_key_a = 1; break;
 		case 13: g_get_key_start = 1; break;
+		case 16: g_get_key_select = 1; break;
 	}
 }
 
@@ -34,6 +36,7 @@ function onKeyUp(event) {
 		case 74: g_get_key_b = 0; break;
 		case 75: g_get_key_a = 0; break;
 		case 13: g_get_key_start = 0; break;
+		case 16: g_get_key_select = 0; break;
 	}
 }
 
