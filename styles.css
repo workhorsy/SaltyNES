@@ -17,11 +17,14 @@ body {
 	padding: 0;
 }
 
-#canvas {
+#screen {
 	/* Don't blur the screen when resized */
 	image-rendering: -moz-crisp-edges;
 	image-rendering: pixelated;
 	-ms-interpolation-mode: nearest-neighbor;
+
+	border: 0px none;
+	background-color: black;
 }
 
 .emscripten {
@@ -37,12 +40,6 @@ div.emscripten {
 
 div.emscripten_border {
 	border: 1px solid black;
-}
-
-/* the canvas *must not* have any border or padding, or mouse coords will be wrong */
-canvas.emscripten {
-	border: 0px none;
-	background-color: black;
 }
 
 .spinner {
