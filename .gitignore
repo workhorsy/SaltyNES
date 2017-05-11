@@ -1,5 +1,5 @@
 
+build/
 index.wasm
 index.html
 index.js
-*.o
