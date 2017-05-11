@@ -1,4 +1,5 @@
 
+roms/
 build/
 index.wasm
 index.js

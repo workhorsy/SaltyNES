@@ -45,13 +45,14 @@ int main(int argc, char* argv[]) {
 	printf("%s\n", "vNES 2.14 (C) 2006-2011 Jamie Sanders thatsanderskid.com");
 	printf("%s\n", "Use of this program subject to GNU GPL, Version 3.");
 	printf("%s\n", "");
-/*
+
 	// Make sure there is a rom file name
-	if(argc < 2) {
+	if (argc < 2) {
 		fprintf(stderr, "No rom file argument provided. Exiting ...\n");
 		return -1;
 	}
-*/
+	std::string file_name = argv[1];
+
 	// Initialize SDL
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 		fprintf(stderr, "Could not initialize SDL: %s\n",
@@ -68,7 +69,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	// Start downloading the game file
-	emscripten_async_wget_data("game.nes", nullptr, onLoaded, onFailed);
+	emscripten_async_wget_data(file_name.c_str(), nullptr, onLoaded, onFailed);
 
 	// Wait here until the game is downloaded
 	emscripten_set_main_loop(idle, 1, true);

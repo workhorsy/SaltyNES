@@ -132,8 +132,10 @@ $('#button_full_screen').addEventListener('click', function() {
 	);
 }, false);
 
-$('#button_play').addEventListener('click', function() {
+$('#select_game').addEventListener('change', function(event) {
+	// Save the file name in the module args
 	Module.setStatus('Downloading ...');
+	Module.arguments = [ $('#select_game').value ];
 
 	// Load the wasm boot strapper
 	let script = document.createElement('script');
