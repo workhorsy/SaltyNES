@@ -1,7 +1,7 @@
 
-An experimental port of SaltyNES to WebAssembly
+A NES emulator in WebAssembly. Based on vNES.
 
-Copied from https://launchpad.net/saltynes
+Forked from the C++ version https://launchpad.net/saltynes
 
 # Build
 ```
@@ -16,7 +16,6 @@ python3 -m http.server 9999
 TODO
 
 * Is there a way to check if running asm.js instead of WebAssembly?
-* Keyboard input
 * Game loading from HTML GUI
 * Remove NACL code
 * Shrink wasm file by removing cout and other complex libraries
