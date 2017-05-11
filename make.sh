@@ -32,6 +32,6 @@ for entry in src/*.cc; do
 	fi
 done
 
-# Build the HTML file
-echo Building index.html ...
+# Build the wasm file
+echo Building WASM ...
 $CC build/*.o $CFLAGS -o index.js
