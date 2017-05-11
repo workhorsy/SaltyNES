@@ -1,3 +1,9 @@
+/*
+Copyright (c) 2012-2017 Matthew Brennan Jones <matthew.brennan.jones@gmail.com>
+A NES emulator in WebAssembly. Based on vNES.
+Licensed under GPLV3 or later
+Hosted at: https://github.com/workhorsy/nes_wasm
+*/
 
 let g_get_key_up = 0;
 let g_get_key_down = 0;
@@ -8,47 +14,16 @@ let g_get_key_a = 0;
 let g_get_key_start = 0;
 let g_get_key_select = 0;
 
-function onKeyDown(event) {
-	let code = event.keyCode || event.which;
-	//console.log(code);
+let statusElement = $('#status');
+let progressElement = $('#progress');
+let spinnerElement = $('#spinner');
 
-	switch (code) {
-		case 65: g_get_key_left = 1; break;
-		case 68: g_get_key_right = 1; break;
-		case 87: g_get_key_up = 1; break;
-		case 83: g_get_key_down = 1; break;
-		case 74: g_get_key_b = 1; break;
-		case 75: g_get_key_a = 1; break;
-		case 13: g_get_key_start = 1; break;
-		case 16: g_get_key_select = 1; break;
-	}
-}
-
-function onKeyUp(event) {
-	let code = event.keyCode || event.which;
-	//console.log(code);
-
-	switch (code) {
-		case 65: g_get_key_left = 0; break;
-		case 68: g_get_key_right = 0; break;
-		case 87: g_get_key_up = 0; break;
-		case 83: g_get_key_down = 0; break;
-		case 74: g_get_key_b = 0; break;
-		case 75: g_get_key_a = 0; break;
-		case 13: g_get_key_start = 0; break;
-		case 16: g_get_key_select = 0; break;
-	}
-}
-
-let statusElement = document.getElementById('status');
-let progressElement = document.getElementById('progress');
-let spinnerElement = document.getElementById('spinner');
 
 var Module = {
 	preRun: [],
 	postRun: [],
 	print: (function() {
-		let element = document.getElementById('output');
+		let element = $('#output');
 		if (element) element.value = ''; // clear browser cache
 		return function(text) {
 			if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
@@ -73,7 +48,7 @@ var Module = {
 		}
 	},
 	canvas: (function() {
-		let screen = document.getElementById('screen');
+		let screen = $('#screen');
 
 		// As a default initial behavior, pop up an alert when webgl context is lost. To make your
 		// application robust, you may want to override this behavior before shipping!
@@ -118,17 +93,46 @@ window.onerror = function(event) {
 	};
 };
 
-document.addEventListener('keydown', onKeyDown, false);
-document.addEventListener('keyup', onKeyUp, false);
+document.addEventListener('keydown', function(event) {
+	let code = event.keyCode || event.which;
+	//console.log(code);
 
-document.getElementById('button_full_screen').addEventListener('click', function() {
+	switch (code) {
+		case 65: g_get_key_left = 1; break;
+		case 68: g_get_key_right = 1; break;
+		case 87: g_get_key_up = 1; break;
+		case 83: g_get_key_down = 1; break;
+		case 74: g_get_key_b = 1; break;
+		case 75: g_get_key_a = 1; break;
+		case 13: g_get_key_start = 1; break;
+		case 16: g_get_key_select = 1; break;
+	}
+}, false);
+
+document.addEventListener('keyup', function(event) {
+	let code = event.keyCode || event.which;
+	//console.log(code);
+
+	switch (code) {
+		case 65: g_get_key_left = 0; break;
+		case 68: g_get_key_right = 0; break;
+		case 87: g_get_key_up = 0; break;
+		case 83: g_get_key_down = 0; break;
+		case 74: g_get_key_b = 0; break;
+		case 75: g_get_key_a = 0; break;
+		case 13: g_get_key_start = 0; break;
+		case 16: g_get_key_select = 0; break;
+	}
+}, false);
+
+$('#button_full_screen').addEventListener('click', function() {
 	Module.requestFullscreen(
-		document.getElementById('pointerLock').checked,
-		document.getElementById('resize').checked
+		$('#pointerLock').checked,
+		$('#resize').checked
 	);
 }, false);
 
-document.getElementById('button_play').addEventListener('click', function() {
+$('#button_play').addEventListener('click', function() {
 	Module.setStatus('Downloading ...');
 
 	// Load the wasm boot strapper
@@ -137,7 +141,7 @@ document.getElementById('button_play').addEventListener('click', function() {
 	document.head.appendChild(script);
 }, false);
 
-document.getElementById('screen').addEventListener('contextmenu', function(event) {
+$('#screen').addEventListener('contextmenu', function(event) {
 	event.preventDefault();
 }, false);
 
