@@ -117,3 +117,14 @@ window.onerror = function(event) {
 
 document.addEventListener('keydown', onKeyDown, false);
 document.addEventListener('keyup', onKeyUp, false);
+
+document.getElementById('button_full_screen').addEventListener('click', function() {
+	Module.requestFullscreen(
+		document.getElementById('pointerLock').checked,
+		document.getElementById('resize').checked
+	);
+}, false);
+
+document.getElementById('canvas').addEventListener('contextmenu', function(event) {
+	event.preventDefault();
+}, false);

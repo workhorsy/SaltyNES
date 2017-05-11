@@ -1,34 +1,31 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>NES Wasm</title>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>NES Wasm</title>
 		<link type="text/css" href="styles.css" media="screen" rel="Stylesheet" />
-  </head>
-  <body>
-    <div class="spinner" id='spinner'></div>
-    <div class="emscripten" id="status">Downloading...</div>
+	</head>
+	<body>
+		<div class="spinner" id='spinner'></div>
+		<div class="emscripten" id="status">Downloading...</div>
 
-<span id='controls'>
-  <span><input type="checkbox" id="resize">Resize canvas</span>
-  <span><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</span>
-  <span><input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked,
-                                                                            document.getElementById('resize').checked)">
-  </span>
-</span>
+		<span id='controls'>
+			<span><input type="checkbox" id="resize">Resize canvas</span>
+			<span><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer</span>
+			<span><input type="button" value="Fullscreen" id="button_full_screen"></span>
+		</span>
 
-    <div class="emscripten">
-      <progress value="0" max="100" id="progress" hidden=1></progress>
-    </div>
+		<div class="emscripten">
+			<progress value="0" max="100" id="progress" hidden=1></progress>
+		</div>
 
+		<div class="emscripten_border">
+			<canvas class="emscripten" id="canvas"></canvas>
+		</div>
+		<textarea id="output" rows="8"></textarea>
 
-    <div class="emscripten_border">
-      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-    </div>
-    <textarea id="output" rows="8"></textarea>
-
-		<script async type="text/javascript" src="key_input.js"></script>
-    <script async type="text/javascript" src="index.js"></script>
-  </body>
+		<script async type="text/javascript" src="setup.js"></script>
+		<script async type="text/javascript" src="index.js"></script>
+	</body>
 </html>
