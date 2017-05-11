@@ -40,15 +40,15 @@ function onKeyUp(event) {
 	}
 }
 
-var statusElement = document.getElementById('status');
-var progressElement = document.getElementById('progress');
-var spinnerElement = document.getElementById('spinner');
+let statusElement = document.getElementById('status');
+let progressElement = document.getElementById('progress');
+let spinnerElement = document.getElementById('spinner');
 
 var Module = {
 	preRun: [],
 	postRun: [],
 	print: (function() {
-		var element = document.getElementById('output');
+		let element = document.getElementById('output');
 		if (element) element.value = ''; // clear browser cache
 		return function(text) {
 			if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
@@ -73,7 +73,7 @@ var Module = {
 		}
 	},
 	canvas: (function() {
-		var screen = document.getElementById('screen');
+		let screen = document.getElementById('screen');
 
 		// As a default initial behavior, pop up an alert when webgl context is lost. To make your
 		// application robust, you may want to override this behavior before shipping!
@@ -85,8 +85,8 @@ var Module = {
 	setStatus: function(text) {
 		if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
 		if (text === Module.setStatus.text) return;
-		var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-		var now = Date.now();
+		let m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+		let now = Date.now();
 		if (m && now - Date.now() < 30) return; // if this is a progress update, skip it if too soon
 		if (m) {
 			text = m[1];
@@ -132,7 +132,7 @@ document.getElementById('button_play').addEventListener('click', function() {
 	Module.setStatus('Downloading ...');
 
 	// Load the wasm boot strapper
-	var script = document.createElement('script');
+	let script = document.createElement('script');
 	script.setAttribute('src', 'index.js');
 	document.head.appendChild(script);
 }, false);
