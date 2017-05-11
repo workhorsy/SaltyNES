@@ -14,7 +14,6 @@ source ../emsdk/emsdk_env.sh
 
 # Delete generated files
 rm -f *.wasm
-rm -f index.html
 rm -f index.js
 
 #rm -f *.o
@@ -35,4 +34,4 @@ done
 
 # Build the HTML file
 echo Building index.html ...
-$CC build/*.o $CFLAGS -o index.html
+$CC build/*.o $CFLAGS -o index.js
