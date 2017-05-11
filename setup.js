@@ -108,7 +108,7 @@ var Module = {
 		Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
 	}
 };
-Module.setStatus('Downloading...');
+
 window.onerror = function(event) {
 	// TODO: do not warn on ok events like simulating an infinite loop or exitStatus
 	Module.setStatus('Exception thrown, see JavaScript console');
@@ -131,3 +131,20 @@ document.getElementById('button_full_screen').addEventListener('click', function
 document.getElementById('canvas').addEventListener('contextmenu', function(event) {
 	event.preventDefault();
 }, false);
+
+function documentOnReady(cb) {
+	if (document.readyState !== 'loading') {
+		cb();
+	} else {
+		document.addEventListener('DOMContentLoaded', cb);
+	}
+}
+
+documentOnReady(() => {
+	Module.setStatus('Downloading...');
+
+	// Load the wasm boot strapper
+	var script = document.createElement('script');
+	script.setAttribute('src', 'index.js');
+	document.head.appendChild(script);
+});
