@@ -153,14 +153,42 @@ void InputHandler::poll_for_key_events() {
 	int numberOfKeys;
 	uint8_t* keystate = 0;// FIXME: SDL_GetKeyState(&numberOfKeys);
 
-	_keys[_map[InputHandler::KEY_UP]] =     keystate[SDLK_UP];
-	_keys[_map[InputHandler::KEY_DOWN]] =   keystate[SDLK_DOWN];
-	_keys[_map[InputHandler::KEY_RIGHT]] =  keystate[SDLK_RIGHT];
-	_keys[_map[InputHandler::KEY_LEFT]] =   keystate[SDLK_LEFT];
-	_keys[_map[InputHandler::KEY_START]] =  keystate[SDLK_RETURN];
+	int is_left = EM_ASM_INT({
+		return (typeof g_get_key_left !== 'undefined' ? g_get_key_left : 0);
+	}, 0);
+
+	int is_right = EM_ASM_INT({
+		return (typeof g_get_key_right !== 'undefined' ? g_get_key_right : 0);
+	}, 0);
+
+	int is_up = EM_ASM_INT({
+		return (typeof g_get_key_up !== 'undefined' ? g_get_key_up : 0);
+	}, 0);
+
+	int is_down = EM_ASM_INT({
+		return (typeof g_get_key_down !== 'undefined' ? g_get_key_down : 0);
+	}, 0);
+
+	int is_b = EM_ASM_INT({
+		return (typeof g_get_key_b !== 'undefined' ? g_get_key_b : 0);
+	}, 0);
+
+	int is_a = EM_ASM_INT({
+		return (typeof g_get_key_a !== 'undefined' ? g_get_key_a : 0);
+	}, 0);
+
+	int is_start = EM_ASM_INT({
+		return (typeof g_get_key_start !== 'undefined' ? g_get_key_start : 0);
+	}, 0);
+
+	_keys[_map[InputHandler::KEY_UP]] =     is_up > 0;
+	_keys[_map[InputHandler::KEY_DOWN]] =   is_down > 0;
+	_keys[_map[InputHandler::KEY_RIGHT]] =  is_right > 0;
+	_keys[_map[InputHandler::KEY_LEFT]] =   is_left > 0;
+	_keys[_map[InputHandler::KEY_START]] =  is_start > 0;
 	_keys[_map[InputHandler::KEY_SELECT]] = keystate[SDLK_RCTRL];
-	_keys[_map[InputHandler::KEY_B]] =      keystate[SDLK_z];
-	_keys[_map[InputHandler::KEY_A]] =      keystate[SDLK_x];
+	_keys[_map[InputHandler::KEY_B]] =      is_b > 0;
+	_keys[_map[InputHandler::KEY_A]] =      is_a > 0;
 #endif
 
 #ifdef NACL

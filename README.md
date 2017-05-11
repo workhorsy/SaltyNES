@@ -15,6 +15,7 @@ python3 -m http.server 9999
 
 TODO
 
+* Update links and copyright
 * Is there a way to check if running asm.js instead of WebAssembly?
 * Keyboard input
 * Game loading from HTML GUI

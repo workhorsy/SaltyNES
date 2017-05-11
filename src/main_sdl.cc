@@ -50,6 +50,16 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+	/*
+	http://kripken.github.io/emscripten-site/docs/porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-code-call-javascript-from-native
+	*/
+	// Handle javascript key presses
+	EM_ASM({
+		var script = document.createElement('script');
+		script.setAttribute('src','key_input.js');
+		document.head.appendChild(script);
+	});
+
 	// Run the emulator
 	vNES vnes;
 	//vnes.init(argv[1]);
