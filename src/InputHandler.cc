@@ -145,31 +145,31 @@ void InputHandler::poll_for_key_events() {
 	uint8_t* keystate = 0;// FIXME: SDL_GetKeyState(&numberOfKeys);
 
 	int is_left = EM_ASM_INT({
-		return (typeof g_get_key_left !== 'undefined' ? g_get_key_left : 0);
+		return g_get_key_left;
 	}, 0);
 
 	int is_right = EM_ASM_INT({
-		return (typeof g_get_key_right !== 'undefined' ? g_get_key_right : 0);
+		return g_get_key_right;
 	}, 0);
 
 	int is_up = EM_ASM_INT({
-		return (typeof g_get_key_up !== 'undefined' ? g_get_key_up : 0);
+		return g_get_key_up;
 	}, 0);
 
 	int is_down = EM_ASM_INT({
-		return (typeof g_get_key_down !== 'undefined' ? g_get_key_down : 0);
+		return g_get_key_down;
 	}, 0);
 
 	int is_b = EM_ASM_INT({
-		return (typeof g_get_key_b !== 'undefined' ? g_get_key_b : 0);
+		return g_get_key_b;
 	}, 0);
 
 	int is_a = EM_ASM_INT({
-		return (typeof g_get_key_a !== 'undefined' ? g_get_key_a : 0);
+		return g_get_key_a;
 	}, 0);
 
 	int is_start = EM_ASM_INT({
-		return (typeof g_get_key_start !== 'undefined' ? g_get_key_start : 0);
+		return g_get_key_start;
 	}, 0);
 
 	_keys[_map[InputHandler::KEY_UP]] =     is_up > 0;
