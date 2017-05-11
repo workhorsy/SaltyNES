@@ -7,10 +7,36 @@ Hosted at: https://github.com/workhorsy/nes_wasm
 #ifdef SDL
 
 #include "SaltyNES.h"
-#include "../game.h"
+#include <iostream>
 
 using namespace std;
 
+
+void onLoaded(void* userData, void* buffer, int size) {
+	std::cout << "!!! onLoaded" << std::endl;
+	std::cout << "!!! size" << size << std::endl;
+
+	// Stop the idle loop that is waiting for this download
+	emscripten_cancel_main_loop();
+
+	// Run the emulator
+	vNES vnes;
+	//vnes.init(argv[1]);
+	vnes.init_data((uint8_t*)buffer, size);
+	vnes.pre_run_setup(nullptr);
+	vnes.run();
+
+	// Clanup the SDL resources then exit
+	SDL_Quit();
+}
+
+void onFailed(void* userData) {
+	std::cout << "!!! game download failed" << std::endl;
+}
+
+void idle() {
+	std::cout << "idle ..." << std::endl;
+}
 
 int main(int argc, char* argv[]) {
 	printf("%s\n", "");
@@ -41,15 +67,12 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	// Run the emulator
-	vNES vnes;
-	//vnes.init(argv[1]);
-	vnes.init_data((uint8_t*)&GAME_DATA, GAME_DATA_LENGTH);
-	vnes.pre_run_setup(nullptr);
-	vnes.run();
+	// Start downloading the game file
+	emscripten_async_wget_data("game.nes", nullptr, onLoaded, onFailed);
 
-	// Clanup the SDL resources then exit
-	SDL_Quit();
+	// Wait here until the game is downloaded
+	emscripten_set_main_loop(idle, 1, true);
+
 	return 0;
 }
 

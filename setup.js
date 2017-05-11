@@ -128,23 +128,19 @@ document.getElementById('button_full_screen').addEventListener('click', function
 	);
 }, false);
 
-document.getElementById('canvas').addEventListener('contextmenu', function(event) {
-	event.preventDefault();
-}, false);
-
-function documentOnReady(cb) {
-	if (document.readyState !== 'loading') {
-		cb();
-	} else {
-		document.addEventListener('DOMContentLoaded', cb);
-	}
-}
-
-documentOnReady(() => {
-	Module.setStatus('Downloading...');
+document.getElementById('button_play').addEventListener('click', function() {
+	Module.setStatus('Downloading ...');
 
 	// Load the wasm boot strapper
 	var script = document.createElement('script');
 	script.setAttribute('src', 'index.js');
 	document.head.appendChild(script);
+}, false);
+
+document.getElementById('canvas').addEventListener('contextmenu', function(event) {
+	event.preventDefault();
+}, false);
+
+documentOnReady(() => {
+	Module.setStatus('Ready ...');
 });
