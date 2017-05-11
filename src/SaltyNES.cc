@@ -3,14 +3,14 @@ SaltyNES Copyright (c) 2012-2014 Matthew Brennan Jones <matthew.brennan.jones@gm
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later 
+Foundation, either version 3 of the License, or (at your option) any later
 version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY
 WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with 
+You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -53,18 +53,18 @@ class ScopedMutexLock {
 	pthread_mutex_t* mutex_; // Weak reference.
 
 public:
-	explicit ScopedMutexLock(pthread_mutex_t* mutex) : 
+	explicit ScopedMutexLock(pthread_mutex_t* mutex) :
 		mutex_(mutex) {
 		if(pthread_mutex_lock(mutex_) != kPthreadMutexSuccess) {
 			mutex_ = nullptr;
 		}
 	}
-	
+
 	~ScopedMutexLock() {
 		if(mutex_)
 			pthread_mutex_unlock(mutex_);
 	}
-	
+
 	bool is_valid() const {
 		return mutex_ != nullptr;
 	}
@@ -78,8 +78,8 @@ class ScopedPixelLock {
 	ScopedPixelLock();	// Not implemented, do not use.
 
 public:
-	explicit ScopedPixelLock(SaltyNES* image_owner) : 
-		image_owner_(image_owner), 
+	explicit ScopedPixelLock(SaltyNES* image_owner) :
+		image_owner_(image_owner),
 		pixels_(image_owner->LockPixels()) {
 	}
 
@@ -103,7 +103,7 @@ SaltyNES::SaltyNES(PP_Instance instance)
 			thread_is_running_(false) {
 	pthread_mutex_init(&pixel_buffer_mutex_, nullptr);
 	vnes = nullptr;
-	
+
 	// Create the gamepads
 	_joy1 = new InputHandler(0);
 	_joy2 = new InputHandler(1);
@@ -117,7 +117,7 @@ SaltyNES::SaltyNES(PP_Instance instance)
 	gamepad_ = static_cast<const PPB_Gamepad*>(
 		module->GetBrowserInterface(PPB_GAMEPAD_INTERFACE));
 	assert(gamepad_);
-	
+
 	// Poll gamepad 1 to populate its info
 	_joy1->_is_gamepad_used = true;
 	this->poll_gamepad();
@@ -134,7 +134,7 @@ SaltyNES::~SaltyNES() {
 		}
 		delete_n_null(vnes);
 	}
-	
+
 	DestroyContext();
 	delete_n_null(pixel_buffer_);
 	pthread_mutex_destroy(&pixel_buffer_mutex_);
@@ -207,7 +207,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 			pthread_create(&thread_, nullptr, start_main_loop, this);
 			thread_is_running_ = true;
 		}
-		
+
 		return;
 	// Start configuring gamepad keys
 	} else if(message.find("start_configure_key:") == 0) {
@@ -216,7 +216,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 
 		InputHandler::_is_configuring_gamepad = true;
 		InputHandler::_configuring_gamepad_button = "";
-		
+
 		// Remove all the previous keys
 		_joy1->_input_map_button[button].clear();
 		_joy1->_input_map_axes_pos[button].clear();
@@ -228,7 +228,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		PP_GamepadsSampleData gamepad_data;
 		gamepad_->Sample(pp_instance(), &gamepad_data);
 		_joy1->update_gamepad(gamepad_data);
-		
+
 		stringstream out;
 		out << "get_configure_key:" << InputHandler::_configuring_gamepad_button;
 		log_to_browser(out.str());
@@ -244,13 +244,13 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 		PP_GamepadsSampleData gamepad_data;
 		gamepad_->Sample(pp_instance(), &gamepad_data);
 		_joy1->update_gamepad(gamepad_data);
-		
+
 		_joy1->_is_gamepad_connected = false;
 		for(size_t i=0; i<gamepad_data.length; ++i) {
 			if(gamepad_data.items[i].connected)
 				_joy1->_is_gamepad_connected = true;
 		}
-	
+
 		// Tell the browser if the gamepad is connected or not
 		stringstream out;
 		out << "get_gamepad_status:";
@@ -286,7 +286,7 @@ void SaltyNES::HandleMessage(const pp::Var& var_message) {
 			string sign = message.substr(sign_pos, 1);
 			size_t axes = 0;
 			istringstream(str_axes) >> axes;
-			
+
 			if(sign == "+") {
 				_joy1->_input_map_axes_pos[input].push_back(axes);
 			} else if(sign == "-") {
@@ -364,7 +364,7 @@ void SaltyNES::Paint() {
 	}
 
 	this->poll_gamepad();
-	
+
 	FlushPixelBuffer();
 }
 
@@ -422,4 +422,3 @@ void SaltyNES::log(string message) {
 }
 
 #endif
-

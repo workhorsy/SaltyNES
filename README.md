@@ -18,7 +18,6 @@ TODO
 * Is there a way to check if running asm.js instead of WebAssembly?
 * Keyboard input
 * Game loading from HTML GUI
-* Cleanup whitespace
 * Remove NACL code
 * Shrink wasm file by removing cout and other complex libraries
 * Make it build as Desktop SDL app

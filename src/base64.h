@@ -1,5 +1,5 @@
 
-/* 
+/*
    This base64 implementation has been modified to conform with newer C++
    style guidelines. The original can be found at:
    https://github.com/ReneNyffenegger/development_misc/tree/master/base64
@@ -38,4 +38,3 @@ std::string base64_encode(unsigned char const* , unsigned int len);
 std::string base64_decode(std::string const& s);
 
 #endif // _BASE64_H_
-

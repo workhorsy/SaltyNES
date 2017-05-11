@@ -206,7 +206,6 @@ int ChannelSquare::getLengthStatus() {
 }
 
 void ChannelSquare::reset() {
-
 	progTimerCount = 0;
 	progTimerMax = 0;
 	lengthCounter = 0;
@@ -228,5 +227,4 @@ void ChannelSquare::reset() {
 	sweepCarry = false;
 	envDecayDisable = false;
 	envDecayLoopEnable = false;
-
 }

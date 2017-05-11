@@ -114,7 +114,7 @@ public:
 	static string p1_b;
 	static string p1_start;
 	static string p1_select;
-	
+
 	static string p2_up;
 	static string p2_down;
 	static string p2_left;
@@ -135,7 +135,7 @@ public:
 	static double CPU_FREQ_NTSC;
 	static double CPU_FREQ_PAL;
 	static int preferredFrameRate;
-	
+
 	// Microseconds per frame:
 	static const double MS_PER_FRAME;
 	// What value to flush memory with on power-up:
@@ -153,7 +153,7 @@ class ByteBuffer {
 public:
 	static const int BO_BIG_ENDIAN = 0;
 	static const int BO_LITTLE_ENDIAN = 1;
-	
+
 	vector<uint16_t> buf;
 	int byteOrder = BO_BIG_ENDIAN;
 	size_t curPos;
@@ -236,7 +236,7 @@ public:
 	static const int MODE_NORMAL = 0;
 	static const int MODE_LOOP = 1;
 	static const int MODE_IRQ = 2;
-	
+
 	PAPU* papu;
 	bool _isEnabled;
 	bool hasSample;
@@ -389,7 +389,7 @@ public:
 	static const int IRQ_NORMAL = 0;
 	static const int IRQ_NMI	= 1;
 	static const int IRQ_RESET  = 2;
-	
+
 	// References to other parts of NES :
 	NES* nes;
 	MapperDefault* mmap;
@@ -596,7 +596,7 @@ public:
 	static const int KEY_DOWN = 5;
 	static const int KEY_LEFT = 6;
 	static const int KEY_RIGHT = 7;
-	
+
 	// Key count:
 	static const int NUM_KEYS = 8;
 
@@ -940,7 +940,7 @@ public:
 	static int curTable[64];
 	static int origTable[64];
 	static int emphTable[8][64];
-	
+
 	int currentEmph;
 	int currentHue, currentSaturation, currentLightness, currentContrast;
 
@@ -1472,7 +1472,7 @@ public:
 	void set_flush_pending(bool flag) {
 		flush_pending_ = flag;
 	}
-	
+
 	void log(string message);
 };
 #endif
@@ -1488,7 +1488,7 @@ template<class T> inline void delete_n_null(T*& obj) {
 template<class T> inline void delete_n_null_array(T*& obj) {
 	if(obj == nullptr)
 		return;
-		
+
 	delete[] obj;
 	obj = nullptr;
 }
@@ -1534,7 +1534,7 @@ inline string toLowerCase(string s) {
 inline bool endsWith(string str, string key) {
 	size_t keylen = key.length();
 	size_t strlen = str.length();
-	
+
 	if(keylen == 0 && strlen == 0) {
 		return true;
 	} else if(keylen == 0 || strlen == 0) {
@@ -1600,7 +1600,7 @@ inline uint8_t string_to_byte(uint8_t upper, uint8_t lower) {
 inline void log_to_browser(string message) {
 	fprintf(stdout, "%s\n", message.c_str());
 	fflush(stdout);
-	
+
 #ifdef NACL
 	if(SaltyNES::g_salty_nes != nullptr)
 		SaltyNES::g_salty_nes->log(message);
@@ -1608,4 +1608,3 @@ inline void log_to_browser(string message) {
 }
 
 #endif // _SALTY_NES_H_
-

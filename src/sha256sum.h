@@ -57,4 +57,3 @@ extern "C" {
 #endif
 
 #endif  // _ULIB_SHA256_H_
-

@@ -30,7 +30,7 @@ vNES::vNES() {
 vNES::~vNES() {
 	stop();
 	delete_n_null(nes);
-	
+
 	_rom_name.clear();
 }
 
@@ -111,7 +111,7 @@ void frame() {
 void vNES::run() {
 	// Can start painting:
 	started = true;
-	
+
 	if(nes->rom->isValid()) {
 		// Start emulation:
 		//System.out.println("vNES is now starting the processor.");

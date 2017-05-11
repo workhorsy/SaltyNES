@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
 */
 	// Initialize SDL
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-		fprintf(stderr, "Could not initialize SDL: %s\n", 
+		fprintf(stderr, "Could not initialize SDL: %s\n",
 			SDL_GetError());
 		return -1;
 	}

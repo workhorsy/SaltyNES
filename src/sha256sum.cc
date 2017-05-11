@@ -457,4 +457,3 @@ void SHA256Final(SHA256Context * sc, uint8_t hash[SHA256_HASH_SIZE])
                 }
         }
 }
-

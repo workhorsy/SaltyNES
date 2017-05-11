@@ -4,14 +4,14 @@ vNES Copyright (c) 2006-2011 Jamie Sanders
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
-Foundation, either version 3 of the License, or (at your option) any later 
+Foundation, either version 3 of the License, or (at your option) any later
 version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY
 WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License along with 
+You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -227,7 +227,7 @@ bool CPU::emulate() {
 //	stopRunning = false;
 
 	//int _counter = 0;
-		
+
 		// Sleep a second if we are paused
 		if(this->nes->_is_paused) {
 //			usleep(1000000);
@@ -248,7 +248,7 @@ bool CPU::emulate() {
 
 			REG_PC_NEW = REG_PC;
 			F_INTERRUPT_NEW = F_INTERRUPT;
-			
+
 			switch(irqType) {
 				case 0:{
 
@@ -1026,7 +1026,7 @@ bool CPU::emulate() {
 					temp = load(addr);
 					add = F_CARRY;
 					F_CARRY = (temp>>7)&1;
-					temp = ((temp<<1)&0xFF)+add;	
+					temp = ((temp<<1)&0xFF)+add;
 					write(addr, static_cast<uint16_t>(temp));
 
 				}
@@ -1045,7 +1045,7 @@ bool CPU::emulate() {
 
 					add = F_CARRY<<7;
 					F_CARRY = REG_ACC&1;
-					temp = (REG_ACC>>1)+add;	
+					temp = (REG_ACC>>1)+add;
 					REG_ACC = temp;
 
 				}else{
@@ -1068,7 +1068,7 @@ bool CPU::emulate() {
 				// *******
 
 				// Return from interrupt. Pull status and PC from stack.
-				
+
 				temp = pull();
 				F_CARRY     = (temp   )&1;
 				F_ZERO      = ((temp>>1)&1)==0?1:0;
@@ -1095,10 +1095,10 @@ bool CPU::emulate() {
 				// *******
 
 				// Return from subroutine. Pull PC from stack.
-				
+
 				REG_PC = pull();
 				REG_PC += (pull()<<8);
-				
+
 				if(REG_PC==0xFFFF) {
 					return false;
 				}
@@ -1260,7 +1260,7 @@ bool CPU::emulate() {
 				if(!crash) {
 					crash = true;
 					stopRunning = true;
-					
+
 					stringstream out;
 					out << "Game crashed, invalid opcode at address $";
 					out << std::hex << static_cast<int>(opaddr);
@@ -1284,11 +1284,11 @@ bool CPU::emulate() {
 
 		ppu->cycles = cycleCount*3;
 		bool did_render = ppu->emulateCycles();
-		
+
 		if(emulateSound) {
 			papu->clockFrameCounter(cycleCount);
 		}
-		
+
 		//++_counter;
 
 	return did_render;
@@ -1411,5 +1411,3 @@ void CPU::setCrashed(bool value) {
 void CPU::setMapper(MapperDefault* mapper) {
 	mmap = mapper;
 }
-
-

@@ -356,4 +356,3 @@ void Mapper001::switch16to32() {
 void Mapper001::switch32to16() {
 	// not yet.
 }
-

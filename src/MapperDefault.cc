@@ -479,7 +479,7 @@ uint16_t MapperDefault::joy1Read() {
 	if(joy1StrobeState == 24) {
 		joy1StrobeState = 0;
 	}
-	
+
 	return ret;
 }
 
@@ -531,12 +531,12 @@ uint16_t MapperDefault::joy2Read() {
 		default:
 			ret = 0;
 	}
-	
+
 	++joy2StrobeState;
 	if(joy2StrobeState == 24) {
 		joy2StrobeState = 0;
 	}
-	
+
 	return ret;
 }
 
@@ -712,4 +712,3 @@ void MapperDefault::base_reset() {
 	this->joypadLastWrite = 0;
 	this->mousePressed = false;
 }
-

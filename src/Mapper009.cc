@@ -200,6 +200,4 @@ void Mapper009::reset() {
 	latchLoVal2 = 4;
 	latchHiVal1 = 0;
 	latchHiVal2 = 0;
-
 }
-

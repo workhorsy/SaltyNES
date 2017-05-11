@@ -43,4 +43,3 @@ public:
 };
 
 #endif // _CPP_COLOR_H_
-

@@ -1,5 +1,5 @@
 
-/* 
+/*
    This base64 implementation has been modified to conform with newer C++
    style guidelines. The original can be found at:
    https://github.com/ReneNyffenegger/development_misc/tree/master/base64
@@ -31,7 +31,7 @@
 #include "base64.h"
 #include <iostream>
 
-static const std::string base64_chars = 
+static const std::string base64_chars =
              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
              "abcdefghijklmnopqrstuvwxyz"
              "0123456789+/";
@@ -124,4 +124,3 @@ std::string base64_decode(std::string const& encoded_string) {
 
   return ret;
 }
-

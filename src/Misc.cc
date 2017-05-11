@@ -113,7 +113,6 @@ vector<uint16_t>* Misc::from_hex_string_to_vector(string data) {
 		(*retval)[i] = value;
 		j += BYTE_LEN;
 	}
-	
+
 	return retval;
 }
-

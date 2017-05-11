@@ -281,7 +281,7 @@ bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length, vect
 
 		rom = new ROM(this);
 		rom->load_from_data(rom_name, data, length, save_ram);
-		
+
 		if(rom->isValid()) {
 
 			// The CPU will load
@@ -312,7 +312,7 @@ void NES::reset() {
 	cpuMem->reset();
 	ppuMem->reset();
 	sprMem->reset();
-	
+
 	clearCPUMemory();
 
 	cpu->reset();
@@ -353,10 +353,9 @@ void NES::enableSound(bool enable) {
 void NES::setFramerate(int rate) {
 	Globals::preferredFrameRate = rate;
 	Globals::frameTime = 1000000 / rate;
-	
+
 	papu->lock_mutex();
 	papu->synchronized_setSampleRate(papu->getSampleRate(), false);
 	papu->unlock_mutex();
 }
 */
-

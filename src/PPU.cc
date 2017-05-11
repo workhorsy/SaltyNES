@@ -69,13 +69,13 @@ PPU::PPU(NES* nes) {
 	f_spClipping = 0;
 	f_bgClipping = 0;
 	f_dispType = 0;
-	
+
 	// Status flags:
 	STATUS_VRAMWRITE = 4;
 	STATUS_SLSPRITECOUNT = 5;
 	STATUS_SPRITE0HIT = 6;
 	STATUS_VBLANK = 7;
-	
+
 	// VRAM I/O:
 	vramAddress = 0;
 	vramTmpAddress = 0;
@@ -373,7 +373,7 @@ void PPU::startVBlank() {
 		int zoomed_x = 0, zoomed_y = 0;
 		int zoom = _zoom;
 		uint32_t* pixel_bits = nes->_salty_nes->LockPixels();
-		
+
 		if(is_safe_to_paint()) {
 			// Each column
 			for(size_t y=UNDER_SCAN; y<240-UNDER_SCAN; ++y) {
@@ -381,7 +381,7 @@ void PPU::startVBlank() {
 				for(size_t x=UNDER_SCAN; x<256-UNDER_SCAN; ++x) {
 					color32 = _screen_buffer[x + (y * (256))];
 					color32 |= (0xFF << 24); // Add full alpha
-					
+
 					// Each pixel zoomed
 					for(size_t y_offset=0; y_offset<zoom; ++y_offset) {
 						zoomed_y = (y * zoom) + y_offset;
@@ -393,7 +393,7 @@ void PPU::startVBlank() {
 				}
 			}
 		}
-		
+
 		nes->_salty_nes->UnlockPixels();
 #endif
 #ifdef SDL
@@ -414,7 +414,7 @@ void PPU::startVBlank() {
 			b = (color32 >> 16) & 0x000000FF;
 			g = (color32 >> 8) & 0x000000FF;
 			r = (color32 >> 0) & 0x000000FF;
-			
+
 			color = SDL_MapRGB(Globals::sdl_screen->format, r, g, b);
 			pixels[x + (y * (256))] = color;
 		}
@@ -450,14 +450,14 @@ void PPU::startVBlank() {
 	double e = _frame_end.tv_usec + (_frame_end.tv_sec * 1000000.0);
 	double s = _frame_start.tv_usec + (_frame_start.tv_sec * 1000000.0);
 	double diff = e - s;
-	
+
 	// Sleep if there is still time left over, after drawing this frame
 	double wait = 0;
 	if(diff < Globals::MS_PER_FRAME) {
 		wait = Globals::MS_PER_FRAME - diff;
 		//usleep(wait);
 	}
-	
+
 	// Print the frame rate
 	_ticks_since_second += diff + wait;
 	if(_ticks_since_second >= 1000000.0) {
@@ -469,7 +469,7 @@ void PPU::startVBlank() {
 		frameCounter = 0;
 	}
 	++frameCounter;
-	
+
 	// Get the start time of the next frame
 	gettimeofday(&_frame_start, nullptr);
 }
@@ -1897,8 +1897,7 @@ void PPU::reset() {
 
 #ifdef NACL
 bool PPU::is_safe_to_paint() {
-	return nes->_salty_nes->width() * nes->_salty_nes->height() == 
+	return nes->_salty_nes->width() * nes->_salty_nes->height() ==
 	(_zoom * 256) * (_zoom * 240);
 }
 #endif
-

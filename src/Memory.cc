@@ -60,13 +60,13 @@ void Memory::dump(string file, size_t offset, size_t length) {
 	for(size_t i=0; i<length; ++i) {
 		ch[i] = static_cast<char>(mem[offset + i]);
 	}
-	
+
 	try{
         ofstream writer(file.c_str(), ios::out|ios::binary);
 		writer.write(ch, length);
 		writer.close();
 		printf("Memory dumped to file \"%s\".\n", file.c_str());
-		
+
 	}catch(exception& ioe) {
 		printf("%s\n", "Memory dump to file: IO Error!");
 	}
@@ -85,5 +85,3 @@ void Memory::write(size_t address, vector<uint16_t>* array, size_t arrayoffset, 
 		return;
 	arraycopy_short(array, arrayoffset, &mem, address, length);
 }
-
-
