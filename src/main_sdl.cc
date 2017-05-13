@@ -12,9 +12,8 @@ using namespace std;
 
 vNES vnes;
 
-void onLoaded(void* userData, void* buffer, int size) {
-	printf("!!! onLoaded\n");
-	printf("!!! size\n");
+void onGameDownloaded(void* userData, void* buffer, int size) {
+	printf("!!! onGameDownloaded\n");
 
 	// Run the emulator
 	//vnes.init(argv[1]);
@@ -23,11 +22,11 @@ void onLoaded(void* userData, void* buffer, int size) {
 	vnes.run();
 }
 
-void onFailed(void* userData) {
-	printf("!!! game download failed\n");
+void onGameFailed(void* userData) {
+	printf("!!! onGameFailed\n");
 }
 
-void main_loop() {
+void onMainLoop() {
 	if (vnes.started) {
 		while (! vnes.nes->getCpu()->emulate()) {
 			// ..
@@ -38,7 +37,7 @@ void main_loop() {
 			emscripten_cancel_main_loop();
 		}
 	} else {
-		printf("!!! main_loop idle ...\n");
+		printf("!!! main loop idle ...\n");
 	}
 }
 
@@ -73,10 +72,10 @@ int main(int argc, char* argv[]) {
 	}
 
 	// Start downloading the game file
-	emscripten_async_wget_data(file_name.c_str(), nullptr, onLoaded, onFailed);
+	emscripten_async_wget_data(file_name.c_str(), nullptr, onGameDownloaded, onGameFailed);
 
-	// Wait here until the game is downloaded
-	emscripten_set_main_loop(main_loop, 0, true);
+	// Run the main loop
+	emscripten_set_main_loop(onMainLoop, 0, true);
 
 	return 0;
 }
