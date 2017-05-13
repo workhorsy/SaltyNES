@@ -87,18 +87,6 @@ void vNES::pre_run_setup(vector<uint16_t>* save_ram) {
 	}
 }
 
-// FIXME: Pass this in as an argument
-NES* g_frame_nes;
-
-void frame() {
-	while (! g_frame_nes->getCpu()->emulate()) {
-		// ..
-	}
-	if (g_frame_nes->getCpu()->stopRunning) {
-		emscripten_cancel_main_loop();
-	}
-}
-
 void vNES::run() {
 	// Can start painting:
 	started = true;
@@ -106,9 +94,7 @@ void vNES::run() {
 	if(nes->rom->isValid()) {
 		// Start emulation:
 		//System.out.println("vNES is now starting the processor.");
-		g_frame_nes = nes;
 		nes->getCpu()->start();
-		emscripten_set_main_loop(frame, 0, true);
 	} else {
 		// ROM file was invalid.
 		printf("vNES was unable to find (%s).\n", _rom_name.c_str());

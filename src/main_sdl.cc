@@ -10,31 +10,36 @@ Hosted at: https://github.com/workhorsy/nes_wasm
 
 using namespace std;
 
+vNES vnes;
 
 void onLoaded(void* userData, void* buffer, int size) {
 	printf("!!! onLoaded\n");
 	printf("!!! size\n");
 
-	// Stop the idle loop that is waiting for this download
-	emscripten_cancel_main_loop();
-
 	// Run the emulator
-	vNES vnes;
 	//vnes.init(argv[1]);
 	vnes.init_data((uint8_t*)buffer, size);
 	vnes.pre_run_setup(nullptr);
 	vnes.run();
-
-	// Clanup the SDL resources then exit
-	SDL_Quit();
 }
 
 void onFailed(void* userData) {
 	printf("!!! game download failed\n");
 }
 
-void idle() {
-	printf("idle ...");
+void main_loop() {
+	if (vnes.started) {
+		while (! vnes.nes->getCpu()->emulate()) {
+			// ..
+		}
+		if (vnes.nes->getCpu()->stopRunning) {
+			// Clanup the SDL resources then exit
+			SDL_Quit();
+			emscripten_cancel_main_loop();
+		}
+	} else {
+		printf("!!! main_loop idle ...\n");
+	}
 }
 
 int main(int argc, char* argv[]) {
@@ -71,7 +76,7 @@ int main(int argc, char* argv[]) {
 	emscripten_async_wget_data(file_name.c_str(), nullptr, onLoaded, onFailed);
 
 	// Wait here until the game is downloaded
-	emscripten_set_main_loop(idle, 1, true);
+	emscripten_set_main_loop(main_loop, 0, true);
 
 	return 0;
 }
