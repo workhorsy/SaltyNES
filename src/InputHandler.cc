@@ -164,14 +164,14 @@ void InputHandler::poll_for_key_events() {
 	int numberOfKeys;
 	uint8_t* keystate = SDL_GetKeyState(&numberOfKeys);
 
-	_keys[_map[InputHandler::KEY_UP]] =     keystate[SDLK_UP];
-	_keys[_map[InputHandler::KEY_DOWN]] =   keystate[SDLK_DOWN];
-	_keys[_map[InputHandler::KEY_RIGHT]] =  keystate[SDLK_RIGHT];
-	_keys[_map[InputHandler::KEY_LEFT]] =   keystate[SDLK_LEFT];
+	_keys[_map[InputHandler::KEY_UP]] =     keystate[SDLK_w];
+	_keys[_map[InputHandler::KEY_DOWN]] =   keystate[SDLK_s];
+	_keys[_map[InputHandler::KEY_RIGHT]] =  keystate[SDLK_d];
+	_keys[_map[InputHandler::KEY_LEFT]] =   keystate[SDLK_a];
 	_keys[_map[InputHandler::KEY_START]] =  keystate[SDLK_RETURN];
-	_keys[_map[InputHandler::KEY_SELECT]] = keystate[SDLK_RCTRL];
-	_keys[_map[InputHandler::KEY_B]] =      keystate[SDLK_z];
-	_keys[_map[InputHandler::KEY_A]] =      keystate[SDLK_x];
+	_keys[_map[InputHandler::KEY_SELECT]] = keystate[SDLK_RSHIFT];
+	_keys[_map[InputHandler::KEY_B]] =      keystate[SDLK_j];
+	_keys[_map[InputHandler::KEY_A]] =      keystate[SDLK_k];
 #endif
 
 #ifdef NACL
