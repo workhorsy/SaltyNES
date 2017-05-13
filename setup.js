@@ -18,6 +18,10 @@ let statusElement = $('#status');
 let progressElement = $('#progress');
 let spinnerElement = $('#spinner');
 
+if (! ('WebAssembly' in window)) {
+	alert('This browser does not support WebAssembly.');
+}
+
 var Module = {
 	preRun: [],
 	postRun: [],
