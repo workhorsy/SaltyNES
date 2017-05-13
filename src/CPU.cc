@@ -221,7 +221,7 @@ bool CPU::emulate() {
 
 		// Sleep a second if we are paused
 		if(this->nes->_is_paused) {
-//			usleep(1000000);
+//			SDL_Delay(1000000);
 			return false;
 		}
 

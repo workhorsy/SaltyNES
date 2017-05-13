@@ -447,7 +447,7 @@ void PPU::startVBlank() {
 	if(diff < Globals::MS_PER_FRAME) {
 		wait = Globals::MS_PER_FRAME - diff;
 #ifdef DESKTOP
-		usleep(wait);
+		SDL_Delay(wait);
 #endif
 	}
 
