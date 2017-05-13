@@ -140,6 +140,10 @@ $('#select_game').addEventListener('change', function(event) {
 	let script = document.createElement('script');
 	script.setAttribute('src', 'index.js');
 	document.head.appendChild(script);
+
+	// Hide the game selector, and enabled the full screen button
+	$('#button_full_screen').disabled = false;
+	hide('#select_game');
 }, false);
 
 $('#screen').addEventListener('contextmenu', function(event) {
