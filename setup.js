@@ -16,7 +16,6 @@ let g_get_key_select = 0;
 
 let statusElement = $('#status');
 let progressElement = $('#progress');
-let spinnerElement = $('#spinner');
 
 if (! ('WebAssembly' in window)) {
 	alert('This browser does not support WebAssembly.');
@@ -71,12 +70,10 @@ var Module = {
 			progressElement.value = parseInt(m[2])*100;
 			progressElement.max = parseInt(m[4])*100;
 			progressElement.hidden = false;
-			spinnerElement.hidden = false;
 		} else {
 			progressElement.value = null;
 			progressElement.max = null;
 			progressElement.hidden = true;
-			if (!text) spinnerElement.style.display = 'none';
 		}
 		statusElement.innerHTML = text;
 	},
@@ -90,7 +87,6 @@ var Module = {
 window.onerror = function(event) {
 	// TODO: do not warn on ok events like simulating an infinite loop or exitStatus
 	Module.setStatus('Exception thrown, see JavaScript console');
-	spinnerElement.style.display = 'none';
 	Module.setStatus = function(text) {
 		if (text) Module.printErr('[post-exception status] ' + text);
 	};
