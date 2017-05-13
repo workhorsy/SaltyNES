@@ -140,10 +140,7 @@ void InputHandler::mapKey(int padKey, int kbKeycode) {
 }
 
 void InputHandler::poll_for_key_events() {
-#ifdef SDL
-	int numberOfKeys;
-	uint8_t* keystate = 0;// FIXME: SDL_GetKeyState(&numberOfKeys);
-
+#ifdef WEB
 	const bool is_left = EM_ASM_INT({ return g_get_key_left; }, 0) > 0;
 	const bool is_right = EM_ASM_INT({ return g_get_key_right; }, 0) > 0;
 	const bool is_up = EM_ASM_INT({ return g_get_key_up; }, 0) > 0;
@@ -161,6 +158,20 @@ void InputHandler::poll_for_key_events() {
 	_keys[_map[InputHandler::KEY_SELECT]] = is_select;
 	_keys[_map[InputHandler::KEY_B]] =      is_b;
 	_keys[_map[InputHandler::KEY_A]] =      is_a;
+#endif
+
+#ifdef DESKTOP
+	int numberOfKeys;
+	uint8_t* keystate = SDL_GetKeyState(&numberOfKeys);
+
+	_keys[_map[InputHandler::KEY_UP]] =     keystate[SDLK_UP];
+	_keys[_map[InputHandler::KEY_DOWN]] =   keystate[SDLK_DOWN];
+	_keys[_map[InputHandler::KEY_RIGHT]] =  keystate[SDLK_RIGHT];
+	_keys[_map[InputHandler::KEY_LEFT]] =   keystate[SDLK_LEFT];
+	_keys[_map[InputHandler::KEY_START]] =  keystate[SDLK_RETURN];
+	_keys[_map[InputHandler::KEY_SELECT]] = keystate[SDLK_RCTRL];
+	_keys[_map[InputHandler::KEY_B]] =      keystate[SDLK_z];
+	_keys[_map[InputHandler::KEY_A]] =      keystate[SDLK_x];
 #endif
 
 #ifdef NACL

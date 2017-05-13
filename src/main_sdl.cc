@@ -4,7 +4,6 @@ A NES emulator in WebAssembly. Based on vNES.
 Licensed under GPLV3 or later
 Hosted at: https://github.com/workhorsy/nes_wasm
 */
-#ifdef SDL
 
 #include "SaltyNES.h"
 
@@ -12,11 +11,12 @@ using namespace std;
 
 vNES vnes;
 
+#ifdef WEB
+
 void onGameDownloaded(void* userData, void* buffer, int size) {
 	printf("!!! onGameDownloaded\n");
 
 	// Run the emulator
-	//vnes.init(argv[1]);
 	vnes.init_data((uint8_t*)buffer, size);
 	vnes.pre_run_setup(nullptr);
 	vnes.run();
@@ -40,6 +40,36 @@ void onMainLoop() {
 		printf("!!! main loop idle ...\n");
 	}
 }
+
+void runMainLoop(string file_name) {
+	// Start downloading the game file
+	emscripten_async_wget_data(file_name.c_str(), nullptr, onGameDownloaded, onGameFailed);
+
+	// Run the main loop
+	emscripten_set_main_loop(onMainLoop, 0, true);
+}
+
+#endif
+
+#ifdef DESKTOP
+
+void runMainLoop(string file_name) {
+	vnes.init(file_name);
+	vnes.pre_run_setup(nullptr);
+	vnes.run();
+
+	while (vnes.started) {
+		while (! vnes.nes->getCpu()->emulate()) {
+			// ..
+		}
+	}
+	if (vnes.nes->getCpu()->stopRunning) {
+		// Clanup the SDL resources then exit
+		SDL_Quit();
+	}
+}
+
+#endif
 
 int main(int argc, char* argv[]) {
 	printf("%s\n", "");
@@ -71,13 +101,7 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	// Start downloading the game file
-	emscripten_async_wget_data(file_name.c_str(), nullptr, onGameDownloaded, onGameFailed);
-
-	// Run the main loop
-	emscripten_set_main_loop(onMainLoop, 0, true);
+	runMainLoop(file_name);
 
 	return 0;
 }
-
-#endif

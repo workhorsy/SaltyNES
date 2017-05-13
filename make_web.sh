@@ -4,7 +4,7 @@ set -e
 
 # Setup compiler build flags
 CC="em++"
-CFLAGS="-Os -std=c++14 -lSDL -lpthread -DSDL=true -s WASM=1"
+CFLAGS="-Os -std=c++14 -lSDL -lpthread -DWEB=true -s WASM=1"
 
 # FIXME: If we didn't have to source emscripten sdk this way, we
 # Could change to building with an incremental build system such

@@ -25,7 +25,6 @@ vNES::~vNES() {
 	_rom_name.clear();
 }
 
-#ifdef SDL
 void vNES::init(string rom_name) {
 	//Logger::init("logs/log");
 	started = false;
@@ -41,7 +40,6 @@ void vNES::init(string rom_name) {
 	nes->enableSound(true);
 	nes->reset();
 }
-#endif
 
 //#ifdef NACL
 void vNES::init_data(uint8_t* rom_data, size_t length) {

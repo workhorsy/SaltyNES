@@ -446,7 +446,9 @@ void PPU::startVBlank() {
 	double wait = 0;
 	if(diff < Globals::MS_PER_FRAME) {
 		wait = Globals::MS_PER_FRAME - diff;
-		//usleep(wait);
+#ifdef DESKTOP
+		usleep(wait);
+#endif
 	}
 
 	// Print the frame rate

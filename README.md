@@ -5,7 +5,7 @@ Forked from the C++ version https://launchpad.net/saltynes
 
 # Build
 ```
-./make.sh
+./make_web.sh
 ```
 
 # Run in browser
@@ -18,6 +18,5 @@ TODO
 * Is there a way to check if running asm.js instead of WebAssembly?
 * Remove NACL code
 * Shrink wasm file by removing cout and other complex libraries
-* Make it build as Desktop SDL app
 * Add sound playing
 * Change the name

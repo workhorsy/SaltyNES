@@ -9,6 +9,14 @@ Hosted at: https://github.com/workhorsy/nes_wasm
 #ifndef _SALTY_NES_H_
 #define _SALTY_NES_H_
 
+#ifdef WEB
+#define SDL
+#endif
+
+#ifdef DESKTOP
+#define SDL
+#endif
+
 #include <assert.h>
 #include <map>
 #include <vector>
@@ -45,6 +53,9 @@ Hosted at: https://github.com/workhorsy/nes_wasm
 #ifdef SDL
 	#include <SDL/SDL.h>
 	#include <SDL/SDL_audio.h>
+#endif
+
+#ifdef WEB
 	#include <emscripten.h>
 #endif
 
