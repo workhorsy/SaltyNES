@@ -10,6 +10,7 @@ CFLAGS="-O3 -std=c++14 -lSDL -lSDL_mixer -lpthread -DDESKTOP=true"
 rm -f *.wasm
 rm -f index.js
 
+rm -f nes
 #rm -f *.o
 #rm -f -rf build_desktop
 mkdir -p build_desktop
