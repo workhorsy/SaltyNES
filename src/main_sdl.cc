@@ -7,14 +7,13 @@ Hosted at: https://github.com/workhorsy/nes_wasm
 #ifdef SDL
 
 #include "SaltyNES.h"
-#include <iostream>
 
 using namespace std;
 
 
 void onLoaded(void* userData, void* buffer, int size) {
-	std::cout << "!!! onLoaded" << std::endl;
-	std::cout << "!!! size" << size << std::endl;
+	printf("!!! onLoaded\n");
+	printf("!!! size\n");
 
 	// Stop the idle loop that is waiting for this download
 	emscripten_cancel_main_loop();
@@ -31,11 +30,11 @@ void onLoaded(void* userData, void* buffer, int size) {
 }
 
 void onFailed(void* userData) {
-	std::cout << "!!! game download failed" << std::endl;
+	printf("!!! game download failed\n");
 }
 
 void idle() {
-	std::cout << "idle ..." << std::endl;
+	printf("idle ...");
 }
 
 int main(int argc, char* argv[]) {

@@ -7,7 +7,6 @@ Hosted at: https://github.com/workhorsy/nes_wasm
 
 #include "SaltyNES.h"
 
-#include <iostream>
 #include <fstream>
 
 using namespace std;
