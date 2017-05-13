@@ -18,7 +18,6 @@ let statusElement = $('#status');
 let progressElement = $('#progress');
 let spinnerElement = $('#spinner');
 
-
 var Module = {
 	preRun: [],
 	postRun: [],

@@ -16,7 +16,6 @@ python3 -m http.server 9999
 TODO
 
 * Is there a way to check if running asm.js instead of WebAssembly?
-* Game loading from HTML GUI
 * Remove NACL code
 * Shrink wasm file by removing cout and other complex libraries
 * Make it build as Desktop SDL app
