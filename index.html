@@ -8,12 +8,23 @@
 		<script type="text/javascript" src="no_more_jquery.js"></script>
 	</head>
 	<body>
-		<div class="emscripten" id="status">Downloading...</div>
+		<div id="status">Downloading...</div>
 
-		<span id='controls'>
-			<span><input type="checkbox" id="resize">Resize canvas</span>
-			<span><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer</span>
-			<span><input type="button" value="Fullscreen" id="button_full_screen"></span>
+		<div>
+			<progress value="0" max="100" id="progress" hidden=1></progress>
+		</div>
+
+		<div id="screen_holder">
+			<canvas id="screen"></canvas>
+		</div>
+
+		<div id="control_holder">
+			<input type="checkbox" id="check_resize" />Resize canvas
+			<input type="checkbox" id="check_lock_pointer" checked />Lock/hide mouse pointer
+			<input type="button" value="Fullscreen" id="button_full_screen" />
+		</div>
+
+		<div id="game_holder">
 			<select id="select_game">
 				<option>Select a Game ...</option>
 				<option value="roms/Bionic Commando (U) [!].nes">Bionic Commando</option>
@@ -31,20 +42,13 @@
 				<option value="roms/Tetris (U) [!].nes">Tetris</option>
 				<option value="roms/Tetris 2 (U) [!].nes">Tetris 2</option>
 			</select>
-		</span>
-
-		<div class="emscripten">
-			<progress value="0" max="100" id="progress" hidden=1></progress>
 		</div>
 
-		<div class="emscripten_border">
-			<canvas class="emscripten" id="screen"></canvas>
-		</div>
 		<textarea id="output" rows="8"></textarea>
 
-		<p>
+		<div id="footer">
 			<a href="https://github.com/workhorsy/nes_wasm">https://github.com/workhorsy/nes_wasm</a>
-		</p>
+		</div>
 
 		<script type="text/javascript" src="setup.js"></script>
 	</body>

@@ -126,8 +126,8 @@ document.addEventListener('keyup', function(event) {
 
 $('#button_full_screen').addEventListener('click', function() {
 	Module.requestFullscreen(
-		$('#pointerLock').checked,
-		$('#resize').checked
+		$('#check_lock_pointer').checked,
+		$('#check_resize').checked
 	);
 }, false);
 

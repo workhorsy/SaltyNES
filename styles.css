@@ -7,12 +7,7 @@
 	font-family: Helvetica, Arial, sans-serif;
 }
 
-html {
-	box-sizing: border-box;
-}
-
 body {
-	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
 }
@@ -23,45 +18,28 @@ body {
 	image-rendering: pixelated;
 	-ms-interpolation-mode: nearest-neighbor;
 
+	width: 256px;
+	height: 240px;
+
 	border: 0px none;
 	background-color: black;
 }
 
-.emscripten {
-	padding-right: 0;
-	margin-left: auto;
-	margin-right: auto;
-	display: block;
-}
-
-div.emscripten {
-	text-align: center;
-}
-
-div.emscripten_border {
-	border: 1px solid black;
-}
-
 #status {
-	display: inline-block;
-	vertical-align: top;
-	margin-top: 30px;
-	margin-left: 20px;
 	font-weight: bold;
 	color: rgb(120, 120, 120);
 }
 
-#progress {
-	height: 20px;
-	width: 30px;
+#screen_holder {
+	text-align: center;
 }
 
-#controls {
-	display: inline-block;
-	float: right;
-	vertical-align: top;
-	margin-top: 30px;
-	margin-right: 20px;
+#control_holder {
+	text-align: center;
+}
+
+#game_holder {
+	text-align: center;
 }
 
 #output {
@@ -78,4 +56,8 @@ div.emscripten_border {
 	color: white;
 	font-family: 'Lucida Console', Monaco, monospace;
 	outline: none;
+}
+
+#footer {
+	padding: 20px;
 }
