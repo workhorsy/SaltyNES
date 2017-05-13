@@ -1,5 +1,6 @@
 
 roms/
-build/
+build_desktop/
+build_web/
 index.wasm
 index.js

@@ -11,8 +11,8 @@ rm -f *.wasm
 rm -f index.js
 
 #rm -f *.o
-#rm -f -rf build
-mkdir -p build
+#rm -f -rf build_desktop
+mkdir -p build_desktop
 
 # FIXME: This wont rebuild if any of the header files changed
 # Build each C++ file into an object file. But only if the C++ file is newer.
@@ -20,12 +20,12 @@ for entry in src/*.cc; do
 	filename=$(basename "$entry")
 	filename=$(echo $filename | cut -f 1 -d '.')
 
-	if [[ src/"$filename".cc -nt build/"$filename".o ]]; then
+	if [[ src/"$filename".cc -nt build_desktop/"$filename".o ]]; then
 		echo Building "$entry" ...
-		$CC src/"$filename".cc $CFLAGS -c -o build/"$filename".o
+		$CC src/"$filename".cc $CFLAGS -c -o build_desktop/"$filename".o
 	fi
 done
 
 # Build the exe file
 echo Building exe ...
-$CC build/*.o $CFLAGS -o nes
+$CC build_desktop/*.o $CFLAGS -o nes
