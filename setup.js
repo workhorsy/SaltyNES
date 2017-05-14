@@ -5,6 +5,7 @@ Licensed under GPLV3 or later
 Hosted at: https://github.com/workhorsy/nes_wasm
 */
 
+let g_zoom = 1;
 let g_get_key_up = 0;
 let g_get_key_down = 0;
 let g_get_key_left = 0;
@@ -129,6 +130,20 @@ $('#button_full_screen').addEventListener('click', function() {
 		$('#check_lock_pointer').checked,
 		$('#check_resize').checked
 	);
+}, false);
+
+$('#button_zoom_in').addEventListener('click', function() {
+	g_zoom++;
+	let style = $('#screen').style;
+	style.width = (g_zoom * 256) + 'px';
+	style.height = (g_zoom * 240) + 'px';
+}, false);
+
+$('#button_zoom_out').addEventListener('click', function() {
+	if (g_zoom > 1) g_zoom--;
+	let style = $('#screen').style;
+	style.width = (g_zoom * 256) + 'px';
+	style.height = (g_zoom * 240) + 'px';
 }, false);
 
 $('#select_game').addEventListener('change', function(event) {
