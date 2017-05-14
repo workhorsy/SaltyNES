@@ -17,25 +17,15 @@ Hosted at: https://github.com/workhorsy/nes_wasm
 #define SDL
 #endif
 
-#include <assert.h>
 #include <map>
 #include <vector>
 #include <sstream>
 #include <iomanip>
 #include <fstream>
-#include <unistd.h>
 #include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <limits>
 #include <string>
-#include <cstring>
-#include <cerrno>
-#include <sys/stat.h>
 #include <algorithm>
 #include <sys/time.h>
-#include <math.h>
 
 #include "Color.h"
 #include "base64.h"
