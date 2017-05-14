@@ -1348,7 +1348,6 @@ public:
 	string _rom_name;
 	uint8_t* _rom_data;
 	size_t _rom_data_length;
-	bool started;
 
 	SaltyNES();
 	~SaltyNES();

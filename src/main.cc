@@ -27,7 +27,7 @@ void onGameFailed(void* userData) {
 }
 
 void onMainLoop() {
-	if (salty_nes.started) {
+	if (salty_nes.nes && ! salty_nes.nes->getCpu()->stopRunning) {
 		while (! salty_nes.nes->getCpu()->emulate()) {
 			// ..
 		}
@@ -58,7 +58,7 @@ void runMainLoop(string file_name) {
 	salty_nes.pre_run_setup(nullptr);
 	salty_nes.run();
 
-	while (salty_nes.started) {
+	while (! salty_nes.nes->getCpu()->stopRunning) {
 		while (! salty_nes.nes->getCpu()->emulate()) {
 			// ..
 		}

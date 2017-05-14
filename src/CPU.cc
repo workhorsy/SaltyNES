@@ -215,7 +215,6 @@ bool CPU::emulate() {
 
 	bool palEmu = Globals::palEmulation;
 	bool emulateSound = Globals::enableSound;
-//	stopRunning = false;
 
 	//int _counter = 0;
 
