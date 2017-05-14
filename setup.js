@@ -6,14 +6,6 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 */
 
 let g_zoom = 1;
-let g_get_key_up = 0;
-let g_get_key_down = 0;
-let g_get_key_left = 0;
-let g_get_key_right = 0;
-let g_get_key_b = 0;
-let g_get_key_a = 0;
-let g_get_key_start = 0;
-let g_get_key_select = 0;
 
 let statusElement = $('#status');
 let progressElement = $('#progress');
@@ -92,38 +84,6 @@ window.onerror = function(event) {
 		if (text) Module.printErr('[post-exception status] ' + text);
 	};
 };
-
-document.addEventListener('keydown', function(event) {
-	let code = event.keyCode || event.which;
-	//console.log(code);
-
-	switch (code) {
-		case 65: g_get_key_left = 1; break;
-		case 68: g_get_key_right = 1; break;
-		case 87: g_get_key_up = 1; break;
-		case 83: g_get_key_down = 1; break;
-		case 74: g_get_key_b = 1; break;
-		case 75: g_get_key_a = 1; break;
-		case 13: g_get_key_start = 1; break;
-		case 16: g_get_key_select = 1; break;
-	}
-}, false);
-
-document.addEventListener('keyup', function(event) {
-	let code = event.keyCode || event.which;
-	//console.log(code);
-
-	switch (code) {
-		case 65: g_get_key_left = 0; break;
-		case 68: g_get_key_right = 0; break;
-		case 87: g_get_key_up = 0; break;
-		case 83: g_get_key_down = 0; break;
-		case 74: g_get_key_b = 0; break;
-		case 75: g_get_key_a = 0; break;
-		case 13: g_get_key_start = 0; break;
-		case 16: g_get_key_select = 0; break;
-	}
-}, false);
 
 $('#button_full_screen').addEventListener('click', function() {
 	Module.requestFullscreen(

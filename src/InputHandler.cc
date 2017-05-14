@@ -47,27 +47,6 @@ void InputHandler::mapKey(int padKey, int kbKeycode) {
 }
 
 void InputHandler::poll_for_key_events() {
-#ifdef WEB
-	const bool is_left = EM_ASM_INT({ return g_get_key_left; }, 0) > 0;
-	const bool is_right = EM_ASM_INT({ return g_get_key_right; }, 0) > 0;
-	const bool is_up = EM_ASM_INT({ return g_get_key_up; }, 0) > 0;
-	const bool is_down = EM_ASM_INT({ return g_get_key_down; }, 0) > 0;
-	const bool is_b = EM_ASM_INT({ return g_get_key_b; }, 0) > 0;
-	const bool is_a = EM_ASM_INT({ return g_get_key_a; }, 0) > 0;
-	const bool is_start = EM_ASM_INT({ return g_get_key_start; }, 0) > 0;
-	const bool is_select = EM_ASM_INT({ return g_get_key_select; }, 0) > 0;
-
-	_keys[_map[InputHandler::KEY_UP]] =     is_up;
-	_keys[_map[InputHandler::KEY_DOWN]] =   is_down;
-	_keys[_map[InputHandler::KEY_RIGHT]] =  is_right;
-	_keys[_map[InputHandler::KEY_LEFT]] =   is_left;
-	_keys[_map[InputHandler::KEY_START]] =  is_start;
-	_keys[_map[InputHandler::KEY_SELECT]] = is_select;
-	_keys[_map[InputHandler::KEY_B]] =      is_b;
-	_keys[_map[InputHandler::KEY_A]] =      is_a;
-#endif
-
-#ifdef DESKTOP
 	int numberOfKeys;
 	const uint8_t* keystate = SDL_GetKeyboardState(&numberOfKeys);
 
@@ -79,7 +58,6 @@ void InputHandler::poll_for_key_events() {
 	_keys[_map[InputHandler::KEY_SELECT]] = keystate[SDL_SCANCODE_RSHIFT];
 	_keys[_map[InputHandler::KEY_B]] =      keystate[SDL_SCANCODE_J];
 	_keys[_map[InputHandler::KEY_A]] =      keystate[SDL_SCANCODE_K];
-#endif
 
 	// Can't hold both left & right or up & down at same time:
 	if(_keys[_map[InputHandler::KEY_LEFT]]) {
