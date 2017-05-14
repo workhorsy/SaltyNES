@@ -31,8 +31,8 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 #include "base64.h"
 
 #ifdef SDL
-	#include <SDL/SDL.h>
-	#include <SDL/SDL_audio.h>
+	#include <SDL2/SDL.h>
+	#include <SDL2/SDL_audio.h>
 #endif
 
 #ifdef WEB
@@ -107,9 +107,10 @@ public:
 // Class Prototypes
 class Globals {
 public:
-#ifdef SDL
-	static SDL_Surface* sdl_screen;
-#endif
+	static SDL_Window* g_window;
+	static SDL_Renderer* g_renderer;
+	static SDL_Texture* g_screen;
+
 	//static NES* nes;
 	static double CPU_FREQ_NTSC;
 	static double CPU_FREQ_PAL;

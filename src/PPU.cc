@@ -358,18 +358,14 @@ void PPU::startVBlank() {
 	endFrame();
 
 	nes->papu->writeBuffer();
-#ifdef SDL
-	// Lock the screen, if needed
-	if(SDL_MUSTLOCK(Globals::sdl_screen)) {
-		if(SDL_LockSurface(Globals::sdl_screen) < 0)
-			return;
-	}
 
+#ifdef SDL
+/*
 	// Actually draw the screen
 	uint8_t r = 0, g = 0, b = 0;
 	int color;
 	int color32;
-	int* pixels = reinterpret_cast<int*>(Globals::sdl_screen->pixels);
+	int* pixels = reinterpret_cast<int*>(Globals::g_screen->pixels);
 	for(size_t y=UNDER_SCAN; y<240-UNDER_SCAN; ++y) {
 		for(size_t x=UNDER_SCAN; x<256-UNDER_SCAN; ++x) {
 			color32 = _screen_buffer[x + (y * (256))];
@@ -377,17 +373,12 @@ void PPU::startVBlank() {
 			g = (color32 >> 8) & 0x000000FF;
 			r = (color32 >> 0) & 0x000000FF;
 
-			color = SDL_MapRGB(Globals::sdl_screen->format, r, g, b);
+			color = SDL_MapRGB(Globals::g_screen->format, r, g, b);
 			pixels[x + (y * (256))] = color;
 		}
 	}
-
-	// Unlock the screen if needed
-	if(SDL_MUSTLOCK(Globals::sdl_screen)) {
-		SDL_UnlockSurface(Globals::sdl_screen);
-	}
-
-	SDL_Flip(Globals::sdl_screen);
+*/
+	SDL_RenderPresent(Globals::g_renderer);
 #endif
 	// Reset scanline counter:
 	lastRenderedScanline = -1;

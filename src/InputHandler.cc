@@ -66,10 +66,10 @@ void InputHandler::poll_for_key_events() {
 	_keys[_map[InputHandler::KEY_B]] =      is_b;
 	_keys[_map[InputHandler::KEY_A]] =      is_a;
 #endif
-
+/*
 #ifdef DESKTOP
 	int numberOfKeys;
-	uint8_t* keystate = SDL_GetKeyState(&numberOfKeys);
+	const uint8_t* keystate = SDL_GetKeyboardState(&numberOfKeys);
 
 	_keys[_map[InputHandler::KEY_UP]] =     keystate[SDLK_w];
 	_keys[_map[InputHandler::KEY_DOWN]] =   keystate[SDLK_s];
@@ -80,6 +80,7 @@ void InputHandler::poll_for_key_events() {
 	_keys[_map[InputHandler::KEY_B]] =      keystate[SDLK_j];
 	_keys[_map[InputHandler::KEY_A]] =      keystate[SDLK_k];
 #endif
+*/
 
 	// Can't hold both left & right or up & down at same time:
 	if(_keys[_map[InputHandler::KEY_LEFT]]) {

@@ -87,19 +87,47 @@ int main(int argc, char* argv[]) {
 	std::string file_name = argv[1];
 
 	// Initialize SDL
-	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		fprintf(stderr, "Could not initialize SDL: %s\n",
 			SDL_GetError());
 		return -1;
 	}
 
-	// Grab a SDL surface from the screen
-	Globals::sdl_screen = SDL_SetVideoMode(256, 240, 32, SDL_SWSURFACE|SDL_ANYFORMAT);
-	if(!Globals::sdl_screen) {
-		fprintf(stderr, "Couldn't create a surface: %s\n",
-			SDL_GetError());
+	// Create a SDL window
+	Globals::g_window = SDL_CreateWindow(
+		"SaltyNES",
+		0, 0, 256, 240,
+		SDL_WINDOW_OPENGL
+	);
+	if (! Globals::g_window) {
+		fprintf(stderr, "Couldn't create a window: %s\n", SDL_GetError());
 		return -1;
 	}
+
+	// Create a SDL renderer
+	Globals::g_renderer = SDL_CreateRenderer(
+		Globals::g_window,
+		-1,
+		SDL_RENDERER_SOFTWARE
+	);
+	if (! Globals::g_renderer) {
+		fprintf(stderr, "Couldn't create a renderer: %s\n", SDL_GetError());
+		return -1;
+	}
+
+	SDL_Surface* surface = SDL_CreateRGBSurface(
+		0, 256, 240, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
+	if (! surface) {
+		fprintf(stderr, "Couldn't create a surface: %s\n", SDL_GetError());
+		return -1;
+	}
+
+	Globals::g_screen = SDL_CreateTextureFromSurface(Globals::g_renderer, surface);
+	if (! Globals::g_screen) {
+		fprintf(stderr, "Couldn't create a teture: %s\n", SDL_GetError());
+		return -1;
+	}
+	SDL_FreeSurface(surface);
 
 	runMainLoop(file_name);
 
