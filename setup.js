@@ -2,7 +2,7 @@
 Copyright (c) 2012-2017 Matthew Brennan Jones <matthew.brennan.jones@gmail.com>
 A NES emulator in WebAssembly. Based on vNES.
 Licensed under GPLV3 or later
-Hosted at: https://github.com/workhorsy/nes_wasm
+Hosted at: https://github.com/workhorsy/SaltyNES
 */
 
 let g_zoom = 1;
