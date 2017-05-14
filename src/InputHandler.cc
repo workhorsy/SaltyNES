@@ -66,21 +66,20 @@ void InputHandler::poll_for_key_events() {
 	_keys[_map[InputHandler::KEY_B]] =      is_b;
 	_keys[_map[InputHandler::KEY_A]] =      is_a;
 #endif
-/*
+
 #ifdef DESKTOP
 	int numberOfKeys;
 	const uint8_t* keystate = SDL_GetKeyboardState(&numberOfKeys);
 
-	_keys[_map[InputHandler::KEY_UP]] =     keystate[SDLK_w];
-	_keys[_map[InputHandler::KEY_DOWN]] =   keystate[SDLK_s];
-	_keys[_map[InputHandler::KEY_RIGHT]] =  keystate[SDLK_d];
-	_keys[_map[InputHandler::KEY_LEFT]] =   keystate[SDLK_a];
-	_keys[_map[InputHandler::KEY_START]] =  keystate[SDLK_RETURN];
-	_keys[_map[InputHandler::KEY_SELECT]] = keystate[SDLK_RSHIFT];
-	_keys[_map[InputHandler::KEY_B]] =      keystate[SDLK_j];
-	_keys[_map[InputHandler::KEY_A]] =      keystate[SDLK_k];
+	_keys[_map[InputHandler::KEY_UP]] =     keystate[SDL_SCANCODE_W];
+	_keys[_map[InputHandler::KEY_DOWN]] =   keystate[SDL_SCANCODE_S];
+	_keys[_map[InputHandler::KEY_RIGHT]] =  keystate[SDL_SCANCODE_D];
+	_keys[_map[InputHandler::KEY_LEFT]] =   keystate[SDL_SCANCODE_A];
+	_keys[_map[InputHandler::KEY_START]] =  keystate[SDL_SCANCODE_RETURN];
+	_keys[_map[InputHandler::KEY_SELECT]] = keystate[SDL_SCANCODE_RSHIFT];
+	_keys[_map[InputHandler::KEY_B]] =      keystate[SDL_SCANCODE_J];
+	_keys[_map[InputHandler::KEY_A]] =      keystate[SDL_SCANCODE_K];
 #endif
-*/
 
 	// Can't hold both left & right or up & down at same time:
 	if(_keys[_map[InputHandler::KEY_LEFT]]) {
