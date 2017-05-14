@@ -364,24 +364,22 @@ void PPU::startVBlank() {
 	// Actually draw the screen
 	uint8_t r = 0, g = 0, b = 0;
 	uint32_t color32;
-	Uint32* pixels = new Uint32[256 * 240];
-	memset(pixels, 255, 256 * 240 * sizeof(Uint32));
+	//memset(Globals::temp_pixels, 255, 256 * 240 * sizeof(uint32_t));
 
 	for(size_t y=0; y<240; ++y) {
 		for(size_t x=0; x<256; ++x) {
+			// Convert the color from BGR888 to RGBA8888 format
 			color32 = _screen_buffer[x + (y * (256))];
 			b = (color32 >> 16) & 0x000000FF;
 			g = (color32 >> 8) & 0x000000FF;
 			r = (color32 >> 0) & 0x000000FF;
+			uint32_t color = (r<<24 | g<<16 | b<<8 | 0x000000FF);
 
-			uint32_t color = SDL_MapRGB(Globals::g_screen_surface->format, r, g, b);
-			pixels[x + (y * (256))] = color;
+			Globals::temp_pixels[x + (y * (256))] = color;
 		}
 	}
 
-	SDL_UpdateTexture(Globals::g_screen, nullptr, pixels, 256 * sizeof(Uint32));
-
-	delete[] pixels;
+	SDL_UpdateTexture(Globals::g_screen, nullptr, Globals::temp_pixels, 256 * sizeof(uint32_t));
 
 	SDL_RenderClear(Globals::g_renderer);
 	SDL_RenderCopy(Globals::g_renderer, Globals::g_screen, nullptr, nullptr);

@@ -11,7 +11,7 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 SDL_Window* Globals::g_window = nullptr;
 SDL_Renderer* Globals::g_renderer = nullptr;
 SDL_Texture* Globals::g_screen = nullptr;
-SDL_Surface* Globals::g_screen_surface = nullptr;
+uint32_t Globals::temp_pixels[256 * 240];
 
 double Globals::CPU_FREQ_NTSC = 1789772.5;
 double Globals::CPU_FREQ_PAL = 1773447.4;

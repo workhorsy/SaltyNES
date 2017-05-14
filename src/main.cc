@@ -115,21 +115,12 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	Globals::g_screen_surface = SDL_CreateRGBSurface(
-		0, 256, 240, 32, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
-	if (! Globals::g_screen_surface) {
-		fprintf(stderr, "Couldn't create a surface: %s\n", SDL_GetError());
-		return -1;
-	}
-
 	Globals::g_screen = SDL_CreateTexture(Globals::g_renderer,
 			SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, 256, 240);
-	//SDL_CreateTextureFromSurface(Globals::g_renderer, surface);
 	if (! Globals::g_screen) {
 		fprintf(stderr, "Couldn't create a teture: %s\n", SDL_GetError());
 		return -1;
 	}
-	//SDL_FreeSurface(surface);
 
 	runMainLoop(file_name);
 
