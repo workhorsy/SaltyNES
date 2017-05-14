@@ -9,7 +9,7 @@ Hosted at: https://github.com/workhorsy/nes_wasm
 
 #include "SaltyNES.h"
 
-vNES::vNES() {
+SaltyNES::SaltyNES() {
 	samplerate = 0;
 	progress = 0;
 	nes = nullptr;
@@ -18,14 +18,14 @@ vNES::vNES() {
 	started = false;
 }
 
-vNES::~vNES() {
+SaltyNES::~SaltyNES() {
 	stop();
 	delete_n_null(nes);
 
 	_rom_name.clear();
 }
 
-void vNES::init(string rom_name) {
+void SaltyNES::init(string rom_name) {
 	//Logger::init("logs/log");
 	started = false;
 	_rom_name = rom_name;
@@ -41,7 +41,7 @@ void vNES::init(string rom_name) {
 	nes->reset();
 }
 
-void vNES::init_data(uint8_t* rom_data, size_t length) {
+void SaltyNES::init_data(uint8_t* rom_data, size_t length) {
 	started = false;
 	_rom_data = rom_data;
 	_rom_data_length = length;
@@ -57,7 +57,7 @@ void vNES::init_data(uint8_t* rom_data, size_t length) {
 	nes->reset();
 }
 
-void vNES::pre_run_setup(vector<uint16_t>* save_ram) {
+void SaltyNES::pre_run_setup(vector<uint16_t>* save_ram) {
 	// Load ROM file:
 	if(_rom_data == nullptr) {
 		log_to_browser("Loading ROM from file.");
@@ -83,7 +83,7 @@ void vNES::pre_run_setup(vector<uint16_t>* save_ram) {
 	}
 }
 
-void vNES::run() {
+void SaltyNES::run() {
 	// Can start painting:
 	started = true;
 
@@ -97,13 +97,13 @@ void vNES::run() {
 	}
 }
 
-void vNES::stop() {
+void SaltyNES::stop() {
 	nes->stopEmulation();
 	//System.out.println("vNES has stopped the processor.");
 	nes->getPapu()->stop();
 }
 
-void vNES::readParams() {
+void SaltyNES::readParams() {
 	/* Controller Setup for Player 1 */
 	Globals::controls["p1_up"] = Parameters::p1_up;
 	Globals::controls["p1_down"] = Parameters::p1_down;
@@ -125,7 +125,7 @@ void vNES::readParams() {
 	Globals::controls["p2_start"] = Parameters::p2_start;
 }
 
-void vNES::initKeyCodes() {
+void SaltyNES::initKeyCodes() {
 	Globals::keycodes["VK_SPACE"] = 32;
 	Globals::keycodes["VK_PAGE_UP"] = 33;
 	Globals::keycodes["VK_PAGE_DOWN"] = 34;

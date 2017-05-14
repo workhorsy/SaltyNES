@@ -80,7 +80,7 @@ class PPU;
 class Raster;
 class ROM;
 class Tile;
-class vNES;
+class SaltyNES;
 
 // Interfaces
 class IPapuChannel {
@@ -1348,7 +1348,7 @@ public:
 	void stateLoad(ByteBuffer* buf);
 };
 
-class vNES {
+class SaltyNES {
 public:
 	int samplerate;
 	int progress;
@@ -1358,8 +1358,8 @@ public:
 	size_t _rom_data_length;
 	bool started;
 
-	vNES();
-	~vNES();
+	SaltyNES();
+	~SaltyNES();
 #ifdef SDL
 	void init(string rom_name);
 #endif

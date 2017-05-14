@@ -9,7 +9,7 @@ Hosted at: https://github.com/workhorsy/nes_wasm
 
 using namespace std;
 
-vNES vnes;
+SaltyNES salty_nes;
 
 #ifdef WEB
 
@@ -17,9 +17,9 @@ void onGameDownloaded(void* userData, void* buffer, int size) {
 	printf("!!! onGameDownloaded\n");
 
 	// Run the emulator
-	vnes.init_data((uint8_t*)buffer, size);
-	vnes.pre_run_setup(nullptr);
-	vnes.run();
+	salty_nes.init_data((uint8_t*)buffer, size);
+	salty_nes.pre_run_setup(nullptr);
+	salty_nes.run();
 }
 
 void onGameFailed(void* userData) {
@@ -27,11 +27,11 @@ void onGameFailed(void* userData) {
 }
 
 void onMainLoop() {
-	if (vnes.started) {
-		while (! vnes.nes->getCpu()->emulate()) {
+	if (salty_nes.started) {
+		while (! salty_nes.nes->getCpu()->emulate()) {
 			// ..
 		}
-		if (vnes.nes->getCpu()->stopRunning) {
+		if (salty_nes.nes->getCpu()->stopRunning) {
 			// Clanup the SDL resources then exit
 			SDL_Quit();
 			emscripten_cancel_main_loop();
@@ -54,16 +54,16 @@ void runMainLoop(string file_name) {
 #ifdef DESKTOP
 
 void runMainLoop(string file_name) {
-	vnes.init(file_name);
-	vnes.pre_run_setup(nullptr);
-	vnes.run();
+	salty_nes.init(file_name);
+	salty_nes.pre_run_setup(nullptr);
+	salty_nes.run();
 
-	while (vnes.started) {
-		while (! vnes.nes->getCpu()->emulate()) {
+	while (salty_nes.started) {
+		while (! salty_nes.nes->getCpu()->emulate()) {
 			// ..
 		}
 	}
-	if (vnes.nes->getCpu()->stopRunning) {
+	if (salty_nes.nes->getCpu()->stopRunning) {
 		// Clanup the SDL resources then exit
 		SDL_Quit();
 	}
