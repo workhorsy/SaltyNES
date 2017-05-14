@@ -110,6 +110,7 @@ public:
 	static SDL_Window* g_window;
 	static SDL_Renderer* g_renderer;
 	static SDL_Texture* g_screen;
+	static SDL_Surface* g_screen_surface;
 
 	//static NES* nes;
 	static double CPU_FREQ_NTSC;

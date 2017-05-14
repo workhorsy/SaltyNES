@@ -360,24 +360,31 @@ void PPU::startVBlank() {
 	nes->papu->writeBuffer();
 
 #ifdef SDL
-/*
+
 	// Actually draw the screen
 	uint8_t r = 0, g = 0, b = 0;
-	int color;
-	int color32;
-	int* pixels = reinterpret_cast<int*>(Globals::g_screen->pixels);
-	for(size_t y=UNDER_SCAN; y<240-UNDER_SCAN; ++y) {
-		for(size_t x=UNDER_SCAN; x<256-UNDER_SCAN; ++x) {
+	uint32_t color32;
+	Uint32* pixels = new Uint32[256 * 240];
+	memset(pixels, 255, 256 * 240 * sizeof(Uint32));
+
+	for(size_t y=0; y<240; ++y) {
+		for(size_t x=0; x<256; ++x) {
 			color32 = _screen_buffer[x + (y * (256))];
 			b = (color32 >> 16) & 0x000000FF;
 			g = (color32 >> 8) & 0x000000FF;
 			r = (color32 >> 0) & 0x000000FF;
 
-			color = SDL_MapRGB(Globals::g_screen->format, r, g, b);
+			uint32_t color = SDL_MapRGB(Globals::g_screen_surface->format, r, g, b);
 			pixels[x + (y * (256))] = color;
 		}
 	}
-*/
+
+	SDL_UpdateTexture(Globals::g_screen, nullptr, pixels, 256 * sizeof(Uint32));
+
+	delete[] pixels;
+
+	SDL_RenderClear(Globals::g_renderer);
+	SDL_RenderCopy(Globals::g_renderer, Globals::g_screen, nullptr, nullptr);
 	SDL_RenderPresent(Globals::g_renderer);
 #endif
 	// Reset scanline counter:
