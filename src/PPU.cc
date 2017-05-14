@@ -366,8 +366,8 @@ void PPU::startVBlank() {
 	uint32_t color32;
 	//memset(Globals::temp_pixels, 255, 256 * 240 * sizeof(uint32_t));
 
-	for(size_t y=0; y<240; ++y) {
-		for(size_t x=0; x<256; ++x) {
+	for(size_t y=UNDER_SCAN; y<240-UNDER_SCAN; ++y) {
+		for(size_t x=UNDER_SCAN; x<256-UNDER_SCAN; ++x) {
 			// Convert the color from BGR888 to RGBA8888 format
 			color32 = _screen_buffer[x + (y * (256))];
 			b = (color32 >> 16) & 0x000000FF;
