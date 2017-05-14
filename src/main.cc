@@ -88,8 +88,7 @@ int main(int argc, char* argv[]) {
 
 	// Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		fprintf(stderr, "Could not initialize SDL: %s\n",
-			SDL_GetError());
+		fprintf(stderr, "Could not initialize SDL: %s\n", SDL_GetError());
 		return -1;
 	}
 
@@ -97,7 +96,7 @@ int main(int argc, char* argv[]) {
 	Globals::g_window = SDL_CreateWindow(
 		"SaltyNES",
 		0, 0, 256, 240,
-		SDL_WINDOW_OPENGL
+		0
 	);
 	if (! Globals::g_window) {
 		fprintf(stderr, "Couldn't create a window: %s\n", SDL_GetError());
@@ -115,6 +114,7 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
+	// Create the SDL screen
 	Globals::g_screen = SDL_CreateTexture(Globals::g_renderer,
 			SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, 256, 240);
 	if (! Globals::g_screen) {
