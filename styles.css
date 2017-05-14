@@ -30,6 +30,13 @@ body {
 	color: rgb(120, 120, 120);
 }
 
+#zoom_holder {
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 600px;
+}
+
 #screen_holder {
 	text-align: center;
 }

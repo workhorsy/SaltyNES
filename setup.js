@@ -158,6 +158,8 @@ $('#select_game').addEventListener('change', function(event) {
 
 	// Hide the game selector, and enabled the full screen button
 	$('#button_full_screen').disabled = false;
+	$('#button_zoom_out').disabled = false;
+	$('#button_zoom_in').disabled = false;
 	hide('#select_game');
 }, false);
 
