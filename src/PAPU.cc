@@ -27,35 +27,6 @@ void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 }
 #endif
 
-#ifdef NACL
-void fill_audio_nacl_cb(void* samples, uint32_t buffer_size, void* data) {
-	SaltyNES* salty_nes = reinterpret_cast<SaltyNES*>(data);
-	PAPU* papu = salty_nes->vnes->nes->papu;
-	uint8_t* buff = reinterpret_cast<uint8_t*>(samples);
-
-	// If there is no sound, just play zero
-	if(salty_nes->vnes->nes->_is_paused || papu == nullptr || !papu->ready_for_buffer_write) {
-		for(size_t i=0; i<buffer_size; ++i) {
-			buff[i] = 0;
-		}
-		return;
-	}
-
-	//const uint32_t channels = papu->stereo ? 2 : 1;
-
-	// Make sure we can't write outside the buffer.
-	//assert(buffer_size >= (sizeof(*buff) * channels * papu->sample_frame_count_));
-
-	size_t mix_len = buffer_size > static_cast<size_t>(papu->bufferIndex) ? static_cast<size_t>(papu->bufferIndex) : buffer_size;
-	for(size_t i=0; i<mix_len; ++i) {
-		buff[i] = papu->sampleBuffer[i];
-	}
-
-	papu->bufferIndex = 0;
-	papu->ready_for_buffer_write = false;
-}
-#endif
-
 const uint8_t PAPU::panning[] = {
 	80,
 	170,
@@ -245,31 +216,6 @@ PAPU::PAPU(NES* nes) {
 	cout << "samples: " << obtainedSpec.samples << endl;
 	cout << "callback: " << obtainedSpec.callback << endl;*/
 #endif
-
-#ifdef NACL
-	frequency_ = 440;
-
-	// Ask the device for an appropriate sample count size.
-	const uint32_t desired_sample_frame_count = 2048; // Same as PAPU::bufferSize
-	sample_frame_count_ = pp::AudioConfig::RecommendSampleFrameCount(
-		this->nes->_salty_nes,
-		PP_AUDIOSAMPLERATE_44100,
-		desired_sample_frame_count
-	);
-
-	pp::AudioConfig config(
-		this->nes->_salty_nes,
-		PP_AUDIOSAMPLERATE_44100,
-		sample_frame_count_
-	);
-
-	audio_ = pp::Audio(
-		this->nes->_salty_nes,
-		config,
-		fill_audio_nacl_cb,
-		this->nes->_salty_nes
-	);
-#endif
 }
 
 PAPU::~PAPU() {
@@ -320,10 +266,6 @@ void PAPU::synchronized_start() {
 		// Start running the stream
 		#ifdef SDL
 		SDL_PauseAudio(0);
-		#endif
-
-		#ifdef NACL
-		audio_.StartPlayback();
 		#endif
 
 	} catch (exception& e) {
@@ -839,9 +781,6 @@ void PAPU::writeBuffer() {
 void PAPU::stop() {
 #ifdef SDL
 	SDL_PauseAudio(1);
-#endif
-#ifdef NACL
-	audio_.StopPlayback();
 #endif
 	_is_running = false;
 }

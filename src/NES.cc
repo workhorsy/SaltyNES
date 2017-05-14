@@ -14,12 +14,6 @@ NES::NES(InputHandler* joy1, InputHandler* joy2) {
 	_joy1 = joy1;
 	_joy2 = joy2;
 #endif
-#ifdef NACL
-NES::NES(SaltyNES* salty_nes) {
-	_salty_nes = salty_nes;
-	_joy1 = salty_nes->_joy1;
-	_joy2 = salty_nes->_joy2;
-#endif
 	this->_is_paused = false;
 	this->_isRunning = false;
 

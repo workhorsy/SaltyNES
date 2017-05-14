@@ -358,35 +358,6 @@ void PPU::startVBlank() {
 	endFrame();
 
 	nes->papu->writeBuffer();
-#ifdef NACL
-//		log_to_browser("startVBlank");
-		int color32;
-		int zoomed_x = 0, zoomed_y = 0;
-		int zoom = _zoom;
-		uint32_t* pixel_bits = nes->_salty_nes->LockPixels();
-
-		if(is_safe_to_paint()) {
-			// Each column
-			for(size_t y=UNDER_SCAN; y<240-UNDER_SCAN; ++y) {
-				// Each row
-				for(size_t x=UNDER_SCAN; x<256-UNDER_SCAN; ++x) {
-					color32 = _screen_buffer[x + (y * (256))];
-					color32 |= (0xFF << 24); // Add full alpha
-
-					// Each pixel zoomed
-					for(size_t y_offset=0; y_offset<zoom; ++y_offset) {
-						zoomed_y = (y * zoom) + y_offset;
-						for(size_t x_offset=0; x_offset<zoom; ++x_offset) {
-							zoomed_x = (x * zoom) + x_offset;
-							pixel_bits[zoomed_x + (zoomed_y * (256 * zoom))] = color32;
-						}
-					}
-				}
-			}
-		}
-
-		nes->_salty_nes->UnlockPixels();
-#endif
 #ifdef SDL
 	// Lock the screen, if needed
 	if(SDL_MUSTLOCK(Globals::sdl_screen)) {
@@ -455,9 +426,6 @@ void PPU::startVBlank() {
 	_ticks_since_second += diff + wait;
 	if(_ticks_since_second >= 1000000.0) {
 		printf("FPS: %d\n", frameCounter);
-#ifdef NACL
-		this->nes->_salty_nes->set_fps(frameCounter);
-#endif
 		_ticks_since_second = 0;
 		frameCounter = 0;
 	}
@@ -1887,10 +1855,3 @@ void PPU::reset() {
 	// Initialize stuff:
 	init();
 }
-
-#ifdef NACL
-bool PPU::is_safe_to_paint() {
-	return nes->_salty_nes->width() * nes->_salty_nes->height() ==
-	(_zoom * 256) * (_zoom * 240);
-}
-#endif

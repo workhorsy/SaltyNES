@@ -41,7 +41,6 @@ void vNES::init(string rom_name) {
 	nes->reset();
 }
 
-//#ifdef NACL
 void vNES::init_data(uint8_t* rom_data, size_t length) {
 	started = false;
 	_rom_data = rom_data;
@@ -57,7 +56,6 @@ void vNES::init_data(uint8_t* rom_data, size_t length) {
 	nes->enableSound(true);
 	nes->reset();
 }
-//#endif
 
 void vNES::pre_run_setup(vector<uint16_t>* save_ram) {
 	// Load ROM file:

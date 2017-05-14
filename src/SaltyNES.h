@@ -40,16 +40,6 @@ Hosted at: https://github.com/workhorsy/nes_wasm
 #include "Color.h"
 #include "base64.h"
 
-#ifdef NACL
-	#include "ppapi/c/ppb_gamepad.h"
-	#include "ppapi/cpp/audio.h"
-	#include "ppapi/cpp/graphics_2d.h"
-	#include "ppapi/cpp/image_data.h"
-	#include "ppapi/cpp/instance.h"
-	#include "ppapi/cpp/rect.h"
-	#include "ppapi/cpp/size.h"
-#endif
-
 #ifdef SDL
 	#include <SDL/SDL.h>
 	#include <SDL/SDL_audio.h>
@@ -91,9 +81,6 @@ class Raster;
 class ROM;
 class Tile;
 class vNES;
-#ifdef NACL
-class SaltyNES;
-#endif
 
 // Interfaces
 class IPapuChannel {
@@ -637,9 +624,6 @@ public:
 
 	explicit InputHandler(int id);
 	~InputHandler();
-#ifdef NACL
-	void update_gamepad(PP_GamepadsSampleData gamepad_data);
-#endif
 	uint16_t getKeyState(int padKey);
 	void mapKey(int padKey, int kbKeycode);
 	void poll_for_key_events();
@@ -889,9 +873,6 @@ public:
 
 class NES {
 public:
-#ifdef NACL
-	SaltyNES* _salty_nes;
-#endif
 	bool _is_paused;
 	CPU* cpu;
 	PPU* ppu;
@@ -909,9 +890,6 @@ public:
 
 #ifdef SDL
 	NES(InputHandler* joy1, InputHandler* joy2);
-#endif
-#ifdef NACL
-	explicit NES(SaltyNES* salty_nes);
 #endif
 	~NES();
 	bool stateLoad(ByteBuffer* buf);
@@ -980,12 +958,6 @@ public:
 	static const uint16_t dmcFreqLookup[];
 	static const uint16_t noiseWavelengthLookup[];
 
-#ifdef NACL
-	pp::Audio audio_;
-	double frequency_;
-	double theta_;
-	uint32_t sample_frame_count_;
-#endif
 	mutable pthread_mutex_t _mutex;
 	bool _is_running;
 	NES* nes;
@@ -1274,9 +1246,6 @@ public:
 	void stateLoad(ByteBuffer* buf);
 	void stateSave(ByteBuffer* buf);
 	void reset();
-#ifdef NACL
-	bool is_safe_to_paint();
-#endif
 };
 
 class Raster {
@@ -1394,90 +1363,13 @@ public:
 #ifdef SDL
 	void init(string rom_name);
 #endif
-//#ifdef NACL
 	void init_data(uint8_t* rom_data, size_t length);
-//#endif
 	void pre_run_setup(vector<uint16_t>* save_ram);
 	void run();
 	void stop();
 	void readParams();
 	void initKeyCodes();
 };
-
-#ifdef NACL
-class SaltyNES : public pp::Instance {
-	mutable pthread_mutex_t pixel_buffer_mutex_;
-	pp::Graphics2D* graphics_2d_context_;
-	pp::ImageData* pixel_buffer_;
-	const PPB_Gamepad* gamepad_;
-	bool flush_pending_;
-	bool quit_;
-	uint32_t _fps;
-	pthread_t thread_;
-	bool thread_is_running_;
-
-	// Create and initialize the 2D context used for drawing.
-	void CreateContext(const pp::Size& size);
-	// Destroy the 2D drawing context.
-	void DestroyContext();
-	// Push the pixels to the browser, then attempt to flush the 2D context.  If
-	// there is a pending flush on the 2D context, then update the pixels only
-	// and do not flush.
-	void FlushPixelBuffer();
-
-	bool IsContextValid() const {
-		return graphics_2d_context_ != nullptr;
-	}
-
-public:
-	static SaltyNES* g_salty_nes;
-	vNES* vnes;
-	InputHandler* _joy1;
-	InputHandler* _joy2;
-
-	explicit SaltyNES(PP_Instance instance);
-	virtual ~SaltyNES();
-
-	static void* start_main_loop(void* param);
-	virtual bool Init(uint32_t argc, const char* argn[], const char* argv[]);
-	virtual void DidChangeView(const pp::View& view);
-	virtual void HandleMessage(const pp::Var& var_message);
-
-	uint32_t* LockPixels();
-	void UnlockPixels() const;
-	void Paint();
-	void poll_gamepad();
-
-	bool quit() const {
-		return quit_;
-	}
-
-	void set_fps(uint32_t value) {
-		_fps = value;
-	}
-	uint32_t get_fps() {
-		return _fps;
-	}
-
-	int width() const {
-		return pixel_buffer_ ? pixel_buffer_->size().width() : 0;
-	}
-	int height() const {
-	return pixel_buffer_ ? pixel_buffer_->size().height() : 0;
-	}
-
-	// Indicate whether a flush is pending.  This can only be called from the
-	// main thread; it is not thread safe.
-	bool flush_pending() const {
-		return flush_pending_;
-	}
-	void set_flush_pending(bool flag) {
-		flush_pending_ = flag;
-	}
-
-	void log(string message);
-};
-#endif
 
 template<class T> inline void delete_n_null(T*& obj) {
 	if(obj == nullptr)
@@ -1602,11 +1494,6 @@ inline uint8_t string_to_byte(uint8_t upper, uint8_t lower) {
 inline void log_to_browser(string message) {
 	fprintf(stdout, "%s\n", message.c_str());
 	fflush(stdout);
-
-#ifdef NACL
-	if(SaltyNES::g_salty_nes != nullptr)
-		SaltyNES::g_salty_nes->log(message);
-#endif
 }
 
 #endif // _SALTY_NES_H_
