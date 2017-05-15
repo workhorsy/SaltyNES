@@ -9,6 +9,12 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
+bool g_is_audio_enabled = false;
+
+extern "C" void toggle_sound() {
+  g_is_audio_enabled = ! g_is_audio_enabled;
+}
+
 #ifdef SDL
 void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 	// Force the buffer to be initialized each time like SDL 1.2
@@ -21,7 +27,9 @@ void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 		return;
 
 	uint32_t mix_len = len > papu->bufferIndex ? papu->bufferIndex : len;
-	SDL_MixAudio(stream, papu->sampleBuffer.data(), mix_len, SDL_MIX_MAXVOLUME);
+	if (g_is_audio_enabled) {
+		SDL_MixAudio(stream, papu->sampleBuffer.data(), mix_len, SDL_MIX_MAXVOLUME);
+	}
 	papu->bufferIndex = 0;
 	//std::fill(papu->sampleBuffer.begin(), papu->sampleBuffer.end(), 0);
 	papu->ready_for_buffer_write = false;

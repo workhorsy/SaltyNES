@@ -85,6 +85,11 @@ window.onerror = function(event) {
 	};
 };
 
+$('#button_toggle_sound').addEventListener('click', function() {
+	let toggle_sound = Module.cwrap('toggle_sound', null, []);
+	toggle_sound();
+}, false);
+
 $('#button_full_screen').addEventListener('click', function() {
 	Module.requestFullscreen(
 		$('#check_lock_pointer').checked,
@@ -120,6 +125,7 @@ $('#select_game').addEventListener('change', function(event) {
 	$('#button_full_screen').disabled = false;
 	$('#button_zoom_out').disabled = false;
 	$('#button_zoom_in').disabled = false;
+	$('#button_toggle_sound').disabled = false;
 	hide('#select_game');
 }, false);
 
