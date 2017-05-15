@@ -107,7 +107,7 @@ int main(int argc, char* argv[]) {
 	Globals::g_renderer = SDL_CreateRenderer(
 		Globals::g_window,
 		-1,
-		SDL_RENDERER_SOFTWARE
+		SDL_RENDERER_ACCELERATED
 	);
 	if (! Globals::g_renderer) {
 		fprintf(stderr, "Couldn't create a renderer: %s\n", SDL_GetError());
