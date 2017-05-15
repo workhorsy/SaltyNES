@@ -19,6 +19,5 @@ TODO
 * Shrink wasm file by removing cout and other complex libraries
 * Add sound playing
 * Change the name
-* Move from SDL to SDL2
 * Desktop mode does not quit
 * Make it show a message if WebAssembly is not supported

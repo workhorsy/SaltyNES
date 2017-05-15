@@ -6,14 +6,6 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 */
 
 let g_zoom = 1;
-let g_get_key_up = 0;
-let g_get_key_down = 0;
-let g_get_key_left = 0;
-let g_get_key_right = 0;
-let g_get_key_b = 0;
-let g_get_key_a = 0;
-let g_get_key_start = 0;
-let g_get_key_select = 0;
 
 let statusElement = $('#status');
 let progressElement = $('#progress');
@@ -93,35 +85,13 @@ window.onerror = function(event) {
 	};
 };
 
-document.addEventListener('keydown', function(event) {
-	let code = event.keyCode || event.which;
-	//console.log(code);
-
-	switch (code) {
-		case 65: g_get_key_left = 1; break;
-		case 68: g_get_key_right = 1; break;
-		case 87: g_get_key_up = 1; break;
-		case 83: g_get_key_down = 1; break;
-		case 74: g_get_key_b = 1; break;
-		case 75: g_get_key_a = 1; break;
-		case 13: g_get_key_start = 1; break;
-		case 16: g_get_key_select = 1; break;
-	}
-}, false);
-
-document.addEventListener('keyup', function(event) {
-	let code = event.keyCode || event.which;
-	//console.log(code);
-
-	switch (code) {
-		case 65: g_get_key_left = 0; break;
-		case 68: g_get_key_right = 0; break;
-		case 87: g_get_key_up = 0; break;
-		case 83: g_get_key_down = 0; break;
-		case 74: g_get_key_b = 0; break;
-		case 75: g_get_key_a = 0; break;
-		case 13: g_get_key_start = 0; break;
-		case 16: g_get_key_select = 0; break;
+$('#button_toggle_sound').addEventListener('click', function() {
+	let toggle_sound = Module.cwrap('toggle_sound', null, []);
+	let is_on = (toggle_sound() == 1);
+	if (is_on) {
+		this.value = "Sound On";
+	} else {
+		this.value = "Sound Off";
 	}
 }, false);
 
@@ -160,6 +130,7 @@ $('#select_game').addEventListener('change', function(event) {
 	$('#button_full_screen').disabled = false;
 	$('#button_zoom_out').disabled = false;
 	$('#button_zoom_in').disabled = false;
+	$('#button_toggle_sound').disabled = false;
 	hide('#select_game');
 }, false);
 

@@ -15,7 +15,6 @@ SaltyNES::SaltyNES() {
 	nes = nullptr;
 	_rom_data = nullptr;
 	_rom_data_length = 0;
-	started = false;
 }
 
 SaltyNES::~SaltyNES() {
@@ -27,7 +26,6 @@ SaltyNES::~SaltyNES() {
 
 void SaltyNES::init(string rom_name) {
 	//Logger::init("logs/log");
-	started = false;
 	_rom_name = rom_name;
 	initKeyCodes();
 	readParams();
@@ -42,7 +40,6 @@ void SaltyNES::init(string rom_name) {
 }
 
 void SaltyNES::init_data(uint8_t* rom_data, size_t length) {
-	started = false;
 	_rom_data = rom_data;
 	_rom_data_length = length;
 	initKeyCodes();
@@ -85,7 +82,6 @@ void SaltyNES::pre_run_setup(vector<uint16_t>* save_ram) {
 
 void SaltyNES::run() {
 	// Can start painting:
-	started = true;
 
 	if(nes->rom->isValid()) {
 		// Start emulation:

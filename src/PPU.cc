@@ -358,36 +358,32 @@ void PPU::startVBlank() {
 	endFrame();
 
 	nes->papu->writeBuffer();
+
 #ifdef SDL
-	// Lock the screen, if needed
-	if(SDL_MUSTLOCK(Globals::sdl_screen)) {
-		if(SDL_LockSurface(Globals::sdl_screen) < 0)
-			return;
-	}
 
 	// Actually draw the screen
 	uint8_t r = 0, g = 0, b = 0;
-	int color;
-	int color32;
-	int* pixels = reinterpret_cast<int*>(Globals::sdl_screen->pixels);
+	uint32_t color32;
+	//memset(Globals::temp_pixels, 255, 256 * 240 * sizeof(uint32_t));
+
 	for(size_t y=UNDER_SCAN; y<240-UNDER_SCAN; ++y) {
 		for(size_t x=UNDER_SCAN; x<256-UNDER_SCAN; ++x) {
+			// Convert the color from BGR888 to RGBA8888 format
 			color32 = _screen_buffer[x + (y * (256))];
 			b = (color32 >> 16) & 0x000000FF;
 			g = (color32 >> 8) & 0x000000FF;
 			r = (color32 >> 0) & 0x000000FF;
+			uint32_t color = (r<<24 | g<<16 | b<<8 | 0x000000FF);
 
-			color = SDL_MapRGB(Globals::sdl_screen->format, r, g, b);
-			pixels[x + (y * (256))] = color;
+			Globals::temp_pixels[x + (y * (256))] = color;
 		}
 	}
 
-	// Unlock the screen if needed
-	if(SDL_MUSTLOCK(Globals::sdl_screen)) {
-		SDL_UnlockSurface(Globals::sdl_screen);
-	}
+	SDL_UpdateTexture(Globals::g_screen, nullptr, Globals::temp_pixels, 256 * sizeof(uint32_t));
 
-	SDL_Flip(Globals::sdl_screen);
+	SDL_RenderClear(Globals::g_renderer);
+	SDL_RenderCopy(Globals::g_renderer, Globals::g_screen, nullptr, nullptr);
+	SDL_RenderPresent(Globals::g_renderer);
 #endif
 	// Reset scanline counter:
 	lastRenderedScanline = -1;
