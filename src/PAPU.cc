@@ -17,10 +17,7 @@ void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 		return;
 
 	uint32_t mix_len = len > papu->bufferIndex ? papu->bufferIndex : len;
-// FIXME: This should work on emscripten
-#ifdef DESKTOP
 	SDL_MixAudio(stream, papu->sampleBuffer.data(), mix_len, SDL_MIX_MAXVOLUME);
-#endif
 	papu->bufferIndex = 0;
 	//std::fill(papu->sampleBuffer.begin(), papu->sampleBuffer.end(), 0);
 	papu->ready_for_buffer_write = false;
