@@ -11,8 +11,9 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 bool g_is_audio_enabled = false;
 
-extern "C" void toggle_sound() {
+extern "C" int toggle_sound() {
   g_is_audio_enabled = ! g_is_audio_enabled;
+	return (g_is_audio_enabled ? 1 : 0);
 }
 
 #ifdef SDL

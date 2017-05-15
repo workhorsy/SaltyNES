@@ -17,7 +17,7 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 #define SDL
 #endif
 
-extern "C" void toggle_sound();
+extern "C" int toggle_sound();
 
 #include <map>
 #include <vector>

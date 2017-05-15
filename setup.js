@@ -87,7 +87,12 @@ window.onerror = function(event) {
 
 $('#button_toggle_sound').addEventListener('click', function() {
 	let toggle_sound = Module.cwrap('toggle_sound', null, []);
-	toggle_sound();
+	let is_on = (toggle_sound() == 1);
+	if (is_on) {
+		this.value = "Sound On";
+	} else {
+		this.value = "Sound Off";
+	}
 }, false);
 
 $('#button_full_screen').addEventListener('click', function() {
