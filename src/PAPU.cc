@@ -11,6 +11,10 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #ifdef SDL
 void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
+	// Force the buffer to be initialized each time like SDL 1.2
+	// https://wiki.libsdl.org/MigrationGuide#Audio
+	SDL_memset(stream, 0, len);
+
 	PAPU* papu = reinterpret_cast<PAPU*>(udata);
 
 	if(!papu->ready_for_buffer_write)
@@ -193,7 +197,6 @@ PAPU::PAPU(NES* nes) {
 
 #ifdef SDL
 	// Setup SDL for the format we want
-	SDL_Init(SDL_INIT_AUDIO);
 	SDL_AudioSpec desiredSpec;
 	desiredSpec.freq = 44100;
 	desiredSpec.format = AUDIO_S16SYS;
@@ -203,7 +206,7 @@ PAPU::PAPU(NES* nes) {
 	desiredSpec.userdata = this;
 
 	SDL_AudioSpec obtainedSpec;
-	if(SDL_OpenAudio(&desiredSpec, &obtainedSpec) < 0) {
+	if(SDL_OpenAudio(&desiredSpec, &obtainedSpec) != 0) {
 		fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
 		exit(1);
 	}
