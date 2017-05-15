@@ -16,8 +16,8 @@ python3 -m http.server 9999
 TODO
 
 * Is there a way to check if running asm.js instead of WebAssembly?
-* Shrink wasm file by removing cout and other complex libraries
-* Add sound playing
+* Shrink wasm file by removing complex libraries
+* Sound is distorted when running in browser, but not desktop
+* Remove unneeded #ifdef SDK tags
 * Change the name
-* Desktop mode does not quit
 * Make it show a message if WebAssembly is not supported
