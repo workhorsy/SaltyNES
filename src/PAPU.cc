@@ -9,7 +9,13 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
+#ifdef DESKTOP
+bool g_is_audio_enabled = true;
+#endif
+
+#ifdef WEB
 bool g_is_audio_enabled = false;
+#endif
 
 extern "C" int toggle_sound() {
   g_is_audio_enabled = ! g_is_audio_enabled;
