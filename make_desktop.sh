@@ -4,7 +4,7 @@ set -e
 
 # Setup compiler build flags
 CC="g++"
-CFLAGS="-O0 -g -std=c++14 -lSDL2 -lSDL2_mixer -lpthread -DDESKTOP=true"
+CFLAGS="-O3 -g -std=c++14 -lSDL2 -lSDL2_mixer -lpthread -DDESKTOP=true"
 
 rm -f nes
 #rm -f *.o

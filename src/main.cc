@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
 
 	// Create the SDL screen
 	Globals::g_screen = SDL_CreateTexture(Globals::g_renderer,
-			SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, 256, 240);
+			SDL_PIXELFORMAT_BGR888, SDL_TEXTUREACCESS_STATIC, 256, 240);
 	if (! Globals::g_screen) {
 		fprintf(stderr, "Couldn't create a teture: %s\n", SDL_GetError());
 		return -1;
