@@ -30,17 +30,14 @@ body {
 	color: rgb(120, 120, 120);
 }
 
-#zoom_holder {
+#control_holder {
+	text-align: right;
 	position: absolute;
 	top: 0;
 	right: 0;
 }
 
 #screen_holder {
-	text-align: center;
-}
-
-#control_holder {
 	text-align: center;
 }
 
@@ -66,4 +63,18 @@ body {
 
 #footer {
 	padding: 20px;
+}
+
+.ui_button {
+	height: 44px;
+	margin: 10px;
+}
+
+.ui_select {
+	height: 44px;
+}
+
+.ui_checkbox {
+	height: 44px;
+	width: 44px;
 }
