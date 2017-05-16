@@ -9,11 +9,10 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 #include "SaltyNES.h"
 
 // Creates the NES system.
-#ifdef SDL
 NES::NES(InputHandler* joy1, InputHandler* joy2) {
 	_joy1 = joy1;
 	_joy2 = joy2;
-#endif
+
 	this->_is_paused = false;
 	this->_isRunning = false;
 

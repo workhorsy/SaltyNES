@@ -9,14 +9,6 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 #ifndef _SALTY_NES_H_
 #define _SALTY_NES_H_
 
-#ifdef WEB
-#define SDL
-#endif
-
-#ifdef DESKTOP
-#define SDL
-#endif
-
 extern "C" int toggle_sound();
 
 #include <map>
@@ -32,10 +24,8 @@ extern "C" int toggle_sound();
 #include "Color.h"
 #include "base64.h"
 
-#ifdef SDL
-	#include <SDL2/SDL.h>
-	#include <SDL2/SDL_audio.h>
-#endif
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_audio.h>
 
 #ifdef WEB
 	#include <emscripten.h>
@@ -881,9 +871,7 @@ public:
 	int cc;
 	bool _isRunning;
 
-#ifdef SDL
 	NES(InputHandler* joy1, InputHandler* joy2);
-#endif
 	~NES();
 	bool stateLoad(ByteBuffer* buf);
 	void stateSave(ByteBuffer* buf);
@@ -1352,9 +1340,7 @@ public:
 
 	SaltyNES();
 	~SaltyNES();
-#ifdef SDL
 	void init(string rom_name);
-#endif
 	void init_data(uint8_t* rom_data, size_t length);
 	void pre_run_setup(vector<uint16_t>* save_ram);
 	void run();

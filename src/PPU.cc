@@ -359,8 +359,6 @@ void PPU::startVBlank() {
 
 	nes->papu->writeBuffer();
 
-#ifdef SDL
-
 	// Actually draw the screen
 	const SDL_Rect rect = { UNDER_SCAN, UNDER_SCAN, 256-(UNDER_SCAN*2), 240-(UNDER_SCAN*2) };
 	SDL_UpdateTexture(Globals::g_screen, &rect, &_screen_buffer[0], 256 * sizeof(uint32_t));
@@ -368,13 +366,12 @@ void PPU::startVBlank() {
 	SDL_RenderClear(Globals::g_renderer);
 	SDL_RenderCopy(Globals::g_renderer, Globals::g_screen, nullptr, nullptr);
 	SDL_RenderPresent(Globals::g_renderer);
-#endif
+
 	// Reset scanline counter:
 	lastRenderedScanline = -1;
 
 	startFrame();
 
-#ifdef SDL
 	// Check for quiting
 	SDL_Event sdl_event;
 	while(SDL_PollEvent(&sdl_event) == 1) {
@@ -382,7 +379,7 @@ void PPU::startVBlank() {
 			nes->cpu->stopRunning = true;
 		}
 	}
-#endif
+
 	// Check for key presses
 	nes->_joy1->poll_for_key_events();
 	//nes->_joy2->poll_for_key_events();

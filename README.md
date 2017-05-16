@@ -18,6 +18,5 @@ TODO
 * Is there a way to check if running asm.js instead of WebAssembly?
 * Shrink wasm file by removing complex libraries
 * Sound is distorted when running in browser, but not desktop
-* Remove unneeded #ifdef SDK tags
 * Change the name
 * Make it show a message if WebAssembly is not supported

@@ -22,7 +22,6 @@ extern "C" int toggle_sound() {
 	return (g_is_audio_enabled ? 1 : 0);
 }
 
-#ifdef SDL
 void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 	// Force the buffer to be initialized each time like SDL 1.2
 	// https://wiki.libsdl.org/MigrationGuide#Audio
@@ -41,7 +40,6 @@ void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 	//std::fill(papu->sampleBuffer.begin(), papu->sampleBuffer.end(), 0);
 	papu->ready_for_buffer_write = false;
 }
-#endif
 
 const uint8_t PAPU::panning[] = {
 	80,
@@ -210,7 +208,6 @@ PAPU::PAPU(NES* nes) {
 	frameIrqCounter = 0;
 	frameIrqCounterMax = 4;
 
-#ifdef SDL
 	// Setup SDL for the format we want
 	SDL_AudioSpec desiredSpec;
 	desiredSpec.freq = 44100;
@@ -230,7 +227,6 @@ PAPU::PAPU(NES* nes) {
 	cout << "channels: " << (s32) obtainedSpec.channels << endl;
 	cout << "samples: " << obtainedSpec.samples << endl;
 	cout << "callback: " << obtainedSpec.callback << endl;*/
-#endif
 }
 
 PAPU::~PAPU() {
@@ -279,9 +275,7 @@ void PAPU::synchronized_start() {
 //			line->open(audioFormat);
 //			line->start();
 		// Start running the stream
-		#ifdef SDL
 		SDL_PauseAudio(0);
-		#endif
 
 	} catch (exception& e) {
 		//System.out.println("Couldn't get sound lines->");
@@ -794,9 +788,7 @@ void PAPU::writeBuffer() {
 }
 
 void PAPU::stop() {
-#ifdef SDL
 	SDL_PauseAudio(1);
-#endif
 	_is_running = false;
 }
 
