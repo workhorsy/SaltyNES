@@ -15,7 +15,6 @@ python3 -m http.server 9999
 
 TODO
 
-* Reset zoom variable on fullscreen
 * Made it not cache the wasm file, even after shift reload
 * change desktop build from nes to saltynes
 * Is there a way to check if running asm.js instead of WebAssembly?

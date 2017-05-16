@@ -100,6 +100,7 @@ $('#button_full_screen').addEventListener('click', function() {
 		$('#check_lock_pointer').checked,
 		$('#check_resize').checked
 	);
+	g_zoom = 1;
 }, false);
 
 $('#button_zoom_in').addEventListener('click', function() {
