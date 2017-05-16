@@ -9,18 +9,6 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-#ifdef DESKTOP
-bool g_is_audio_enabled = true;
-#endif
-
-#ifdef WEB
-bool g_is_audio_enabled = false;
-#endif
-
-extern "C" int toggle_sound() {
-  g_is_audio_enabled = ! g_is_audio_enabled;
-	return (g_is_audio_enabled ? 1 : 0);
-}
 
 void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 	// Force the buffer to be initialized each time like SDL 1.2
@@ -33,7 +21,7 @@ void fill_audio_sdl_cb(void* udata, uint8_t* stream, int len) {
 		return;
 
 	uint32_t mix_len = len > papu->bufferIndex ? papu->bufferIndex : len;
-	if (g_is_audio_enabled) {
+	if (! papu->_is_muted) {
 		SDL_MixAudio(stream, papu->sampleBuffer.data(), mix_len, SDL_MIX_MAXVOLUME);
 	}
 	papu->bufferIndex = 0;
@@ -116,6 +104,15 @@ void PAPU::unlock_mutex() {
 
 PAPU::PAPU(NES* nes) {
 	pthread_mutex_init(&_mutex, nullptr);
+
+	#ifdef DESKTOP
+	_is_muted = false;
+	#endif
+
+	#ifdef WEB
+	_is_muted = true;
+	#endif
+
 	_is_running = false;
 
 	channelEnableValue = 0;

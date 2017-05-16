@@ -940,6 +940,7 @@ public:
 	static const uint16_t noiseWavelengthLookup[];
 
 	mutable pthread_mutex_t _mutex;
+	bool _is_muted;
 	bool _is_running;
 	NES* nes;
 	Memory* cpuMem;

@@ -13,6 +13,12 @@ SaltyNES salty_nes;
 
 #ifdef WEB
 
+extern "C" int toggle_sound() {
+	PAPU* papu = salty_nes.nes->papu;
+	papu->_is_muted = ! papu->_is_muted;
+	return (papu->_is_muted ? 0 : 1);
+}
+
 void onGameDownloaded(void* userData, void* buffer, int size) {
 	printf("!!! onGameDownloaded\n");
 
