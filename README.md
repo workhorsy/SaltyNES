@@ -15,6 +15,10 @@ python3 -m http.server 9999
 
 TODO
 
+* Reset zoom variable on fullscreen
+* Add favicon
+* Made it not cache the wasm file, even after shift reload
+* change desktop build from nes to saltynes
 * Is there a way to check if running asm.js instead of WebAssembly?
 * Shrink wasm file by removing complex libraries
 * Sound is distorted when running in browser, but not desktop
