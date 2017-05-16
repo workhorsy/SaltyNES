@@ -25,4 +25,4 @@ done
 
 # Build the exe file
 echo Building exe ...
-$CC build_desktop/*.o $CFLAGS -o nes
+$CC build_desktop/*.o $CFLAGS -o saltynes
