@@ -30,7 +30,11 @@ vector<int>* PPU::get_spr_palette_buffer() {
 	return nullptr;
 }
 
-PPU::PPU(NES* nes) {
+PPU::PPU() : enable_shared_from_this<PPU>() {
+
+}
+
+shared_ptr<PPU> PPU::Init(shared_ptr<NES> nes) {
 	this->nes = nes;
 	_zoom = 1;
 	_frame_start.tv_usec = 0;
@@ -168,6 +172,8 @@ PPU::PPU(NES* nes) {
 	available = 0;
 	cycles = 0;
 	_screen_buffer = vector<int>(256 * 240, 0);
+
+	return shared_from_this();
 }
 
 PPU::~PPU() {

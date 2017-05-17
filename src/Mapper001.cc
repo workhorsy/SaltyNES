@@ -30,7 +30,7 @@ Mapper001::Mapper001() : MapperDefault() {
 	regBufferCounter = 0;
 }
 
-void Mapper001::init(NES* nes) {
+void Mapper001::init(shared_ptr<NES> nes) {
 	this->base_init(nes);
 }
 

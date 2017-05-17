@@ -8,7 +8,7 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-void Mapper007::init(NES* nes) {
+void Mapper007::init(shared_ptr<NES> nes) {
 	this->base_init(nes);
 	currentOffset = 0;
 	currentMirroring = -1;

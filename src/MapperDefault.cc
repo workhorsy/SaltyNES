@@ -40,7 +40,7 @@ void MapperDefault::write(int address, uint16_t value) {
 	base_write(address, value);
 }
 
-void MapperDefault::base_init(NES* nes) {
+void MapperDefault::base_init(shared_ptr<NES> nes) {
 	this->nes = nes;
 	this->cpuMem = nes->getCpuMemory();
 	this->cpuMemArray = &(cpuMem->mem);
@@ -54,7 +54,7 @@ void MapperDefault::base_init(NES* nes) {
 
 }
 
-void MapperDefault::init(NES* nes) {
+void MapperDefault::init(shared_ptr<NES> nes) {
 	this->base_init(nes);
 }
 
@@ -419,7 +419,7 @@ void MapperDefault::regWrite(int address, uint16_t value) {
 
 uint16_t MapperDefault::joy1Read() {
 	uint16_t ret = 0;
-	InputHandler* in = nes->_joy1;
+	shared_ptr<InputHandler> in = nes->_joy1;
 
 	switch (joy1StrobeState) {
 		case 0:
@@ -476,7 +476,7 @@ uint16_t MapperDefault::joy1Read() {
 
 uint16_t MapperDefault::joy2Read() {
 	uint16_t ret = 0;
-	InputHandler* in = nes->_joy2;
+	shared_ptr<InputHandler> in = nes->_joy2;
 
 	switch (joy2StrobeState) {
 		case 0:

@@ -8,7 +8,7 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-void Mapper003::init(NES* nes) {
+void Mapper003::init(shared_ptr<NES> nes) {
 	this->base_init(nes);
 }
 

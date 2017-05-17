@@ -14,7 +14,7 @@ SaltyNES salty_nes;
 #ifdef WEB
 
 extern "C" int toggle_sound() {
-	PAPU* papu = salty_nes.nes->papu;
+	shared_ptr<PAPU> papu = salty_nes.nes->papu;
 	papu->_is_muted = ! papu->_is_muted;
 	return (papu->_is_muted ? 0 : 1);
 }

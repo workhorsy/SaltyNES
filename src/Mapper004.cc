@@ -14,7 +14,7 @@ Mapper004::Mapper004() {
 	prgAddressChanged = false;
 }
 
-void Mapper004::init(NES* nes) {
+void Mapper004::init(shared_ptr<NES> nes) {
 	this->base_init(nes);
 }
 

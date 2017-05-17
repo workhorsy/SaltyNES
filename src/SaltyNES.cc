@@ -19,7 +19,6 @@ SaltyNES::SaltyNES() {
 
 SaltyNES::~SaltyNES() {
 	stop();
-	delete_n_null(nes);
 
 	_rom_name.clear();
 }
@@ -32,9 +31,9 @@ void SaltyNES::init(string rom_name) {
 
 	Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
-	InputHandler* joy1 = new InputHandler(0);
-	InputHandler* joy2 = new InputHandler(1);
-	nes = new NES(joy1, joy2);
+	auto joy1 = make_shared<InputHandler>(0);
+	auto joy2 = make_shared<InputHandler>(1);
+	nes = make_shared<NES>()->Init(joy1, joy2);
 	nes->enableSound(true);
 	nes->reset();
 }
@@ -47,9 +46,9 @@ void SaltyNES::init_data(uint8_t* rom_data, size_t length) {
 
 	Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
-	InputHandler* joy1 = new InputHandler(0);
-	InputHandler* joy2 = new InputHandler(1);
-	nes = new NES(joy1, joy2);
+	auto joy1 = make_shared<InputHandler>(0);
+	auto joy2 = make_shared<InputHandler>(1);
+	nes = make_shared<NES>()->Init(joy1, joy2);
 	nes->enableSound(true);
 	nes->reset();
 }

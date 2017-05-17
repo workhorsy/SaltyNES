@@ -14,8 +14,11 @@ instructions and invokes emulation of the PPU and pAPU.
 
 #include "SaltyNES.h"
 
-// Constructor:
-CPU::CPU(NES* nes) {
+CPU::CPU() : enable_shared_from_this<CPU>() {
+
+}
+
+shared_ptr<CPU> CPU::Init(shared_ptr<NES> nes) {
 	this->nes = nes;
 	this->mmap = nullptr;
 	this->mem = nullptr;
@@ -46,6 +49,7 @@ CPU::CPU(NES* nes) {
 	this->cyclesToHalt = 0;
 	this->stopRunning = false;
 	this->crash = false;
+	return shared_from_this();
 }
 
 CPU::~CPU() {
@@ -210,8 +214,8 @@ bool CPU::emulate() {
 
 	// References to other parts of NES:
 	MapperDefault* mmap = nes->memMapper;
-	PPU* 		 ppu  = nes->ppu;
-	PAPU* 		 papu = nes->papu;
+	shared_ptr<PPU> 		 ppu  = nes->ppu;
+	shared_ptr<PAPU> 		 papu = nes->papu;
 
 	bool palEmu = Globals::palEmulation;
 	bool emulateSound = Globals::enableSound;
