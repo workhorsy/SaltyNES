@@ -121,7 +121,7 @@ shared_ptr<PPU> PPU::Init(shared_ptr<NES> nes) {
 	ptTile.fill(nullptr);
 	// Name table data:
 	ntable1.fill(0);
-	nameTable.fill(nullptr);
+	//nameTable.fill(nullptr);
 	currentMirroring = -1;
 
 	// Palette data:
@@ -177,10 +177,6 @@ shared_ptr<PPU> PPU::Init(shared_ptr<NES> nes) {
 }
 
 PPU::~PPU() {
-	for(size_t i = 0; i < nameTable.size(); ++i) {
-		delete_n_null(nameTable[i]);
-	}
-
 	nes = nullptr;
 	ppuMem = nullptr;
 	sprMem = nullptr;
@@ -206,7 +202,7 @@ void PPU::init() {
 	for(size_t i = 0; i < nameTable.size(); ++i) {
 		stringstream name;
 		name << "Nt" << i;
-		nameTable[i] = new NameTable(32, 32, name.str());
+		nameTable[i].name = name.str();
 	}
 
 	// Initialize mirroring lookup table:
@@ -1010,9 +1006,9 @@ void PPU::renderBgScanline(array<int, 256 * 240>* buffer, int scan) {
 					att = attrib[tile];
 				} else {
 					// Fetch data:
-					t = ptTile[baseTile + nameTable[curNt]->getTileIndex(cntHT, cntVT)];
+					t = ptTile[baseTile + nameTable[curNt].getTileIndex(cntHT, cntVT)];
 					tpix = &t->pix;
-					att = nameTable[curNt]->getAttrib(cntHT, cntVT);
+					att = nameTable[curNt].getAttrib(cntHT, cntVT);
 					scantile[tile] = t;
 					attrib[tile] = att;
 				}
@@ -1504,7 +1500,7 @@ void PPU::invalidateFrameCache() {
 // Updates the internal name table buffers
 // with this new byte.
 void PPU::nameTableWrite(int index, int address, uint16_t value) {
-	nameTable[index]->writeTileIndex(address, value);
+	nameTable[index].writeTileIndex(address, value);
 
 	// Update Sprite #0 hit:
 	//updateSpr0Hit();
@@ -1515,7 +1511,7 @@ void PPU::nameTableWrite(int index, int address, uint16_t value) {
 // table buffers with this new attribute
 // table byte.
 void PPU::attribTableWrite(int index, int address, uint16_t value) {
-	nameTable[index]->writeAttrib(address, value);
+	nameTable[index].writeAttrib(address, value);
 }
 
 // Updates the internally buffered sprite
@@ -1668,7 +1664,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 		// Name tables:
 		for(size_t i = 0; i < 4; ++i) {
 			ntable1[i] = buf->readByte();
-			nameTable[i]->stateLoad(buf);
+			nameTable[i].stateLoad(buf);
 		}
 
 		// Pattern data:
@@ -1765,7 +1761,7 @@ void PPU::stateSave(ByteBuffer* buf) {
 	// Name tables:
 	for(size_t i = 0; i < 4; ++i) {
 		buf->putByte(static_cast<uint16_t>(ntable1[i]));
-		nameTable[i]->stateSave(buf);
+		nameTable[i].stateSave(buf);
 	}
 
 	// Pattern data:

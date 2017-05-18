@@ -847,12 +847,13 @@ public:
 class NameTable {
 public:
 	string name;
-	vector<uint16_t>* tile;
-	vector<uint16_t>* attrib;
+	array<uint16_t, 32*32> tile;
+	array<uint16_t, 32*32> attrib;
 	int width;
 	int height;
 
-	NameTable(int width, int height, string name);
+	NameTable();
+	NameTable(string name);
 	~NameTable();
 	uint16_t getTileIndex(int x, int y);
 	uint16_t getAttrib(int x, int y);
@@ -1141,7 +1142,7 @@ public:
 	array<Tile*, 512> ptTile;
 	// Name table data:
 	array<int, 4> ntable1;
-	array<NameTable*, 4> nameTable;
+	array<NameTable, 4> nameTable;
 	int currentMirroring;
 
 	// Palette data:
