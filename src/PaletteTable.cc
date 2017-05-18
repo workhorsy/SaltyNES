@@ -14,12 +14,16 @@ int PaletteTable::curTable[64] = {0};
 int PaletteTable::origTable[64] = {0};
 int PaletteTable::emphTable[8][64] = {{0}};
 
-PaletteTable::PaletteTable() {
+PaletteTable::PaletteTable() : enable_shared_from_this<PaletteTable>() {
+}
+
+shared_ptr<PaletteTable> PaletteTable::Init() {
 	currentEmph = -1;
 	currentHue = 0;
 	currentSaturation = 0;
 	currentLightness = 0;
 	currentContrast = 0;
+	return shared_from_this();
 }
 
 // Load the NTSC palette:

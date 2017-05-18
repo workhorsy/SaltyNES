@@ -9,9 +9,13 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 #include "SaltyNES.h"
 
 
-Memory::Memory(shared_ptr<NES> nes, size_t byteCount) {
+Memory::Memory() : enable_shared_from_this<Memory>() {
+}
+
+shared_ptr<Memory> Memory::Init(shared_ptr<NES> nes, size_t byteCount) {
 	this->nes = nes;
 	this->mem = vector<uint16_t>(byteCount, 0);
+	return shared_from_this();
 }
 
 Memory::~Memory() {

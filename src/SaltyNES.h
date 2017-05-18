@@ -634,12 +634,13 @@ public:
 	static void flush();
 };
 
-class Memory {
+class Memory : public enable_shared_from_this<Memory> {
 public:
 	shared_ptr<NES> nes;
 	vector<uint16_t> mem;
 
-	Memory(shared_ptr<NES> nes, size_t byteCount);
+	Memory();
+	shared_ptr<Memory> Init(shared_ptr<NES> nes, size_t byteCount);
 	~Memory();
 	void stateLoad(ByteBuffer* buf);
 	void stateSave(ByteBuffer* buf);
@@ -656,10 +657,10 @@ public:
 class MapperDefault {
 public:
 	shared_ptr<NES> nes;
-	Memory* cpuMem;
-	Memory* ppuMem;
+	shared_ptr<Memory> cpuMem;
+	shared_ptr<Memory> ppuMem;
 	vector<uint16_t>* cpuMemArray;
-	ROM* rom;
+	shared_ptr<ROM> rom;
 	shared_ptr<CPU> cpu;
 	shared_ptr<PPU> ppu;
 	int cpuMemSize;
@@ -691,7 +692,7 @@ public:
 	void regWrite(int address, uint16_t value);
 	uint16_t joy1Read();
 	uint16_t joy2Read();
-	virtual void loadROM(ROM* rom);
+	virtual void loadROM(shared_ptr<ROM> rom);
 	void loadPRGROM();
 	void loadCHRROM();
 	void loadBatteryRam();
@@ -742,7 +743,7 @@ public:
 	virtual void write(int address, uint16_t value);
 	void setReg(int reg, int value);
 	int getRegNumber(int address);
-	virtual void loadROM(ROM* rom);
+	virtual void loadROM(shared_ptr<ROM> rom);
 	virtual void reset();
 	void switchLowHighPrgRom(int oldSetting);
 	void switch16to32();
@@ -753,7 +754,7 @@ class Mapper002 : public MapperDefault {
 public:
 	void init(shared_ptr<NES> nes);
 	virtual void write(int address, uint16_t value);
-	virtual void loadROM(ROM* rom);
+	virtual void loadROM(shared_ptr<ROM> rom);
 };
 
 class Mapper003 : public MapperDefault {
@@ -787,7 +788,7 @@ public:
 	void mapperInternalStateSave(ByteBuffer* buf);
 	virtual void write(int address, uint16_t value);
 	virtual void executeCommand(int cmd, int arg);
-	virtual void loadROM(ROM* rom);
+	virtual void loadROM(shared_ptr<ROM> rom);
 	virtual void clockIrqCounter();
 	virtual void reset();
 };
@@ -817,7 +818,7 @@ public:
 
 	virtual void init(shared_ptr<NES> nes);
 	virtual void write(int address, uint16_t value);
-	virtual void loadROM(ROM* rom);
+	virtual void loadROM(shared_ptr<ROM> rom);
 	virtual void latchAccess(int address);
 	void mapperInternalStateLoad(ByteBuffer* buf);
 	void mapperInternalStateSave(ByteBuffer* buf);
@@ -869,12 +870,12 @@ public:
 	shared_ptr<PAPU> papu;
 	shared_ptr<InputHandler> _joy1;
 	shared_ptr<InputHandler> _joy2;
-	Memory* cpuMem;
-	Memory* ppuMem;
-	Memory* sprMem;
+	shared_ptr<Memory> cpuMem;
+	shared_ptr<Memory> ppuMem;
+	shared_ptr<Memory> sprMem;
 	MapperDefault* memMapper;
-	PaletteTable* palTable;
-	ROM* rom;
+	shared_ptr<PaletteTable> palTable;
+	shared_ptr<ROM> rom;
 	int cc;
 	bool _isRunning;
 
@@ -893,10 +894,10 @@ public:
 	shared_ptr<CPU> getCpu();
 	shared_ptr<PPU> getPpu();
 	shared_ptr<PAPU> getPapu();
-	Memory* getCpuMemory();
-	Memory* getPpuMemory();
-	Memory* getSprMemory();
-	ROM* getRom();
+	shared_ptr<Memory> getCpuMemory();
+	shared_ptr<Memory> getPpuMemory();
+	shared_ptr<Memory> getSprMemory();
+	shared_ptr<ROM> getRom();
 	MapperDefault* getMemoryMapper();
 	bool load_rom_from_data(string rom_name, uint8_t* data, size_t length, vector<uint16_t>* save_ram);
 	void reset();
@@ -904,7 +905,7 @@ public:
 //	void setFramerate(int rate);
 };
 
-class PaletteTable {
+class PaletteTable : public enable_shared_from_this<PaletteTable> {
 public:
 	static int curTable[64];
 	static int origTable[64];
@@ -914,6 +915,7 @@ public:
 	int currentHue, currentSaturation, currentLightness, currentContrast;
 
 	PaletteTable();
+	shared_ptr<PaletteTable> Init();
 	bool loadNTSCPalette();
 	void makeTables();
 	void setEmphasis(int emph);
@@ -951,7 +953,7 @@ public:
 	bool _is_muted;
 	bool _is_running;
 	shared_ptr<NES> nes;
-	Memory* cpuMem;
+	shared_ptr<Memory> cpuMem;
 	shared_ptr<ChannelSquare> square1;
 	shared_ptr<ChannelSquare> square2;
 	shared_ptr<ChannelTriangle> triangle;
@@ -1067,8 +1069,8 @@ public:
 	struct timeval _frame_end;
 	double _ticks_since_second;
 	uint32_t frameCounter;
-	Memory* ppuMem;
-	Memory* sprMem;
+	shared_ptr<Memory> ppuMem;
+	shared_ptr<Memory> sprMem;
 	// Rendering Options:
 	bool showSpr0Hit;
 	// Control Flags Register 1:
@@ -1251,7 +1253,7 @@ public:
 	void drawTile(Raster* srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h);
 };
 
-class ROM {
+class ROM : public enable_shared_from_this<ROM> {
 public:
 	// Mirroring types:
 	static const int VERTICAL_MIRRORING = 0;
@@ -1285,7 +1287,8 @@ public:
 	bool enableSave;
 	bool valid;
 
-	explicit ROM(shared_ptr<NES> nes);
+	explicit ROM();
+	shared_ptr<ROM> Init(shared_ptr<NES> nes);
 	~ROM();
 	string sha256sum(uint8_t* data, size_t length);
 	string getmapperName();

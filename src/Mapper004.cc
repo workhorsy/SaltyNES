@@ -208,7 +208,7 @@ void Mapper004::executeCommand(int cmd, int arg) {
 	}
 }
 
-void Mapper004::loadROM(ROM* rom) {
+void Mapper004::loadROM(shared_ptr<ROM> rom) {
 	//System.out.println("Loading ROM.");
 
 	if(!rom->isValid()) {

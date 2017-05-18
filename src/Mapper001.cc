@@ -289,7 +289,7 @@ int Mapper001::getRegNumber(int address) {
 	}
 }
 
-void Mapper001::loadROM(ROM* rom) {
+void Mapper001::loadROM(shared_ptr<ROM> rom) {
 	//System.out.println("Loading ROM.");
 
 	if(!rom->isValid()) {

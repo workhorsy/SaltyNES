@@ -19,13 +19,13 @@ shared_ptr<NES> NES::Init(shared_ptr<InputHandler> joy1, shared_ptr<InputHandler
 	this->_isRunning = false;
 
 	// Create memory:
-	cpuMem = new Memory(shared_from_this(), 0x10000);	// Main memory (internal to CPU)
-	ppuMem = new Memory(shared_from_this(), 0x8000);	// VRAM memory (internal to PPU)
-	sprMem = new Memory(shared_from_this(), 0x100);	// Sprite RAM  (internal to PPU)
+	cpuMem = make_shared<Memory>()->Init(shared_from_this(), 0x10000);	// Main memory (internal to CPU)
+	ppuMem = make_shared<Memory>()->Init(shared_from_this(), 0x8000);	// VRAM memory (internal to PPU)
+	sprMem = make_shared<Memory>()->Init(shared_from_this(), 0x100);	// Sprite RAM  (internal to PPU)
 
 	// Create system units:
 	cpu = make_shared<CPU>()->Init(shared_from_this());
-	palTable = new PaletteTable();
+	palTable = make_shared<PaletteTable>()->Init();
 	ppu = make_shared<PPU>()->Init(shared_from_this());
 	papu = make_shared<PAPU>()->Init(shared_from_this());
 	memMapper = nullptr;
@@ -80,12 +80,7 @@ shared_ptr<NES> NES::Init(shared_ptr<InputHandler> joy1, shared_ptr<InputHandler
 }
 
 NES::~NES() {
-	delete_n_null(cpuMem);
-	delete_n_null(ppuMem);
-	delete_n_null(sprMem);
 	delete_n_null(memMapper);
-	delete_n_null(rom);
-	delete_n_null(palTable);
 }
 
 void NES::dumpRomMemory(ofstream* writer) {
@@ -231,22 +226,22 @@ shared_ptr<PAPU> NES::getPapu() {
 }
 
 // Returns CPU Memory.
-Memory* NES::getCpuMemory() {
+shared_ptr<Memory> NES::getCpuMemory() {
 	return cpuMem;
 }
 
 // Returns PPU Memory.
-Memory* NES::getPpuMemory() {
+shared_ptr<Memory> NES::getPpuMemory() {
 	return ppuMem;
 }
 
 // Returns Sprite Memory.
-Memory* NES::getSprMemory() {
+shared_ptr<Memory> NES::getSprMemory() {
 	return sprMem;
 }
 
 // Returns the currently loaded ROM.
-ROM* NES::getRom() {
+shared_ptr<ROM> NES::getRom() {
 	return rom;
 }
 
@@ -264,7 +259,7 @@ bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length, vect
 	{
 		// Load ROM file:
 
-		rom = new ROM(shared_from_this());
+		rom = make_shared<ROM>()->Init(shared_from_this());
 		rom->load_from_data(rom_name, data, length, save_ram);
 
 		if(rom->isValid()) {

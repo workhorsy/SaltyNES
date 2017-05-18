@@ -14,7 +14,7 @@ void Mapper007::init(shared_ptr<NES> nes) {
 	currentMirroring = -1;
 
 	// Get ref to ROM:
-	ROM* rom = nes->getRom();
+	shared_ptr<ROM> rom = nes->getRom();
 
 	// Read out all PRG rom:
 	int bc = rom->getRomBankCount();

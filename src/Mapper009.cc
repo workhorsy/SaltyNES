@@ -101,7 +101,7 @@ void Mapper009::write(int address, uint16_t value) {
 	}
 }
 
-void Mapper009::loadROM(ROM* rom) {
+void Mapper009::loadROM(shared_ptr<ROM> rom) {
 	//System.out.println("Loading ROM.");
 
 	if(!rom->isValid()) {

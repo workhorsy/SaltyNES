@@ -24,7 +24,7 @@ void Mapper002::write(int address, uint16_t value) {
 	}
 }
 
-void Mapper002::loadROM(ROM* rom) {
+void Mapper002::loadROM(shared_ptr<ROM> rom) {
 	if(!rom->isValid()) {
 		//System.out.println("UNROM: Invalid ROM! Unable to load.");
 		return;

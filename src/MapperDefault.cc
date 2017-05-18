@@ -531,7 +531,7 @@ uint16_t MapperDefault::joy2Read() {
 	return ret;
 }
 
-void MapperDefault::loadROM(ROM* rom) {
+void MapperDefault::loadROM(shared_ptr<ROM> rom) {
 	if(!rom->isValid() || rom->getRomBankCount() < 1) {
 		//System.out.println("NoMapper: Invalid ROM! Unable to load.");
 		return;

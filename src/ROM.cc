@@ -20,7 +20,11 @@ const int ROM::SINGLESCREEN_MIRRORING4;
 vector<string>* ROM::_mapperName = nullptr;
 vector<bool>* ROM::_mapperSupported = nullptr;
 
-ROM::ROM(shared_ptr<NES> nes) {
+ROM::ROM() : enable_shared_from_this<ROM>() {
+
+}
+
+shared_ptr<ROM> ROM::Init(shared_ptr<NES> nes) {
 	failedSaveFile = false;
 	saveRamUpToDate = true;
 	header = nullptr;
@@ -39,6 +43,7 @@ ROM::ROM(shared_ptr<NES> nes) {
 	//string fileName;
 	enableSave = true;
 	valid = false;
+	return shared_from_this();
 }
 
 ROM::~ROM() {

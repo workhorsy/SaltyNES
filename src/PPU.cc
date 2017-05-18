@@ -813,7 +813,7 @@ void PPU::vramWrite(uint16_t value) {
 // Write 256 bytes of main memory
 // into Sprite RAM.
 void PPU::sramDMA(uint16_t value) {
-	Memory* cpuMem = nes->getCpuMemory();
+	shared_ptr<Memory> cpuMem = nes->getCpuMemory();
 	int baseAddress = value * 0x100;
 	uint16_t data;
 	for(size_t i = sramAddress; i < 256; ++i) {
