@@ -1398,13 +1398,6 @@ inline void arraycopy_Tile(vector<Tile*>* src, size_t srcPos, array<Tile*, 512>*
 	std::copy(src->begin()+srcPos, src->begin()+srcPos+length, dest->begin()+destPos);
 }
 
-inline void arraycopy_int(vector<int>* src, size_t srcPos, vector<int>* dest, size_t destPos, size_t length) {
-	assert(srcPos+length <= src->size());
-	assert(destPos+length <= dest->size());
-
-	std::copy(src->begin()+srcPos, src->begin()+srcPos+length, dest->begin()+destPos);
-}
-
 inline string intToHexString(int i) {
 	stringstream ss;
 	ss << std::hex << std::showbase << i;
