@@ -1269,7 +1269,7 @@ public:
 
 	bool failedSaveFile;
 	bool saveRamUpToDate;
-	uint16_t* header;
+	array<uint16_t, 16> header;
 	vector<vector<uint16_t>*>* rom;
 	vector<vector<uint16_t>*>* vrom;
 	vector<uint16_t>* saveRam;
@@ -1297,7 +1297,7 @@ public:
 	bool isValid();
 	int getRomBankCount();
 	int getVromBankCount();
-	uint16_t* getHeader();
+	array<uint16_t, 16> getHeader();
 	vector<uint16_t>* getRomBank(int bank);
 	vector<uint16_t>* getVromBank(int bank);
 	vector<Tile*>* getVromBankTiles(int bank);

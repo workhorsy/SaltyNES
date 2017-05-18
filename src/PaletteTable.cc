@@ -79,15 +79,14 @@ int PaletteTable::getEntry(int yiq) {
 }
 
 int PaletteTable::RGBtoHSL(int r, int g, int b) {
-	float* hsbvals = new float[3];
-	hsbvals = Color::RGBtoHSB(b, g, r, hsbvals);
-	hsbvals[0] -= floor(hsbvals[0]);
+	auto buffer = array<float, 3>();
+	array<float, 3>* hsbvals = Color::RGBtoHSB(b, g, r, &buffer);
+	(*hsbvals)[0] -= floor((*hsbvals)[0]);
 
 	int ret = 0;
-	ret |= (static_cast<int>(hsbvals[0] * 255.0) << 16);
-	ret |= (static_cast<int>(hsbvals[1] * 255.0) << 8);
-	ret |= static_cast<int>(hsbvals[2] * 255.0);
-	delete_n_null_array(hsbvals);
+	ret |= (static_cast<int>((*hsbvals)[0] * 255.0) << 16);
+	ret |= (static_cast<int>((*hsbvals)[1] * 255.0) << 8);
+	ret |= static_cast<int>((*hsbvals)[2] * 255.0);
 
 	return ret;
 }

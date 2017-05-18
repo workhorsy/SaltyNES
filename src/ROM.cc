@@ -27,7 +27,7 @@ ROM::ROM() : enable_shared_from_this<ROM>() {
 shared_ptr<ROM> ROM::Init(shared_ptr<NES> nes) {
 	failedSaveFile = false;
 	saveRamUpToDate = true;
-	header = nullptr;
+	header.fill(0);
 	rom = nullptr;
 	vrom = nullptr;
 	saveRam = nullptr;
@@ -48,8 +48,6 @@ shared_ptr<ROM> ROM::Init(shared_ptr<NES> nes) {
 
 ROM::~ROM() {
 	closeRom();
-
-	delete_n_null_array(header);
 
 	if(rom != nullptr) {
 		for(size_t i=0; i<rom->size(); ++i) {
@@ -256,8 +254,7 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	log_to_browser("log: rom::sha256sum");
 
 	// Read header:
-	header = new uint16_t[16];
-	for(int i = 0; i < 16; ++i) {
+	for(int i = 0; i < header.size(); ++i) {
 		header[i] = sdata[i];
 	}
 
@@ -404,7 +401,7 @@ int ROM::getVromBankCount() {
 	return vromCount;
 }
 
-uint16_t* ROM::getHeader() {
+array<uint16_t, 16> ROM::getHeader() {
 	return header;
 }
 

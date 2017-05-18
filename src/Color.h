@@ -12,10 +12,11 @@ http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/jav
 #include <assert.h>
 #include <stdlib.h>
 #include <math.h>
+#include <array>
 
 class Color {
 public:
-    static float* RGBtoHSB(int r, int g, int b, float* hsbvals);
+    static std::array<float, 3>* RGBtoHSB(int r, int g, int b, std::array<float, 3>* hsbvals);
     static int HSBtoRGB(float hue, float saturation, float brightness);
 };
 

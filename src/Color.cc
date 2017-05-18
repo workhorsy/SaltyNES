@@ -8,7 +8,7 @@ http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b14/jav
 
 #include "Color.h"
 
-float* Color::RGBtoHSB(int r, int g, int b, float* hsbvals) {
+std::array<float, 3>* Color::RGBtoHSB(int r, int g, int b, std::array<float, 3>* hsbvals) {
     assert(hsbvals != nullptr);
     float hue, saturation, brightness;
 
@@ -38,9 +38,9 @@ float* Color::RGBtoHSB(int r, int g, int b, float* hsbvals) {
         if(hue < 0)
             hue = hue + 1.0f;
     }
-    hsbvals[0] = hue;
-    hsbvals[1] = saturation;
-    hsbvals[2] = brightness;
+    (*hsbvals)[0] = hue;
+    (*hsbvals)[1] = saturation;
+    (*hsbvals)[2] = brightness;
     return hsbvals;
 }
 
