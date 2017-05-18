@@ -17,8 +17,8 @@ const int ROM::SINGLESCREEN_MIRRORING;
 const int ROM::SINGLESCREEN_MIRRORING2;
 const int ROM::SINGLESCREEN_MIRRORING3;
 const int ROM::SINGLESCREEN_MIRRORING4;
-vector<string>* ROM::_mapperName = nullptr;
-vector<bool>* ROM::_mapperSupported = nullptr;
+array<string, 255>* ROM::_mapperName = nullptr;
+array<bool, 255>* ROM::_mapperSupported = nullptr;
 
 ROM::ROM() : enable_shared_from_this<ROM>() {
 
@@ -105,7 +105,7 @@ string ROM::sha256sum(uint8_t* data, size_t length) {
 
 string ROM::getmapperName() {
 	if(_mapperName == nullptr) {
-		_mapperName = new vector<string>(255);
+		_mapperName = new array<string, 255>();
 		for(int i = 0; i < 255; ++i) {
 			(*_mapperName)[i] = "Unknown Mapper";
 		}
@@ -199,9 +199,10 @@ string ROM::getmapperName() {
 	return ss.str();
 }
 
-vector<bool>* ROM::getmapperSupported() {
+array<bool, 255>* ROM::getmapperSupported() {
 	if(_mapperSupported == nullptr) {
-		_mapperSupported = new vector<bool>(255, false);
+		_mapperSupported = new array<bool, 255>;
+		_mapperSupported->fill(false);
 
 		// The mappers supported:
 		(*_mapperSupported)[ 0] = true; // No Mapper

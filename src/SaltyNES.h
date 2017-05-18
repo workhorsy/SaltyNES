@@ -460,12 +460,12 @@ class CpuInfo {
 public:
 	// Opdata array:
 	static bool isOp;
-	static vector<int> opdata;
+	static array<int, 256> opdata;
 	// Instruction names:
-	static const vector<string> instname;
+	static const array<string, 56> instname;
 	// Address mode descriptions:
-	static const vector<string> addrDesc;
-	static const vector<int> cycTable;
+	static const array<string, 13> addrDesc;
+	static const array<int, 256> cycTable;
 	// Instruction types:
 	// -------------------------------- //
 	static const int INS_ADC;
@@ -541,9 +541,9 @@ public:
 	static const int ADDR_POSTIDXIND;
 	static const int ADDR_INDABS;
 
-	static vector<string> getInstNames();
+	static array<string, 56> getInstNames();
 	static string getInstName(size_t inst);
-	static vector<string> getAddressModeNames();
+	static array<string, 13> getAddressModeNames();
 	static string getAddressModeName(int addrMode);
 	static void initOpData();
 	static void setOp(int inst, int op, int addr, int size, int cycles);
@@ -959,8 +959,8 @@ public:
 	shared_ptr<ChannelTriangle> triangle;
 	shared_ptr<ChannelNoise> noise;
 	shared_ptr<ChannelDM> dmc;
-	vector<int> square_table;
-	vector<int> tnd_table;
+	array<int, 32 * 16> square_table;
+	array<int, 204 * 16> tnd_table;
 	vector<int> ismpbuffer;
 	vector<uint8_t> sampleBuffer;
 	bool ready_for_buffer_write;
@@ -1264,8 +1264,8 @@ public:
 	static const int SINGLESCREEN_MIRRORING3 = 5;
 	static const int SINGLESCREEN_MIRRORING4 = 6;
 	static const int CHRROM_MIRRORING = 7;
-	static vector<string>* _mapperName;
-	static vector<bool>* _mapperSupported;
+	static array<string, 255>* _mapperName;
+	static array<bool, 255>* _mapperSupported;
 
 	bool failedSaveFile;
 	bool saveRamUpToDate;
@@ -1292,7 +1292,7 @@ public:
 	~ROM();
 	string sha256sum(uint8_t* data, size_t length);
 	string getmapperName();
-	static vector<bool>* getmapperSupported();
+	static array<bool, 255>* getmapperSupported();
 	void load_from_data(string file_name, uint8_t* data, size_t length, vector<uint16_t>* save_ram);
 	bool isValid();
 	int getRomBankCount();

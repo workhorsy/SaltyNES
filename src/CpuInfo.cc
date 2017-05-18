@@ -10,10 +10,10 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 // Opdata array:
 bool CpuInfo::isOp = false;
-vector<int> CpuInfo::opdata;
+array<int, 256> CpuInfo::opdata;
 
 // Instruction names:
-const vector<string> CpuInfo::instname = {{
+const array<string, 56> CpuInfo::instname = {{
 	"ADC",
 	"AND",
 	"ASL",
@@ -73,7 +73,7 @@ const vector<string> CpuInfo::instname = {{
 }};
 
 // Address mode descriptions:
-const vector<string> CpuInfo::addrDesc = {{
+const array<string, 13> CpuInfo::addrDesc = {{
 	"Zero Page           ",
 	"Relative            ",
 	"Implied             ",
@@ -89,7 +89,7 @@ const vector<string> CpuInfo::addrDesc = {{
 	"Indirect Absolute   "
 }};
 
-const vector<int> CpuInfo::cycTable = {
+const array<int, 256> CpuInfo::cycTable = {
 	/*0x00*/7, 6, 2, 8, 3, 3, 5, 5, 3, 2, 2, 2, 4, 4, 6, 6,
 	/*0x10*/ 2, 5, 2, 8, 4, 4, 6, 6, 2, 4, 2, 7, 4, 4, 7, 7,
 	/*0x20*/ 6, 6, 2, 8, 3, 3, 5, 5, 4, 2, 2, 2, 4, 4, 6, 6,
@@ -183,7 +183,7 @@ const int CpuInfo::ADDR_PREIDXIND = 10;
 const int CpuInfo::ADDR_POSTIDXIND = 11;
 const int CpuInfo::ADDR_INDABS = 12;
 
-vector<string> CpuInfo::getInstNames() {
+array<string, 56> CpuInfo::getInstNames() {
 	return instname;
 }
 
@@ -195,7 +195,7 @@ string CpuInfo::getInstName(size_t inst) {
 	}
 }
 
-vector<string> CpuInfo::getAddressModeNames() {
+array<string, 13> CpuInfo::getAddressModeNames() {
 	return addrDesc;
 }
 
@@ -213,7 +213,7 @@ void CpuInfo::initOpData() {
 	isOp = true;
 
 	// Set all to invalid instruction (to detect crashes):
-	opdata = vector<int>(256, 0xFF);
+	opdata.fill(0xFF);
 
 	// Now fill in all valid opcodes:
 

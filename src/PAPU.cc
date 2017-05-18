@@ -180,8 +180,8 @@ shared_ptr<PAPU> PAPU::Init(shared_ptr<NES> nes) {
 
 	this->nes = nes;
 	cpuMem = nes->getCpuMemory();
-	square_table = vector<int>(32 * 16, 0);
-	tnd_table = vector<int>(204 * 16, 0);
+	square_table.fill(0);
+	tnd_table.fill(0);
 	ready_for_buffer_write = false;
 
 	lock_mutex();
