@@ -13,9 +13,6 @@ MapperDefault::MapperDefault() : enable_shared_from_this<MapperDefault>() {
 }
 
 shared_ptr<MapperDefault> MapperDefault::Init(shared_ptr<NES> nes) {
-	this->base_init(nes);
-
-	nes = nullptr;
 	cpuMem = nullptr;
 	ppuMem = nullptr;
 	cpuMemArray = nullptr;
@@ -31,6 +28,8 @@ shared_ptr<MapperDefault> MapperDefault::Init(shared_ptr<NES> nes) {
 	mouseX = 0;
 	mouseY = 0;
 	tmp = 0;
+
+	this->base_init(nes);
 	return shared_from_this();
 }
 

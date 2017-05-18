@@ -13,7 +13,6 @@ Mapper007::Mapper007() : MapperDefault() {
 }
 
 shared_ptr<MapperDefault> Mapper007::Init(shared_ptr<NES> nes) {
-	this->base_init(nes);
 	currentOffset = 0;
 	currentMirroring = -1;
 
@@ -27,6 +26,7 @@ shared_ptr<MapperDefault> Mapper007::Init(shared_ptr<NES> nes) {
 		arraycopy_short(rom->getRomBank(i), 0, &prgrom, i * 16384, 16384);
 	}
 
+	this->base_init(nes);
 	return shared_from_this();
 }
 

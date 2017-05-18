@@ -13,8 +13,6 @@ Mapper001::Mapper001() : MapperDefault() {
 }
 
 shared_ptr<MapperDefault> Mapper001::Init(shared_ptr<NES> nes) {
-	this->base_init(nes);
-
 	// Register 0:
 	mirroring = 0;
 	oneScreenMirroring = 0;
@@ -34,6 +32,8 @@ shared_ptr<MapperDefault> Mapper001::Init(shared_ptr<NES> nes) {
 	// 5-bit buffer:
 	regBuffer = 0;
 	regBufferCounter = 0;
+
+	this->base_init(nes);
 	return shared_from_this();
 }
 

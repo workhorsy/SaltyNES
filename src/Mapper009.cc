@@ -13,8 +13,6 @@ Mapper009::Mapper009() : MapperDefault() {
 }
 
 shared_ptr<MapperDefault> Mapper009::Init(shared_ptr<NES> nes) {
-	this->base_init(nes);
-
 	latchLo = 0;
 	latchHi = 0;
 	latchLoVal1 = 0;
@@ -24,6 +22,7 @@ shared_ptr<MapperDefault> Mapper009::Init(shared_ptr<NES> nes) {
 
 	reset();
 
+	this->base_init(nes);
 	return shared_from_this();
 }
 

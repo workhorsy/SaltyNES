@@ -14,8 +14,8 @@ Mapper004::Mapper004() : MapperDefault() {
 }
 
 shared_ptr<MapperDefault> Mapper004::Init(shared_ptr<NES> nes) {
-	this->base_init(nes);
 	prgAddressChanged = false;
+	this->base_init(nes);
 	return shared_from_this();
 }
 
