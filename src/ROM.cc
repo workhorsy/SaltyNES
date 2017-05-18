@@ -479,8 +479,8 @@ shared_ptr<MapperDefault> ROM::createMapper() {
 	switch(mapperType) {
 			case 0: return make_shared<MapperDefault>()->Init(this->nes);
 			case 1: return make_shared<Mapper001>()->Init(this->nes);
-			case 3: return make_shared<Mapper003>()->Init(this->nes);
 			case 2: return make_shared<Mapper002>()->Init(this->nes);
+			case 3: return make_shared<Mapper003>()->Init(this->nes);
 			case 4: return make_shared<Mapper004>()->Init(this->nes);
 			case 7: return make_shared<Mapper007>()->Init(this->nes);
 			case 9: return make_shared<Mapper009>()->Init(this->nes);
