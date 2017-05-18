@@ -10,7 +10,7 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 const size_t PPU::UNDER_SCAN = 8;
 
-vector<int>* PPU::get_screen_buffer() {
+array<int, 256 * 240>* PPU::get_screen_buffer() {
 	return &_screen_buffer;
 }
 
@@ -76,7 +76,7 @@ shared_ptr<PPU> PPU::Init(shared_ptr<NES> nes) {
 	vramTmpAddress = 0;
 	vramBufferedReadValue = 0;
 	firstWrite = true;
-	vramMirrorTable = vector<int>(0x8000, 0);
+	vramMirrorTable.fill(0);
 	i = 0;
 
 	// SPR-RAM I/O:
@@ -106,27 +106,27 @@ shared_ptr<PPU> PPU::Init(shared_ptr<NES> nes) {
 	mapperIrqCounter = 0;
 
 	// Sprite data:
-	sprX = vector<int>(64, 0);
-	sprY = vector<int>(64, 0);
-	sprTile = vector<int>(64, 0);
-	sprCol = vector<int>(64, 0);
-	vertFlip = vector<bool>(64, false);
-	horiFlip = vector<bool>(64, false);
-	bgPriority = vector<bool>(64, false);
+	sprX.fill(0);
+	sprY.fill(0);
+	sprTile.fill(0);
+	sprCol.fill(0);
+	vertFlip.fill(false);
+	horiFlip.fill(false);
+	bgPriority.fill(false);
 	spr0HitX = 0;
 	spr0HitY = 0;
 	hitSpr0 = false;
 
 	// Tiles:
-	ptTile = vector<Tile*>(512, nullptr);
+	ptTile.fill(nullptr);
 	// Name table data:
-	ntable1 = vector<int>(4, 0);
-	nameTable = vector<NameTable*>(4, nullptr);
+	ntable1.fill(0);
+	nameTable.fill(nullptr);
 	currentMirroring = -1;
 
 	// Palette data:
-	sprPalette = vector<int>(16, 0);
-	imgPalette = vector<int>(16, 0);
+	sprPalette.fill(0);
+	imgPalette.fill(0);
 
 	// Misc:
 	scanlineAlreadyRendered = false;
@@ -142,15 +142,15 @@ shared_ptr<PPU> PPU::Init(shared_ptr<NES> nes) {
 	b2 = 0;
 
 	// Variables used when rendering:
-	attrib = vector<int>(32, 0);
-	bgbuffer = vector<int>(256 * 240, 0);
-	pixrendered = vector<int>(256 * 240, 0);
+	attrib.fill(0);
+	bgbuffer.fill(0);
+	pixrendered.fill(0);
 	//dummyPixPriTable = vector<int>(256 * 240, 0);
 	tpix = nullptr;
 	requestRenderAll = false;
 	validTileData = false;
 	att = 0;
-	scantile = vector<Tile*>(32, nullptr);
+	scantile.fill(nullptr);
 	t = nullptr;
 
 	// These are temporary variables used in rendering and sound procedures.
@@ -171,7 +171,7 @@ shared_ptr<PPU> PPU::Init(shared_ptr<NES> nes) {
 	bufferSize = 0;
 	available = 0;
 	cycles = 0;
-	_screen_buffer = vector<int>(256 * 240, 0);
+	_screen_buffer.fill(0);
 
 	return shared_from_this();
 }
@@ -985,7 +985,7 @@ void PPU::renderFramePartially(int startScan, int scanCount) {
 	validTileData = false;
 }
 
-void PPU::renderBgScanline(vector<int>* buffer, int scan) {
+void PPU::renderBgScanline(array<int, 256 * 240>* buffer, int scan) {
 	baseTile = (regS == 0 ? 0 : 256);
 	destIndex = (scan << 8) - regFH;
 	curNt = ntable1[cntV + cntV + cntH];

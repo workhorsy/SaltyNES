@@ -12,7 +12,7 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 Tile::Tile() {
 	// Tile data:
-	pix = vector<int>(64, 0);
+	pix.fill(0);
 	fbIndex = 0;
 	tIndex = 0;
 	x = 0;
@@ -25,7 +25,7 @@ Tile::Tile() {
 	tpri = 0;
 	c = 0;
 	initialized = false;
-	opaque = vector<bool>(8, false);
+	opaque.fill(false);
 }
 
 void Tile::setBuffer(vector<uint16_t>* scanline) {
@@ -82,7 +82,7 @@ void Tile::renderSmall(int dx, int dy, vector<int>* buffer, int palAdd, int* pal
 
 }
 
-void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, vector<int>* fBuffer, int palAdd, vector<int>* palette, bool flipHorizontal, bool flipVertical, int pri, vector<int>* priTable) {
+void Tile::render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, array<int, 256 * 240>* fBuffer, int palAdd, array<int, 16>* palette, bool flipHorizontal, bool flipVertical, int pri, array<int, 256 * 240>* priTable) {
 	if(dx < -7 || dx >= 256 || dy < -7 || dy >= 240) {
 		return;
 	}

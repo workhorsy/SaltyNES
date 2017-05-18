@@ -1097,7 +1097,7 @@ public:
 	int vramTmpAddress;
 	uint16_t vramBufferedReadValue;
 	bool firstWrite; 		// VRAM/Scroll Hi/Lo latch
-	vector<int> vramMirrorTable; // Mirroring Lookup Table.
+	array<int, 0x8000> vramMirrorTable; // Mirroring Lookup Table.
 	int i;
 
 	// SPR-RAM I/O:
@@ -1126,27 +1126,27 @@ public:
 	int lastRenderedScanline;
 	int mapperIrqCounter;
 	// Sprite data:
-	vector<int> sprX;				// X coordinate
-	vector<int> sprY;				// Y coordinate
-	vector<int> sprTile;			// Tile Index (into pattern table)
-	vector<int> sprCol;			// Upper two bits of color
-	vector<bool> vertFlip;		// Vertical Flip
-	vector<bool> horiFlip;		// Horizontal Flip
-	vector<bool> bgPriority;	// Background priority
+	array<int, 64> sprX;				// X coordinate
+	array<int, 64> sprY;				// Y coordinate
+	array<int, 64> sprTile;			// Tile Index (into pattern table)
+	array<int, 64> sprCol;			// Upper two bits of color
+	array<bool, 64> vertFlip;		// Vertical Flip
+	array<bool, 64> horiFlip;		// Horizontal Flip
+	array<bool, 64> bgPriority;	// Background priority
 	int spr0HitX;	// Sprite #0 hit X coordinate
 	int spr0HitY;	// Sprite #0 hit Y coordinate
 	bool hitSpr0;
 
 	// Tiles:
-	vector<Tile*> ptTile;
+	array<Tile*, 512> ptTile;
 	// Name table data:
-	vector<int> ntable1;
-	vector<NameTable*> nameTable;
+	array<int, 4> ntable1;
+	array<NameTable*, 4> nameTable;
 	int currentMirroring;
 
 	// Palette data:
-	vector<int> sprPalette;
-	vector<int> imgPalette;
+	array<int, 16> sprPalette;
+	array<int, 16> imgPalette;
 	// Misc:
 	bool scanlineAlreadyRendered;
 	bool requestEndFrame;
@@ -1158,15 +1158,15 @@ public:
 	// Vars used when updating regs/address:
 	int address, b1, b2;
 	// Variables used when rendering:
-	vector<int> attrib;
-	vector<int> bgbuffer;
-	vector<int> pixrendered;
+	array<int, 32> attrib;
+	array<int, 256 * 240> bgbuffer;
+	array<int, 256 * 240> pixrendered;
 	//vector<int> dummyPixPriTable;
-	vector<int>* tpix;
+	array<int, 64>* tpix;
 	bool requestRenderAll;
 	bool validTileData;
 	int att;
-	vector<Tile*> scantile;
+	array<Tile*, 32> scantile;
 	Tile* t;
 	// These are temporary variables used in rendering and sound procedures.
 	// Their states outside of those procedures can be ignored.
@@ -1181,9 +1181,9 @@ public:
 	int srcy1, srcy2;
 	int bufferSize, available;
 	int cycles;
-	vector<int> _screen_buffer;
+	array<int, 256 * 240> _screen_buffer;
 
-	vector<int>* get_screen_buffer();
+	array<int, 256 * 240>* get_screen_buffer();
 	vector<int>* get_pattern_buffer();
 	vector<int>* get_name_buffer();
 	vector<int>* get_img_palette_buffer();
@@ -1220,7 +1220,7 @@ public:
 	void mirroredWrite(int address, uint16_t value);
 	void triggerRendering();
 	void renderFramePartially(int startScan, int scanCount);
-	void renderBgScanline(vector<int>* buffer, int scan);
+	void renderBgScanline(array<int, 256 * 240>* buffer, int scan);
 	void renderSpritesPartially(int startscan, int scancount, bool bgPri);
 	bool checkSprite0(int scan);
 	void renderPattern();
@@ -1319,7 +1319,7 @@ public:
 class Tile {
 public:
 	// Tile data:
-	vector<int> pix;
+	array<int, 64> pix;
 	int fbIndex;
 	int tIndex;
 	int x, y;
@@ -1329,14 +1329,14 @@ public:
 	int tpri;
 	int c;
 	bool initialized;
-	vector<bool> opaque;
+	array<bool, 8> opaque;
 
 	Tile();
 	void setBuffer(vector<uint16_t>* scanline);
 	void setScanline(int sline, uint16_t b1, uint16_t b2);
 	void renderSimple(int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette);
 	void renderSmall(int dx, int dy, vector<int>* buffer, int palAdd, int* palette);
-	void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, vector<int>* fBuffer, int palAdd, vector<int>* palette, bool flipHorizontal, bool flipVertical, int pri, vector<int>* priTable);
+	void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, array<int, 256 * 240>* fBuffer, int palAdd, array<int, 16>* palette, bool flipHorizontal, bool flipVertical, int pri, array<int, 256 * 240>* priTable);
 	bool isTransparent(int x, int y);
 	void dumpData(string file);
 	void stateSave(ByteBuffer* buf);
@@ -1386,7 +1386,7 @@ inline void arraycopy_short(vector<uint16_t>* src, size_t srcPos, vector<uint16_
 	std::copy(src->begin()+srcPos, src->begin()+srcPos+length, dest->begin()+destPos);
 }
 
-inline void arraycopy_Tile(vector<Tile*>* src, size_t srcPos, vector<Tile*>* dest, size_t destPos, size_t length) {
+inline void arraycopy_Tile(vector<Tile*>* src, size_t srcPos, array<Tile*, 512>* dest, size_t destPos, size_t length) {
 	assert(srcPos+length <= src->size());
 	assert(destPos+length <= dest->size());
 
