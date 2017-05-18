@@ -469,7 +469,7 @@ bool ROM::mapperSupported() {
 	return false;
 }
 
-MapperDefault* ROM::createMapper() {
+shared_ptr<MapperDefault> ROM::createMapper() {
 
 	if(!mapperSupported()) {
 		fprintf(stderr, "Unsupported mapper: %zu for the rom: %s. Exiting ...\n", mapperType, fileName.c_str());
@@ -477,13 +477,13 @@ MapperDefault* ROM::createMapper() {
 	}
 
 	switch(mapperType) {
-			case 0: return new MapperDefault();
-			case 1: return new Mapper001();
-			case 2: return new Mapper002();
-			case 3: return new Mapper003();
-			case 4: return new Mapper004();
-			case 7: return new Mapper007();
-			case 9: return new Mapper009();
+			case 0: return make_shared<MapperDefault>()->Init(this->nes);
+			case 1: return make_shared<Mapper001>()->Init(this->nes);
+			case 3: return make_shared<Mapper003>()->Init(this->nes);
+			case 2: return make_shared<Mapper002>()->Init(this->nes);
+			case 4: return make_shared<Mapper004>()->Init(this->nes);
+			case 7: return make_shared<Mapper007>()->Init(this->nes);
+			case 9: return make_shared<Mapper009>()->Init(this->nes);
 /*
 			case 10: return new Mapper010();
 			case 11: return new Mapper011();

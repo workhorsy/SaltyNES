@@ -370,7 +370,7 @@ public:
 
 	// References to other parts of NES :
 	shared_ptr<NES> nes;
-	MapperDefault* mmap;
+	shared_ptr<MapperDefault> mmap;
 	vector<uint16_t>* mem;
 
 	// Registers:
@@ -453,7 +453,7 @@ public:
 	int getStatus();
 	void setStatus(int st);
 	void setCrashed(bool value);
-	void setMapper(MapperDefault* mapper);
+	void setMapper(shared_ptr<MapperDefault> mapper);
 };
 
 class CpuInfo {
@@ -654,7 +654,7 @@ public:
 	void write(size_t address, vector<uint16_t>* array, size_t arrayoffset, size_t length);
 };
 
-class MapperDefault {
+class MapperDefault : public enable_shared_from_this<MapperDefault> {
 public:
 	shared_ptr<NES> nes;
 	shared_ptr<Memory> cpuMem;
@@ -674,9 +674,9 @@ public:
 	int tmp;
 
 	MapperDefault();
+	shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	virtual ~MapperDefault();
 	virtual void write(int address, uint16_t value);
-	virtual void init(shared_ptr<NES> nes);
 	void base_init(shared_ptr<NES> nes);
 	void stateLoad(ByteBuffer* buf);
 	void stateSave(ByteBuffer* buf);
@@ -737,7 +737,7 @@ public:
 	int regBufferCounter;
 
 	Mapper001();
-	void init(shared_ptr<NES> nes);
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	void mapperInternalStateLoad(ByteBuffer* buf);
 	void mapperInternalStateSave(ByteBuffer* buf);
 	virtual void write(int address, uint16_t value);
@@ -752,14 +752,16 @@ public:
 
 class Mapper002 : public MapperDefault {
 public:
-	void init(shared_ptr<NES> nes);
+	Mapper002();
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	virtual void write(int address, uint16_t value);
 	virtual void loadROM(shared_ptr<ROM> rom);
 };
 
 class Mapper003 : public MapperDefault {
 public:
-	virtual void init(shared_ptr<NES> nes);
+	Mapper003();
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	virtual void write(int address, uint16_t value);
 };
 
@@ -783,7 +785,7 @@ public:
 	bool prgAddressChanged;
 
 	Mapper004();
-	virtual void init(shared_ptr<NES> nes);
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	void mapperInternalStateLoad(ByteBuffer* buf);
 	void mapperInternalStateSave(ByteBuffer* buf);
 	virtual void write(int address, uint16_t value);
@@ -799,7 +801,8 @@ public:
 	int currentMirroring;
 	vector<uint16_t> prgrom;
 
-	virtual void init(shared_ptr<NES> nes);
+	Mapper007();
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	virtual uint16_t load(int address);
 	virtual void write(int address, uint16_t value);
 	void mapperInternalStateLoad(ByteBuffer* buf);
@@ -816,7 +819,8 @@ public:
 	int latchHiVal1;
 	int latchHiVal2;
 
-	virtual void init(shared_ptr<NES> nes);
+	Mapper009();
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	virtual void write(int address, uint16_t value);
 	virtual void loadROM(shared_ptr<ROM> rom);
 	virtual void latchAccess(int address);
@@ -874,7 +878,7 @@ public:
 	shared_ptr<Memory> cpuMem;
 	shared_ptr<Memory> ppuMem;
 	shared_ptr<Memory> sprMem;
-	MapperDefault* memMapper;
+	shared_ptr<MapperDefault> memMapper;
 	shared_ptr<PaletteTable> palTable;
 	shared_ptr<ROM> rom;
 	int cc;
@@ -899,7 +903,7 @@ public:
 	shared_ptr<Memory> getPpuMemory();
 	shared_ptr<Memory> getSprMemory();
 	shared_ptr<ROM> getRom();
-	MapperDefault* getMemoryMapper();
+	shared_ptr<MapperDefault> getMemoryMapper();
 	bool load_rom_from_data(string rom_name, uint8_t* data, size_t length, vector<uint16_t>* save_ram);
 	void reset();
 	void enableSound(bool enable);
@@ -1309,7 +1313,7 @@ public:
 	bool hasTrainer();
 	string getFileName();
 	bool mapperSupported();
-	MapperDefault* createMapper();
+	shared_ptr<MapperDefault> createMapper();
 	void setSaveState(bool enableSave);
 	vector<uint16_t>* getBatteryRam();
 	void loadBatteryRam();

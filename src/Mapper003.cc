@@ -8,8 +8,13 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-void Mapper003::init(shared_ptr<NES> nes) {
+Mapper003::Mapper003() : MapperDefault() {
+
+}
+
+shared_ptr<MapperDefault> Mapper003::Init(shared_ptr<NES> nes) {
 	this->base_init(nes);
+	return shared_from_this();
 }
 
 void Mapper003::write(int address, uint16_t value) {

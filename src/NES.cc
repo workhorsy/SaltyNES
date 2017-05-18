@@ -80,7 +80,6 @@ shared_ptr<NES> NES::Init(shared_ptr<InputHandler> joy1, shared_ptr<InputHandler
 }
 
 NES::~NES() {
-	delete_n_null(memMapper);
 }
 
 void NES::dumpRomMemory(ofstream* writer) {
@@ -246,7 +245,7 @@ shared_ptr<ROM> NES::getRom() {
 }
 
 // Returns the memory mapper.
-MapperDefault* NES::getMemoryMapper() {
+shared_ptr<MapperDefault> NES::getMemoryMapper() {
 	return memMapper;
 }
 
@@ -271,7 +270,6 @@ bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length, vect
 			reset();
 
 			memMapper = rom->createMapper();
-			memMapper->init(shared_from_this());
 			cpu->setMapper(memMapper);
 			memMapper->loadROM(rom);
 			ppu->setMirroring(rom->getMirroringType());

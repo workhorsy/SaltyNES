@@ -9,13 +9,14 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 #include "SaltyNES.h"
 
 
+Mapper004::Mapper004() : MapperDefault() {
 
-Mapper004::Mapper004() {
-	prgAddressChanged = false;
 }
 
-void Mapper004::init(shared_ptr<NES> nes) {
+shared_ptr<MapperDefault> Mapper004::Init(shared_ptr<NES> nes) {
 	this->base_init(nes);
+	prgAddressChanged = false;
+	return shared_from_this();
 }
 
 void Mapper004::mapperInternalStateLoad(ByteBuffer* buf) {

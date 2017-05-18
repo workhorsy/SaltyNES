@@ -8,7 +8,11 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-void Mapper009::init(shared_ptr<NES> nes) {
+Mapper009::Mapper009() : MapperDefault() {
+
+}
+
+shared_ptr<MapperDefault> Mapper009::Init(shared_ptr<NES> nes) {
 	this->base_init(nes);
 
 	latchLo = 0;
@@ -19,6 +23,8 @@ void Mapper009::init(shared_ptr<NES> nes) {
 	latchHiVal2 = 0;
 
 	reset();
+
+	return shared_from_this();
 }
 
 void Mapper009::write(int address, uint16_t value) {

@@ -8,7 +8,11 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-void Mapper007::init(shared_ptr<NES> nes) {
+Mapper007::Mapper007() : MapperDefault() {
+
+}
+
+shared_ptr<MapperDefault> Mapper007::Init(shared_ptr<NES> nes) {
 	this->base_init(nes);
 	currentOffset = 0;
 	currentMirroring = -1;
@@ -22,6 +26,8 @@ void Mapper007::init(shared_ptr<NES> nes) {
 	for(int i = 0; i < bc; ++i) {
 		arraycopy_short(rom->getRomBank(i), 0, &prgrom, i * 16384, 16384);
 	}
+
+	return shared_from_this();
 }
 
 uint16_t Mapper007::load(int address) {

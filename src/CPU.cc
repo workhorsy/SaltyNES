@@ -213,7 +213,7 @@ bool CPU::emulate() {
 	mem = &nes->cpuMem->mem;
 
 	// References to other parts of NES:
-	MapperDefault* mmap = nes->memMapper;
+	shared_ptr<MapperDefault> mmap = nes->memMapper;
 	shared_ptr<PPU> 		 ppu  = nes->ppu;
 	shared_ptr<PAPU> 		 papu = nes->papu;
 
@@ -1402,6 +1402,6 @@ void CPU::setCrashed(bool value) {
 	this->crash = value;
 }
 
-void CPU::setMapper(MapperDefault* mapper) {
+void CPU::setMapper(shared_ptr<MapperDefault> mapper) {
 	mmap = mapper;
 }

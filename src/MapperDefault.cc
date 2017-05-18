@@ -8,7 +8,13 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-MapperDefault::MapperDefault() {
+
+MapperDefault::MapperDefault() : enable_shared_from_this<MapperDefault>() {
+}
+
+shared_ptr<MapperDefault> MapperDefault::Init(shared_ptr<NES> nes) {
+	this->base_init(nes);
+
 	nes = nullptr;
 	cpuMem = nullptr;
 	ppuMem = nullptr;
@@ -25,6 +31,7 @@ MapperDefault::MapperDefault() {
 	mouseX = 0;
 	mouseY = 0;
 	tmp = 0;
+	return shared_from_this();
 }
 
 MapperDefault::~MapperDefault() {
@@ -52,10 +59,6 @@ void MapperDefault::base_init(shared_ptr<NES> nes) {
 	cpuMemSize = cpuMem->getMemSize();
 	joypadLastWrite = -1;
 
-}
-
-void MapperDefault::init(shared_ptr<NES> nes) {
-	this->base_init(nes);
 }
 
 void MapperDefault::stateLoad(ByteBuffer* buf) {
