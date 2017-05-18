@@ -1384,14 +1384,7 @@ template<class T> inline void delete_n_null_array(T*& obj) {
 	obj = nullptr;
 }
 
-inline void arraycopy_short(vector<uint16_t>* src, size_t srcPos, vector<uint16_t>* dest, size_t destPos, size_t length) {
-	assert(srcPos+length <= src->size());
-	assert(destPos+length <= dest->size());
-
-	std::copy(src->begin()+srcPos, src->begin()+srcPos+length, dest->begin()+destPos);
-}
-
-inline void arraycopy_Tile(vector<Tile*>* src, size_t srcPos, array<Tile*, 512>* dest, size_t destPos, size_t length) {
+template<typename SRC, typename DST> inline void array_copy(SRC src, size_t srcPos, DST dest, size_t destPos, size_t length) {
 	assert(srcPos+length <= src->size());
 	assert(destPos+length <= dest->size());
 

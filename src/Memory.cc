@@ -72,11 +72,11 @@ void Memory::dump(string file, size_t offset, size_t length) {
 void Memory::write(size_t address, vector<uint16_t>* array, size_t length) {
 	if(address+length > mem.size())
 		return;
-	arraycopy_short(array, 0, &mem, address, length);
+	array_copy(array, 0, &mem, address, length);
 }
 
 void Memory::write(size_t address, vector<uint16_t>* array, size_t arrayoffset, size_t length) {
 	if(address+length > mem.size())
 		return;
-	arraycopy_short(array, arrayoffset, &mem, address, length);
+	array_copy(array, arrayoffset, &mem, address, length);
 }

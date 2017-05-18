@@ -586,7 +586,7 @@ void MapperDefault::loadBatteryRam() {
 	if(rom->batteryRam) {
 		vector<uint16_t>* ram = rom->getBatteryRam();
 		if(ram != nullptr && ram->size() == 0x2000) {
-			arraycopy_short(ram, 0, &nes->cpuMem->mem, 0x6000, 0x2000);
+			array_copy(ram, 0, &nes->cpuMem->mem, 0x6000, 0x2000);
 		}
 	}
 }
@@ -596,7 +596,7 @@ void MapperDefault::loadRomBank(int bank, int address) {
 	bank %= rom->getRomBankCount();
 	//vector<uint16_t>* data = rom->getRomBank(bank);
 	//cpuMem->write(address,data,data.length);
-	arraycopy_short(rom->getRomBank(bank), 0, &cpuMem->mem, address, 16384);
+	array_copy(rom->getRomBank(bank), 0, &cpuMem->mem, address, 16384);
 
 }
 
@@ -606,10 +606,10 @@ void MapperDefault::loadVromBank(int bank, int address) {
 	}
 	ppu->triggerRendering();
 
-	arraycopy_short(rom->getVromBank(bank % rom->getVromBankCount()), 0, &nes->ppuMem->mem, address, 4096);
+	array_copy(rom->getVromBank(bank % rom->getVromBankCount()), 0, &nes->ppuMem->mem, address, 4096);
 
 	vector<Tile*>* vromTile = rom->getVromBankTiles(bank % rom->getVromBankCount());
-	arraycopy_Tile(vromTile, 0, &ppu->ptTile, address >> 4, 256);
+	array_copy(vromTile, 0, &ppu->ptTile, address >> 4, 256);
 }
 
 void MapperDefault::load32kRomBank(int bank, int address) {
@@ -635,7 +635,7 @@ void MapperDefault::load1kVromBank(int bank1k, int address) {
 
 	int bank4k = (bank1k / 4) % rom->getVromBankCount();
 	int bankoffset = (bank1k % 4) * 1024;
-	arraycopy_short(rom->getVromBank(bank4k), 0, &nes->ppuMem->mem, bankoffset, 1024);
+	array_copy(rom->getVromBank(bank4k), 0, &nes->ppuMem->mem, bankoffset, 1024);
 
 	// Update tiles:
 	vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);
@@ -653,7 +653,7 @@ void MapperDefault::load2kVromBank(int bank2k, int address) {
 
 	int bank4k = (bank2k / 2) % rom->getVromBankCount();
 	int bankoffset = (bank2k % 2) * 2048;
-	arraycopy_short(rom->getVromBank(bank4k), bankoffset, &nes->ppuMem->mem, address, 2048);
+	array_copy(rom->getVromBank(bank4k), bankoffset, &nes->ppuMem->mem, address, 2048);
 
 	// Update tiles:
 	vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);

@@ -23,7 +23,7 @@ shared_ptr<MapperDefault> Mapper007::Init(shared_ptr<NES> nes) {
 	int bc = rom->getRomBankCount();
 	prgrom = vector<uint16_t>(bc * 16384, 0);
 	for(int i = 0; i < bc; ++i) {
-		arraycopy_short(rom->getRomBank(i), 0, &prgrom, i * 16384, 16384);
+		array_copy(rom->getRomBank(i), 0, &prgrom, i * 16384, 16384);
 	}
 
 	this->base_init(nes);
