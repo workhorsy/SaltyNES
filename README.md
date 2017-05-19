@@ -24,6 +24,8 @@ TODO
 * remove idle messages in web main loop.
 * make main loops for desktop and web not have nested while loops
 * make fps show in html
+* Make it so the emulator can be restarted with out reloading the page
+* Add gamepad support
 * make html terminal show with a toggle button
 * make the emulator easy to embed in other web apps by having hooks for all gui buttons
 * make it show progress for downloading games and wasm
