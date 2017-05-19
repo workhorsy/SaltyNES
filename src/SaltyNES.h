@@ -844,7 +844,7 @@ public:
 	static string binStr(uint32_t value, int bitcount);
 	static string pad(string str, string padStr, int length);
 	static float random();
-	static string from_vector_to_hex_string(vector<uint16_t>* data);
+	static string from_vector_to_hex_string(array<uint16_t, 0x2000>* data);
 	static vector<uint16_t>* from_hex_string_to_vector(string data);
 };
 
@@ -904,7 +904,7 @@ public:
 	shared_ptr<Memory> getSprMemory();
 	shared_ptr<ROM> getRom();
 	shared_ptr<MapperDefault> getMemoryMapper();
-	bool load_rom_from_data(string rom_name, uint8_t* data, size_t length, vector<uint16_t>* save_ram);
+	bool load_rom_from_data(string rom_name, uint8_t* data, size_t length, array<uint16_t, 0x2000>* save_ram);
 	void reset();
 	void enableSound(bool enable);
 //	void setFramerate(int rate);
@@ -1285,6 +1285,19 @@ public:
 	void drawTile(Raster* srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h);
 };
 
+class MapperStatus {
+public:
+	int number;
+	bool is_supported;
+	string name;
+	
+	MapperStatus(int number, bool is_supported, string name) {
+		this->number = number;
+		this->is_supported = is_supported;
+		this->name = name;
+	}
+};
+
 class ROM : public enable_shared_from_this<ROM> {
 public:
 	// Mirroring types:
@@ -1296,15 +1309,14 @@ public:
 	static const int SINGLESCREEN_MIRRORING3 = 5;
 	static const int SINGLESCREEN_MIRRORING4 = 6;
 	static const int CHRROM_MIRRORING = 7;
-	static array<string, 255>* _mapperName;
-	static array<bool, 255>* _mapperSupported;
+	static const array<MapperStatus, 255> _mapperStatus;
 
 	bool failedSaveFile;
 	bool saveRamUpToDate;
 	array<uint16_t, 16> header;
 	vector<array<uint16_t, 16384>> rom;
 	vector<array<uint16_t, 4096>> vrom;
-	vector<uint16_t>* saveRam;
+	array<uint16_t, 0x2000>* saveRam;
 	vector<array<Tile, 256>> vromTile;
 	shared_ptr<NES> nes;
 	size_t romCount;
@@ -1324,8 +1336,7 @@ public:
 	~ROM();
 	string sha256sum(uint8_t* data, size_t length);
 	string getmapperName();
-	static array<bool, 255>* getmapperSupported();
-	void load_from_data(string file_name, uint8_t* data, size_t length, vector<uint16_t>* save_ram);
+	void load_from_data(string file_name, uint8_t* data, size_t length, array<uint16_t, 0x2000>* save_ram);
 	bool isValid();
 	int getRomBankCount();
 	int getVromBankCount();
@@ -1342,7 +1353,7 @@ public:
 	bool mapperSupported();
 	shared_ptr<MapperDefault> createMapper();
 	void setSaveState(bool enableSave);
-	vector<uint16_t>* getBatteryRam();
+	array<uint16_t, 0x2000>* getBatteryRam();
 	void loadBatteryRam();
 	void writeBatteryRam(int address, uint16_t value);
 	void closeRom();
@@ -1361,28 +1372,12 @@ public:
 	~SaltyNES();
 	void init(string rom_name);
 	void init_data(uint8_t* rom_data, size_t length);
-	void pre_run_setup(vector<uint16_t>* save_ram);
+	void pre_run_setup(array<uint16_t, 0x2000>* save_ram);
 	void run();
 	void stop();
 	void readParams();
 	void initKeyCodes();
 };
-
-template<class T> inline void delete_n_null(T*& obj) {
-	if(obj == nullptr)
-		return;
-
-	delete obj;
-	obj = nullptr;
-}
-
-template<class T> inline void delete_n_null_array(T*& obj) {
-	if(obj == nullptr)
-		return;
-
-	delete[] obj;
-	obj = nullptr;
-}
 
 template<typename SRC, typename DST> inline void array_copy(SRC src, size_t srcPos, DST dest, size_t destPos, size_t length) {
 	assert(srcPos+length <= src->size());

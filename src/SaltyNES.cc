@@ -53,7 +53,7 @@ void SaltyNES::init_data(uint8_t* rom_data, size_t length) {
 	nes->reset();
 }
 
-void SaltyNES::pre_run_setup(vector<uint16_t>* save_ram) {
+void SaltyNES::pre_run_setup(array<uint16_t, 0x2000>* save_ram) {
 	// Load ROM file:
 	if(_rom_data == nullptr) {
 		log_to_browser("Loading ROM from file.");
@@ -71,7 +71,7 @@ void SaltyNES::pre_run_setup(vector<uint16_t>* save_ram) {
 		uint8_t* bdata = new uint8_t[length];
 		reader.read(reinterpret_cast<char*>(bdata), length);
 		nes->load_rom_from_data(_rom_name.c_str(), bdata, length, save_ram);
-		delete_n_null_array(bdata);
+		delete[] bdata;
 		reader.close();
 	} else {
 		log_to_browser("Loading ROM from data.");

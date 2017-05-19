@@ -584,7 +584,7 @@ void MapperDefault::loadCHRROM() {
 
 void MapperDefault::loadBatteryRam() {
 	if(rom->batteryRam) {
-		vector<uint16_t>* ram = rom->getBatteryRam();
+		array<uint16_t, 0x2000>* ram = rom->getBatteryRam();
 		if(ram != nullptr && ram->size() == 0x2000) {
 			array_copy(ram, 0, &nes->cpuMem->mem, 0x6000, 0x2000);
 		}

@@ -80,7 +80,7 @@ float Misc::random() {
 	return rndret;
 }
 
-string Misc::from_vector_to_hex_string(vector<uint16_t>* data) {
+string Misc::from_vector_to_hex_string(array<uint16_t, 0x2000>* data) {
 	const size_t BYTE_LEN = 4;
 	stringstream out;
 	for(size_t i=0; i<data->size(); ++i) {
