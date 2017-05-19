@@ -14,7 +14,11 @@ python3 -m http.server 9999
 ```
 
 TODO
-
+* Move the old SaltyNES to a repo called SaltyNESLegacy
+* Update Ui to have copyright
+* Make sure all supported mappers actually work
+* Auto hide the mouse cursor in fullscteen mode
+* Remove resize canvas and pointerlock from ui.
 * Make a trivial SDL audio app to see why sound playing is broken.
 * Try using opengl for the screen to see if it makes painting faster.
 * remove idle messages in web main loop.
