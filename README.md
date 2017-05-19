@@ -20,7 +20,6 @@ TODO
 * Remove pointerlock from ui.
 * Make a trivial SDL audio app to see why sound playing is broken.
 * Try using opengl for the screen to see if it makes painting faster.
-* remove idle messages in web main loop.
 * make main loops for desktop and web not have nested while loops
 * make fps show in html
 * Make it so the emulator can be restarted with out reloading the page

@@ -42,8 +42,6 @@ void onMainLoop() {
 			SDL_Quit();
 			emscripten_cancel_main_loop();
 		}
-	} else {
-		printf("!!! main loop idle ...\n");
 	}
 }
 
