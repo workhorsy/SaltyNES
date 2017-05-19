@@ -51,22 +51,20 @@ void Memory::dump(string file) {
 }
 
 void Memory::dump(string file, size_t offset, size_t length) {
-	char* ch = new char[length];
-	for(size_t i=0; i<length; ++i) {
+	auto ch = vector<char>(length);
+	for(size_t i=0; i<ch.size(); ++i) {
 		ch[i] = static_cast<char>(mem[offset + i]);
 	}
 
 	try{
         ofstream writer(file.c_str(), ios::out|ios::binary);
-		writer.write(ch, length);
+		writer.write(ch.data(), ch.size());
 		writer.close();
 		printf("Memory dumped to file \"%s\".\n", file.c_str());
 
 	}catch(exception& ioe) {
 		printf("%s\n", "Memory dump to file: IO Error!");
 	}
-
-	delete[] ch;
 }
 
 void Memory::write(size_t address, array<uint16_t, 16384>* array, size_t length) {

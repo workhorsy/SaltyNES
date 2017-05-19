@@ -337,8 +337,8 @@ string ROM::getmapperName() {
 
 void ROM::load_from_data(string file_name, uint8_t* data, size_t length, array<uint16_t, 0x2000>* save_ram) {
 	fileName = file_name;
-	uint16_t* sdata = new uint16_t[length];
-	for(size_t i=0; i<length; ++i) {
+	auto sdata = vector<uint16_t>(length);
+	for(size_t i=0; i<sdata.size(); ++i) {
 		sdata[i] = static_cast<uint16_t>(data[i] & 255);
 	}
 	log_to_browser("log: rom::load_from_data");
@@ -480,7 +480,6 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, array<u
 	return;
 	}*/
 
-	delete[] sdata;
 	valid = true;
 }
 
