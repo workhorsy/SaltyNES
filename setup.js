@@ -98,7 +98,7 @@ $('#button_toggle_sound').addEventListener('click', function() {
 $('#button_full_screen').addEventListener('click', function() {
 	Module.requestFullscreen(
 		$('#check_lock_pointer').checked,
-		$('#check_resize').checked
+		false
 	);
 	g_zoom = 1;
 }, false);
