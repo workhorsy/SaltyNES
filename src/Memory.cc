@@ -9,9 +9,13 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 #include "SaltyNES.h"
 
 
-Memory::Memory(NES* nes, size_t byteCount) {
+Memory::Memory() : enable_shared_from_this<Memory>() {
+}
+
+shared_ptr<Memory> Memory::Init(shared_ptr<NES> nes, size_t byteCount) {
 	this->nes = nes;
 	this->mem = vector<uint16_t>(byteCount, 0);
+	return shared_from_this();
 }
 
 Memory::~Memory() {
@@ -47,32 +51,30 @@ void Memory::dump(string file) {
 }
 
 void Memory::dump(string file, size_t offset, size_t length) {
-	char* ch = new char[length];
-	for(size_t i=0; i<length; ++i) {
+	auto ch = vector<char>(length);
+	for(size_t i=0; i<ch.size(); ++i) {
 		ch[i] = static_cast<char>(mem[offset + i]);
 	}
 
 	try{
         ofstream writer(file.c_str(), ios::out|ios::binary);
-		writer.write(ch, length);
+		writer.write(ch.data(), ch.size());
 		writer.close();
 		printf("Memory dumped to file \"%s\".\n", file.c_str());
 
 	}catch(exception& ioe) {
 		printf("%s\n", "Memory dump to file: IO Error!");
 	}
-
-	delete[] ch;
 }
 
-void Memory::write(size_t address, vector<uint16_t>* array, size_t length) {
+void Memory::write(size_t address, array<uint16_t, 16384>* array, size_t length) {
 	if(address+length > mem.size())
 		return;
-	arraycopy_short(array, 0, &mem, address, length);
+	array_copy(array, 0, &mem, address, length);
 }
 
-void Memory::write(size_t address, vector<uint16_t>* array, size_t arrayoffset, size_t length) {
+void Memory::write(size_t address, array<uint16_t, 16384>* array, size_t arrayoffset, size_t length) {
 	if(address+length > mem.size())
 		return;
-	arraycopy_short(array, arrayoffset, &mem, address, length);
+	array_copy(array, arrayoffset, &mem, address, length);
 }

@@ -8,8 +8,11 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-MapperDefault::MapperDefault() {
-	nes = nullptr;
+
+MapperDefault::MapperDefault() : enable_shared_from_this<MapperDefault>() {
+}
+
+shared_ptr<MapperDefault> MapperDefault::Init(shared_ptr<NES> nes) {
 	cpuMem = nullptr;
 	ppuMem = nullptr;
 	cpuMemArray = nullptr;
@@ -25,6 +28,9 @@ MapperDefault::MapperDefault() {
 	mouseX = 0;
 	mouseY = 0;
 	tmp = 0;
+
+	this->base_init(nes);
+	return shared_from_this();
 }
 
 MapperDefault::~MapperDefault() {
@@ -40,7 +46,7 @@ void MapperDefault::write(int address, uint16_t value) {
 	base_write(address, value);
 }
 
-void MapperDefault::base_init(NES* nes) {
+void MapperDefault::base_init(shared_ptr<NES> nes) {
 	this->nes = nes;
 	this->cpuMem = nes->getCpuMemory();
 	this->cpuMemArray = &(cpuMem->mem);
@@ -52,10 +58,6 @@ void MapperDefault::base_init(NES* nes) {
 	cpuMemSize = cpuMem->getMemSize();
 	joypadLastWrite = -1;
 
-}
-
-void MapperDefault::init(NES* nes) {
-	this->base_init(nes);
 }
 
 void MapperDefault::stateLoad(ByteBuffer* buf) {
@@ -419,7 +421,7 @@ void MapperDefault::regWrite(int address, uint16_t value) {
 
 uint16_t MapperDefault::joy1Read() {
 	uint16_t ret = 0;
-	InputHandler* in = nes->_joy1;
+	shared_ptr<InputHandler> in = nes->_joy1;
 
 	switch (joy1StrobeState) {
 		case 0:
@@ -476,7 +478,7 @@ uint16_t MapperDefault::joy1Read() {
 
 uint16_t MapperDefault::joy2Read() {
 	uint16_t ret = 0;
-	InputHandler* in = nes->_joy2;
+	shared_ptr<InputHandler> in = nes->_joy2;
 
 	switch (joy2StrobeState) {
 		case 0:
@@ -531,7 +533,7 @@ uint16_t MapperDefault::joy2Read() {
 	return ret;
 }
 
-void MapperDefault::loadROM(ROM* rom) {
+void MapperDefault::loadROM(shared_ptr<ROM> rom) {
 	if(!rom->isValid() || rom->getRomBankCount() < 1) {
 		//System.out.println("NoMapper: Invalid ROM! Unable to load.");
 		return;
@@ -582,9 +584,9 @@ void MapperDefault::loadCHRROM() {
 
 void MapperDefault::loadBatteryRam() {
 	if(rom->batteryRam) {
-		vector<uint16_t>* ram = rom->getBatteryRam();
+		array<uint16_t, 0x2000>* ram = rom->getBatteryRam();
 		if(ram != nullptr && ram->size() == 0x2000) {
-			arraycopy_short(ram, 0, &nes->cpuMem->mem, 0x6000, 0x2000);
+			array_copy(ram, 0, &nes->cpuMem->mem, 0x6000, 0x2000);
 		}
 	}
 }
@@ -592,9 +594,9 @@ void MapperDefault::loadBatteryRam() {
 void MapperDefault::loadRomBank(int bank, int address) {
 	// Loads a ROM bank into the specified address.
 	bank %= rom->getRomBankCount();
-	//vector<uint16_t>* data = rom->getRomBank(bank);
+	//array<uint16_t, 16384>* data = rom->getRomBank(bank);
 	//cpuMem->write(address,data,data.length);
-	arraycopy_short(rom->getRomBank(bank), 0, &cpuMem->mem, address, 16384);
+	array_copy(rom->getRomBank(bank), 0, &cpuMem->mem, address, 16384);
 
 }
 
@@ -604,10 +606,10 @@ void MapperDefault::loadVromBank(int bank, int address) {
 	}
 	ppu->triggerRendering();
 
-	arraycopy_short(rom->getVromBank(bank % rom->getVromBankCount()), 0, &nes->ppuMem->mem, address, 4096);
+	array_copy(rom->getVromBank(bank % rom->getVromBankCount()), 0, &nes->ppuMem->mem, address, 4096);
 
-	vector<Tile*>* vromTile = rom->getVromBankTiles(bank % rom->getVromBankCount());
-	arraycopy_Tile(vromTile, 0, &ppu->ptTile, address >> 4, 256);
+	array<Tile, 256>* vromTile = rom->getVromBankTiles(bank % rom->getVromBankCount());
+	array_copy(vromTile, 0, &ppu->ptTile, address >> 4, 256);
 }
 
 void MapperDefault::load32kRomBank(int bank, int address) {
@@ -633,10 +635,10 @@ void MapperDefault::load1kVromBank(int bank1k, int address) {
 
 	int bank4k = (bank1k / 4) % rom->getVromBankCount();
 	int bankoffset = (bank1k % 4) * 1024;
-	arraycopy_short(rom->getVromBank(bank4k), 0, &nes->ppuMem->mem, bankoffset, 1024);
+	array_copy(rom->getVromBank(bank4k), 0, &nes->ppuMem->mem, bankoffset, 1024);
 
 	// Update tiles:
-	vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);
+	array<Tile, 256>* vromTile = rom->getVromBankTiles(bank4k);
 	int baseIndex = address >> 4;
 	for(int i = 0; i < 64; ++i) {
 		ppu->ptTile[baseIndex + i] = (*vromTile)[((bank1k % 4) << 6) + i];
@@ -651,10 +653,10 @@ void MapperDefault::load2kVromBank(int bank2k, int address) {
 
 	int bank4k = (bank2k / 2) % rom->getVromBankCount();
 	int bankoffset = (bank2k % 2) * 2048;
-	arraycopy_short(rom->getVromBank(bank4k), bankoffset, &nes->ppuMem->mem, address, 2048);
+	array_copy(rom->getVromBank(bank4k), bankoffset, &nes->ppuMem->mem, address, 2048);
 
 	// Update tiles:
-	vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);
+	array<Tile, 256>* vromTile = rom->getVromBankTiles(bank4k);
 	int baseIndex = address >> 4;
 	for(int i = 0; i < 128; ++i) {
 		ppu->ptTile[baseIndex + i] = (*vromTile)[((bank2k % 2) << 7) + i];
@@ -665,7 +667,7 @@ void MapperDefault::load8kRomBank(int bank8k, int address) {
 	int bank16k = (bank8k / 2) % rom->getRomBankCount();
 	int offset = (bank8k % 2) * 8192;
 
-	vector<uint16_t>* bank = rom->getRomBank(bank16k);
+	array<uint16_t, 16384>* bank = rom->getRomBank(bank16k);
 	cpuMem->write(address, bank, offset, 8192);
 }
 

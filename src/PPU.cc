@@ -10,7 +10,7 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 const size_t PPU::UNDER_SCAN = 8;
 
-vector<int>* PPU::get_screen_buffer() {
+array<int, 256 * 240>* PPU::get_screen_buffer() {
 	return &_screen_buffer;
 }
 
@@ -30,7 +30,11 @@ vector<int>* PPU::get_spr_palette_buffer() {
 	return nullptr;
 }
 
-PPU::PPU(NES* nes) {
+PPU::PPU() : enable_shared_from_this<PPU>() {
+
+}
+
+shared_ptr<PPU> PPU::Init(shared_ptr<NES> nes) {
 	this->nes = nes;
 	_zoom = 1;
 	_frame_start.tv_usec = 0;
@@ -72,7 +76,7 @@ PPU::PPU(NES* nes) {
 	vramTmpAddress = 0;
 	vramBufferedReadValue = 0;
 	firstWrite = true;
-	vramMirrorTable = vector<int>(0x8000, 0);
+	vramMirrorTable.fill(0);
 	i = 0;
 
 	// SPR-RAM I/O:
@@ -102,27 +106,27 @@ PPU::PPU(NES* nes) {
 	mapperIrqCounter = 0;
 
 	// Sprite data:
-	sprX = vector<int>(64, 0);
-	sprY = vector<int>(64, 0);
-	sprTile = vector<int>(64, 0);
-	sprCol = vector<int>(64, 0);
-	vertFlip = vector<bool>(64, false);
-	horiFlip = vector<bool>(64, false);
-	bgPriority = vector<bool>(64, false);
+	sprX.fill(0);
+	sprY.fill(0);
+	sprTile.fill(0);
+	sprCol.fill(0);
+	vertFlip.fill(false);
+	horiFlip.fill(false);
+	bgPriority.fill(false);
 	spr0HitX = 0;
 	spr0HitY = 0;
 	hitSpr0 = false;
 
 	// Tiles:
-	ptTile = vector<Tile*>(512, nullptr);
+	//ptTile.fill(nullptr);
 	// Name table data:
-	ntable1 = vector<int>(4, 0);
-	nameTable = vector<NameTable*>(4, nullptr);
+	ntable1.fill(0);
+	//nameTable.fill(nullptr);
 	currentMirroring = -1;
 
 	// Palette data:
-	sprPalette = vector<int>(16, 0);
-	imgPalette = vector<int>(16, 0);
+	sprPalette.fill(0);
+	imgPalette.fill(0);
 
 	// Misc:
 	scanlineAlreadyRendered = false;
@@ -138,15 +142,15 @@ PPU::PPU(NES* nes) {
 	b2 = 0;
 
 	// Variables used when rendering:
-	attrib = vector<int>(32, 0);
-	bgbuffer = vector<int>(256 * 240, 0);
-	pixrendered = vector<int>(256 * 240, 0);
+	attrib.fill(0);
+	bgbuffer.fill(0);
+	pixrendered.fill(0);
 	//dummyPixPriTable = vector<int>(256 * 240, 0);
 	tpix = nullptr;
 	requestRenderAll = false;
 	validTileData = false;
 	att = 0;
-	scantile = vector<Tile*>(32, nullptr);
+	scantile.fill(nullptr);
 	t = nullptr;
 
 	// These are temporary variables used in rendering and sound procedures.
@@ -167,14 +171,12 @@ PPU::PPU(NES* nes) {
 	bufferSize = 0;
 	available = 0;
 	cycles = 0;
-	_screen_buffer = vector<int>(256 * 240, 0);
+	_screen_buffer.fill(0);
+
+	return shared_from_this();
 }
 
 PPU::~PPU() {
-	for(size_t i = 0; i < nameTable.size(); ++i) {
-		delete_n_null(nameTable[i]);
-	}
-
 	nes = nullptr;
 	ppuMem = nullptr;
 	sprMem = nullptr;
@@ -193,14 +195,14 @@ void PPU::init() {
 
 	// Create pattern table tile buffers:
 	for(size_t i = 0; i < ptTile.size(); ++i) {
-		ptTile[i] = new Tile();
+		ptTile[i] = Tile();
 	}
 
 	// Create nametable buffers:
 	for(size_t i = 0; i < nameTable.size(); ++i) {
 		stringstream name;
 		name << "Nt" << i;
-		nameTable[i] = new NameTable(32, 32, name.str());
+		nameTable[i].name = name.str();
 	}
 
 	// Initialize mirroring lookup table:
@@ -807,7 +809,7 @@ void PPU::vramWrite(uint16_t value) {
 // Write 256 bytes of main memory
 // into Sprite RAM.
 void PPU::sramDMA(uint16_t value) {
-	Memory* cpuMem = nes->getCpuMemory();
+	shared_ptr<Memory> cpuMem = nes->getCpuMemory();
 	int baseAddress = value * 0x100;
 	uint16_t data;
 	for(size_t i = sramAddress; i < 256; ++i) {
@@ -979,7 +981,7 @@ void PPU::renderFramePartially(int startScan, int scanCount) {
 	validTileData = false;
 }
 
-void PPU::renderBgScanline(vector<int>* buffer, int scan) {
+void PPU::renderBgScanline(array<int, 256 * 240>* buffer, int scan) {
 	baseTile = (regS == 0 ? 0 : 256);
 	destIndex = (scan << 8) - regFH;
 	curNt = ntable1[cntV + cntV + cntH];
@@ -1004,9 +1006,9 @@ void PPU::renderBgScanline(vector<int>* buffer, int scan) {
 					att = attrib[tile];
 				} else {
 					// Fetch data:
-					t = ptTile[baseTile + nameTable[curNt]->getTileIndex(cntHT, cntVT)];
+					t = &(ptTile[baseTile + nameTable[curNt].getTileIndex(cntHT, cntVT)]);
 					tpix = &t->pix;
-					att = nameTable[curNt]->getAttrib(cntHT, cntVT);
+					att = nameTable[curNt].getAttrib(cntHT, cntVT);
 					scantile[tile] = t;
 					attrib[tile] = att;
 				}
@@ -1098,9 +1100,9 @@ void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 					}
 
 					if(f_spPatternTable == 0) {
-						ptTile[sprTile[i]]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+						ptTile[sprTile[i]].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 					} else {
-						ptTile[sprTile[i] + 256]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+						ptTile[sprTile[i] + 256].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 					}
 				} else {
 					// 8x16 sprites
@@ -1120,7 +1122,7 @@ void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 						srcy2 = startscan + scancount - sprY[i];
 					}
 
-					ptTile[top + (vertFlip[i] ? 1 : 0)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+					ptTile[top + (vertFlip[i] ? 1 : 0)].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 
 					srcy1 = 0;
 					srcy2 = 8;
@@ -1133,7 +1135,7 @@ void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 						srcy2 = startscan + scancount - (sprY[i] + 8);
 					}
 
-					ptTile[top + (vertFlip[i] ? 0 : 1)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+					ptTile[top + (vertFlip[i] ? 0 : 1)].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 
 				}
 			}
@@ -1166,7 +1168,7 @@ bool PPU::checkSprite0(int scan) {
 
 			// Sprite is in range.
 			// Draw scanline:
-			t = ptTile[sprTile[0] + tIndexAdd];
+			t = &(ptTile[sprTile[0] + tIndexAdd]);
 			//col = sprCol[0];
 			//bgPri = bgPriority[0];
 
@@ -1232,10 +1234,10 @@ bool PPU::checkSprite0(int scan) {
 
 			if(toffset < 8) {
 				// first half of sprite.
-				t = ptTile[sprTile[0] + (vertFlip[0] ? 1 : 0) + ((sprTile[0] & 1) != 0 ? 255 : 0)];
+				t = &(ptTile[sprTile[0] + (vertFlip[0] ? 1 : 0) + ((sprTile[0] & 1) != 0 ? 255 : 0)]);
 			} else {
 				// second half of sprite.
-				t = ptTile[sprTile[0] + (vertFlip[0] ? 0 : 1) + ((sprTile[0] & 1) != 0 ? 255 : 0)];
+				t = &(ptTile[sprTile[0] + (vertFlip[0] ? 0 : 1) + ((sprTile[0] & 1) != 0 ? 255 : 0)]);
 				if(vertFlip[0]) {
 					toffset = 15 - toffset;
 				} else {
@@ -1466,9 +1468,9 @@ void PPU::patternWrite(int address, uint16_t value) {
 	int tileIndex = address / 16;
 	int leftOver = address % 16;
 	if(leftOver < 8) {
-		ptTile[tileIndex]->setScanline(leftOver, value, ppuMem->load(address + 8));
+		ptTile[tileIndex].setScanline(leftOver, value, ppuMem->load(address + 8));
 	} else {
-		ptTile[tileIndex]->setScanline(leftOver - 8, ppuMem->load(address - 8), value);
+		ptTile[tileIndex].setScanline(leftOver - 8, ppuMem->load(address - 8), value);
 	}
 }
 
@@ -1482,9 +1484,9 @@ void PPU::patternWrite(int address, vector<uint16_t>* value, size_t offset, size
 		leftOver = (address + i) % 16;
 
 		if(leftOver < 8) {
-			ptTile[tileIndex]->setScanline(leftOver, (*value)[offset + i], ppuMem->load(address + 8 + i));
+			ptTile[tileIndex].setScanline(leftOver, (*value)[offset + i], ppuMem->load(address + 8 + i));
 		} else {
-			ptTile[tileIndex]->setScanline(leftOver - 8, ppuMem->load(address - 8 + i), (*value)[offset + i]);
+			ptTile[tileIndex].setScanline(leftOver - 8, ppuMem->load(address - 8 + i), (*value)[offset + i]);
 		}
 
 	}
@@ -1498,7 +1500,7 @@ void PPU::invalidateFrameCache() {
 // Updates the internal name table buffers
 // with this new byte.
 void PPU::nameTableWrite(int index, int address, uint16_t value) {
-	nameTable[index]->writeTileIndex(address, value);
+	nameTable[index].writeTileIndex(address, value);
 
 	// Update Sprite #0 hit:
 	//updateSpr0Hit();
@@ -1509,7 +1511,7 @@ void PPU::nameTableWrite(int index, int address, uint16_t value) {
 // table buffers with this new attribute
 // table byte.
 void PPU::attribTableWrite(int index, int address, uint16_t value) {
-	nameTable[index]->writeAttrib(address, value);
+	nameTable[index].writeAttrib(address, value);
 }
 
 // Updates the internally buffered sprite
@@ -1662,12 +1664,12 @@ void PPU::stateLoad(ByteBuffer* buf) {
 		// Name tables:
 		for(size_t i = 0; i < 4; ++i) {
 			ntable1[i] = buf->readByte();
-			nameTable[i]->stateLoad(buf);
+			nameTable[i].stateLoad(buf);
 		}
 
 		// Pattern data:
 		for(size_t i = 0; i < ptTile.size(); ++i) {
-			ptTile[i]->stateLoad(buf);
+			ptTile[i].stateLoad(buf);
 		}
 
 		// Update internally stored stuff from VRAM memory:
@@ -1759,12 +1761,12 @@ void PPU::stateSave(ByteBuffer* buf) {
 	// Name tables:
 	for(size_t i = 0; i < 4; ++i) {
 		buf->putByte(static_cast<uint16_t>(ntable1[i]));
-		nameTable[i]->stateSave(buf);
+		nameTable[i].stateSave(buf);
 	}
 
 	// Pattern data:
 	for(size_t i = 0; i < ptTile.size(); ++i) {
-		ptTile[i]->stateSave(buf);
+		ptTile[i].stateSave(buf);
 	}
 
 }

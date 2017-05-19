@@ -18,7 +18,7 @@ string InputHandler::_configuring_gamepad_button = "";
 InputHandler::InputHandler(int id) :
 	_id(id),
 	_keys(255),
-	_map(InputHandler::NUM_KEYS) {
+	_map(InputHandler::NUM_KEYS), enable_shared_from_this<InputHandler>() {
 
 	_is_gamepad_connected = false;
 	_is_gamepad_used = false;

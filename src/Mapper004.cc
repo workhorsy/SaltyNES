@@ -9,13 +9,14 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 #include "SaltyNES.h"
 
 
+Mapper004::Mapper004() : MapperDefault() {
 
-Mapper004::Mapper004() {
-	prgAddressChanged = false;
 }
 
-void Mapper004::init(NES* nes) {
+shared_ptr<MapperDefault> Mapper004::Init(shared_ptr<NES> nes) {
+	prgAddressChanged = false;
 	this->base_init(nes);
+	return shared_from_this();
 }
 
 void Mapper004::mapperInternalStateLoad(ByteBuffer* buf) {
@@ -208,7 +209,7 @@ void Mapper004::executeCommand(int cmd, int arg) {
 	}
 }
 
-void Mapper004::loadROM(ROM* rom) {
+void Mapper004::loadROM(shared_ptr<ROM> rom) {
 	//System.out.println("Loading ROM.");
 
 	if(!rom->isValid()) {

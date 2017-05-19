@@ -102,7 +102,11 @@ void PAPU::unlock_mutex() {
 	pthread_mutex_unlock(&_mutex);
 }
 
-PAPU::PAPU(NES* nes) {
+PAPU::PAPU() : enable_shared_from_this<PAPU>() {
+	
+}
+
+shared_ptr<PAPU> PAPU::Init(shared_ptr<NES> nes) {
 	pthread_mutex_init(&_mutex, nullptr);
 
 	#ifdef DESKTOP
@@ -176,8 +180,8 @@ PAPU::PAPU(NES* nes) {
 
 	this->nes = nes;
 	cpuMem = nes->getCpuMemory();
-	square_table = vector<int>(32 * 16, 0);
-	tnd_table = vector<int>(204 * 16, 0);
+	square_table.fill(0);
+	tnd_table.fill(0);
 	ready_for_buffer_write = false;
 
 	lock_mutex();
@@ -189,12 +193,11 @@ PAPU::PAPU(NES* nes) {
 	bufferIndex = 0;
 	frameIrqEnabled = false;
 	initCounter = 2048;
-
-	square1 = new ChannelSquare(this, true);
-	square2 = new ChannelSquare(this, false);
-	triangle = new ChannelTriangle(this);
-	noise = new ChannelNoise(this);
-	dmc = new ChannelDM(this);
+	square1 = make_shared<ChannelSquare>()->Init(shared_from_this(), true);
+	square2 = make_shared<ChannelSquare>()->Init(shared_from_this(), false);
+	triangle = make_shared<ChannelTriangle>()->Init(shared_from_this());
+	noise = make_shared<ChannelNoise>()->Init(shared_from_this());
+	dmc = make_shared<ChannelDM>()->Init(shared_from_this());
 
 	masterVolume = 256;
 	updateStereoPos();
@@ -224,15 +227,10 @@ PAPU::PAPU(NES* nes) {
 	cout << "channels: " << (s32) obtainedSpec.channels << endl;
 	cout << "samples: " << obtainedSpec.samples << endl;
 	cout << "callback: " << obtainedSpec.callback << endl;*/
+	return shared_from_this();
 }
 
 PAPU::~PAPU() {
-	delete_n_null(square1);
-	delete_n_null(square2);
-	delete_n_null(triangle);
-	delete_n_null(noise);
-	delete_n_null(dmc);
-
 	nes = nullptr;
 	cpuMem = nullptr;
 
@@ -280,7 +278,7 @@ void PAPU::synchronized_start() {
 
 }
 
-NES* PAPU::getNes() {
+shared_ptr<NES> PAPU::getNes() {
 	return nes;
 }
 

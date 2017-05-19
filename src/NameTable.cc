@@ -8,29 +8,35 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-NameTable::NameTable(int width, int height, string name) {
+NameTable::NameTable() {
+	this->name = "";
+	this->tile.fill(0);
+	this->attrib.fill(0);
+	this->width = 32;
+	this->height = 32;
+}
+
+NameTable::NameTable(string name) {
 	this->name = name;
-	this->tile = new vector<uint16_t>(width * height, 0);
-	this->attrib = new vector<uint16_t>(width * height, 0);
-	this->width = width;
-	this->height = height;
+	this->tile.fill(0);
+	this->attrib.fill(0);
+	this->width = 32;
+	this->height = 32;
 }
 
 NameTable::~NameTable() {
-	delete_n_null(tile);
-	delete_n_null(attrib);
 }
 
 uint16_t NameTable::getTileIndex(int x, int y) {
-	return (*tile)[y * width + x];
+	return tile[y * width + x];
 }
 
 uint16_t NameTable::getAttrib(int x, int y) {
-	return (*attrib)[y * width + x];
+	return attrib[y * width + x];
 }
 
 void NameTable::writeTileIndex(int index, int value) {
-	(*tile)[index] = static_cast<uint16_t>(value);
+	tile[index] = static_cast<uint16_t>(value);
 }
 
 void NameTable::writeAttrib(int index, int value) {
@@ -51,7 +57,7 @@ void NameTable::writeAttrib(int index, int value) {
 					tx = basex + sqx * 2 + x;
 					ty = basey + sqy * 2 + y;
 					//attindex = ty * width + tx;
-					(*attrib)[ty * width + tx] = static_cast<uint16_t>((add << 2) & 12);
+					attrib[ty * width + tx] = static_cast<uint16_t>((add << 2) & 12);
 				////System.out.println("x="+tx+" y="+ty+" value="+attrib[ty*width+tx]+" index="+attindex);
 				}
 			}
@@ -61,21 +67,21 @@ void NameTable::writeAttrib(int index, int value) {
 
 void NameTable::stateSave(ByteBuffer* buf) {
 	for(int i = 0; i < width * height; ++i) {
-		if((*tile)[i] > 255)//System.out.println(">255!!");
+		if(tile[i] > 255)//System.out.println(">255!!");
 		{
-			buf->putByte(static_cast<uint8_t>((*tile)[i]));
+			buf->putByte(static_cast<uint8_t>(tile[i]));
 		}
 	}
 	for(int i = 0; i < width * height; ++i) {
-		buf->putByte(static_cast<uint8_t>((*attrib)[i]));
+		buf->putByte(static_cast<uint8_t>(attrib[i]));
 	}
 }
 
 void NameTable::stateLoad(ByteBuffer* buf) {
 	for(int i = 0; i < width * height; ++i) {
-		(*tile)[i] = buf->readByte();
+		tile[i] = buf->readByte();
 	}
 	for(int i = 0; i < width * height; ++i) {
-		(*attrib)[i] = buf->readByte();
+		attrib[i] = buf->readByte();
 	}
 }

@@ -8,8 +8,10 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-// Creates the NES system.
-NES::NES(InputHandler* joy1, InputHandler* joy2) {
+NES::NES() : enable_shared_from_this<NES>() {
+}
+
+shared_ptr<NES> NES::Init(shared_ptr<InputHandler> joy1, shared_ptr<InputHandler> joy2) {
 	_joy1 = joy1;
 	_joy2 = joy2;
 
@@ -17,15 +19,15 @@ NES::NES(InputHandler* joy1, InputHandler* joy2) {
 	this->_isRunning = false;
 
 	// Create memory:
-	cpuMem = new Memory(this, 0x10000);	// Main memory (internal to CPU)
-	ppuMem = new Memory(this, 0x8000);	// VRAM memory (internal to PPU)
-	sprMem = new Memory(this, 0x100);	// Sprite RAM  (internal to PPU)
+	cpuMem = make_shared<Memory>()->Init(shared_from_this(), 0x10000);	// Main memory (internal to CPU)
+	ppuMem = make_shared<Memory>()->Init(shared_from_this(), 0x8000);	// VRAM memory (internal to PPU)
+	sprMem = make_shared<Memory>()->Init(shared_from_this(), 0x100);	// Sprite RAM  (internal to PPU)
 
 	// Create system units:
-	cpu = new CPU(this);
-	palTable = new PaletteTable();
-	ppu = new PPU(this);
-	papu = new PAPU(this);
+	cpu = make_shared<CPU>()->Init(shared_from_this());
+	palTable = make_shared<PaletteTable>()->Init();
+	ppu = make_shared<PPU>()->Init(shared_from_this());
+	papu = make_shared<PAPU>()->Init(shared_from_this());
 	memMapper = nullptr;
 	rom = nullptr;
 
@@ -73,26 +75,19 @@ NES::NES(InputHandler* joy1, InputHandler* joy2) {
 
 	// Clear CPU memory:
 	clearCPUMemory();
+
+	return shared_from_this();
 }
 
 NES::~NES() {
-	delete_n_null(cpu);
-	delete_n_null(ppu);
-	delete_n_null(papu);
-	delete_n_null(cpuMem);
-	delete_n_null(ppuMem);
-	delete_n_null(sprMem);
-	delete_n_null(memMapper);
-	delete_n_null(rom);
-	delete_n_null(palTable);
 }
 
 void NES::dumpRomMemory(ofstream* writer) {
 	//ofstream writer("rom_mem_cpp.txt", ios::out|ios::binary);
-	for(size_t i = 0;i<rom->rom->size(); ++i) {
-		for(size_t j = 0;j<(*rom->rom)[i]->size(); ++j) {
+	for(size_t i = 0;i<rom->rom.size(); ++i) {
+		for(size_t j = 0;j<rom->rom[i].size(); ++j) {
 			stringstream out;
-			out << "@" << j << " " << (*(*rom->rom)[i])[j] << "\n";
+			out << "@" << j << " " << rom->rom[i][j] << "\n";
 			writer->write(out.str().c_str(), out.str().length());
 		}
 	}
@@ -215,46 +210,46 @@ void NES::setGameGenieState(bool enable) {
 }
 
 // Returns CPU object.
-CPU* NES::getCpu() {
+shared_ptr<CPU> NES::getCpu() {
 	return cpu;
 }
 
 // Returns PPU object.
-PPU* NES::getPpu() {
+shared_ptr<PPU> NES::getPpu() {
 	return ppu;
 }
 
 // Returns pAPU object.
-PAPU* NES::getPapu() {
+shared_ptr<PAPU> NES::getPapu() {
 	return papu;
 }
 
 // Returns CPU Memory.
-Memory* NES::getCpuMemory() {
+shared_ptr<Memory> NES::getCpuMemory() {
 	return cpuMem;
 }
 
 // Returns PPU Memory.
-Memory* NES::getPpuMemory() {
+shared_ptr<Memory> NES::getPpuMemory() {
 	return ppuMem;
 }
 
 // Returns Sprite Memory.
-Memory* NES::getSprMemory() {
+shared_ptr<Memory> NES::getSprMemory() {
 	return sprMem;
 }
 
 // Returns the currently loaded ROM.
-ROM* NES::getRom() {
+shared_ptr<ROM> NES::getRom() {
 	return rom;
 }
 
 // Returns the memory mapper.
-MapperDefault* NES::getMemoryMapper() {
+shared_ptr<MapperDefault> NES::getMemoryMapper() {
 	return memMapper;
 }
 
-bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length, vector<uint16_t>* save_ram) {
+bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length, array<uint16_t, 0x2000>* save_ram) {
 	// Can't load ROM while still running.
 	if(_isRunning) {
 		stopEmulation();
@@ -263,7 +258,7 @@ bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length, vect
 	{
 		// Load ROM file:
 
-		rom = new ROM(this);
+		rom = make_shared<ROM>()->Init(shared_from_this());
 		rom->load_from_data(rom_name, data, length, save_ram);
 
 		if(rom->isValid()) {
@@ -275,7 +270,6 @@ bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length, vect
 			reset();
 
 			memMapper = rom->createMapper();
-			memMapper->init(this);
 			cpu->setMapper(memMapper);
 			memMapper->loadROM(rom);
 			ppu->setMirroring(rom->getMirroringType());
@@ -305,7 +299,7 @@ void NES::reset() {
 	palTable->reset();
 	papu->reset();
 
-//		InputHandler* joy1 = gui->getJoy1();
+//		shared_ptr<InputHandler> joy1 = gui->getJoy1();
 //		if(joy1 != nullptr) {
 //			joy1->reset();
 //		}

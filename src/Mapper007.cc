@@ -8,20 +8,26 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-void Mapper007::init(NES* nes) {
-	this->base_init(nes);
+Mapper007::Mapper007() : MapperDefault() {
+
+}
+
+shared_ptr<MapperDefault> Mapper007::Init(shared_ptr<NES> nes) {
 	currentOffset = 0;
 	currentMirroring = -1;
 
 	// Get ref to ROM:
-	ROM* rom = nes->getRom();
+	shared_ptr<ROM> rom = nes->getRom();
 
 	// Read out all PRG rom:
 	int bc = rom->getRomBankCount();
 	prgrom = vector<uint16_t>(bc * 16384, 0);
 	for(int i = 0; i < bc; ++i) {
-		arraycopy_short(rom->getRomBank(i), 0, &prgrom, i * 16384, 16384);
+		array_copy(rom->getRomBank(i), 0, &prgrom, i * 16384, 16384);
 	}
+
+	this->base_init(nes);
+	return shared_from_this();
 }
 
 uint16_t Mapper007::load(int address) {

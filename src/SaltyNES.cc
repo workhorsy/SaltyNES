@@ -19,7 +19,6 @@ SaltyNES::SaltyNES() {
 
 SaltyNES::~SaltyNES() {
 	stop();
-	delete_n_null(nes);
 
 	_rom_name.clear();
 }
@@ -32,9 +31,9 @@ void SaltyNES::init(string rom_name) {
 
 	Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
-	InputHandler* joy1 = new InputHandler(0);
-	InputHandler* joy2 = new InputHandler(1);
-	nes = new NES(joy1, joy2);
+	auto joy1 = make_shared<InputHandler>(0);
+	auto joy2 = make_shared<InputHandler>(1);
+	nes = make_shared<NES>()->Init(joy1, joy2);
 	nes->enableSound(true);
 	nes->reset();
 }
@@ -47,14 +46,14 @@ void SaltyNES::init_data(uint8_t* rom_data, size_t length) {
 
 	Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
 
-	InputHandler* joy1 = new InputHandler(0);
-	InputHandler* joy2 = new InputHandler(1);
-	nes = new NES(joy1, joy2);
+	auto joy1 = make_shared<InputHandler>(0);
+	auto joy2 = make_shared<InputHandler>(1);
+	nes = make_shared<NES>()->Init(joy1, joy2);
 	nes->enableSound(true);
 	nes->reset();
 }
 
-void SaltyNES::pre_run_setup(vector<uint16_t>* save_ram) {
+void SaltyNES::pre_run_setup(array<uint16_t, 0x2000>* save_ram) {
 	// Load ROM file:
 	if(_rom_data == nullptr) {
 		log_to_browser("Loading ROM from file.");
@@ -69,10 +68,9 @@ void SaltyNES::pre_run_setup(vector<uint16_t>* save_ram) {
 		size_t length = reader.tellg();
 		reader.seekg(0, ios::beg);
 		assert(length > 0);
-		uint8_t* bdata = new uint8_t[length];
-		reader.read(reinterpret_cast<char*>(bdata), length);
-		nes->load_rom_from_data(_rom_name.c_str(), bdata, length, save_ram);
-		delete_n_null_array(bdata);
+		auto bdata = vector<uint8_t>(length);
+		reader.read(reinterpret_cast<char*>(bdata.data()), bdata.size());
+		nes->load_rom_from_data(_rom_name.c_str(), bdata.data(), bdata.size(), save_ram);
 		reader.close();
 	} else {
 		log_to_browser("Loading ROM from data.");

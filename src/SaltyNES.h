@@ -9,7 +9,6 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 #ifndef _SALTY_NES_H_
 #define _SALTY_NES_H_
 
-extern "C" int toggle_sound();
 
 #include <map>
 #include <vector>
@@ -19,6 +18,8 @@ extern "C" int toggle_sound();
 #include <pthread.h>
 #include <string>
 #include <algorithm>
+#include <memory>
+#include <array>
 #include <sys/time.h>
 
 #include "Color.h"
@@ -103,7 +104,7 @@ public:
 	static SDL_Renderer* g_renderer;
 	static SDL_Texture* g_screen;
 
-	//static NES* nes;
+	//static shared_ptr<NES> nes;
 	static double CPU_FREQ_NTSC;
 	static double CPU_FREQ_PAL;
 	static int preferredFrameRate;
@@ -203,13 +204,13 @@ public:
 	//static ByteBuffer* readFromZipFile(File f);
 };
 
-class ChannelDM : public IPapuChannel {
+class ChannelDM : public IPapuChannel, public enable_shared_from_this<ChannelDM> {
 public:
 	static const int MODE_NORMAL = 0;
 	static const int MODE_LOOP = 1;
 	static const int MODE_IRQ = 2;
 
-	PAPU* papu;
+	shared_ptr<PAPU> papu;
 	bool _isEnabled;
 	bool hasSample;
 	bool irqGenerated;
@@ -228,7 +229,8 @@ public:
 	int dacLsb;
 	int data;
 
-	explicit ChannelDM(PAPU* papu);
+	explicit ChannelDM();
+	shared_ptr<ChannelDM> Init(shared_ptr<PAPU> papu);
 	virtual ~ChannelDM();
 	void clockDmc();
 	void endOfSample();
@@ -242,9 +244,9 @@ public:
 };
 
 
-class ChannelNoise : public IPapuChannel {
+class ChannelNoise : public IPapuChannel, public enable_shared_from_this<ChannelNoise> {
 public:
-	PAPU* papu;
+	shared_ptr<PAPU> papu;
 	bool _isEnabled;
 	bool envDecayDisable;
 	bool envDecayLoopEnable;
@@ -266,7 +268,8 @@ public:
 	uint32_t accCount;
 	int tmp;
 
-	explicit ChannelNoise(PAPU* papu);
+	explicit ChannelNoise();
+	shared_ptr<ChannelNoise> Init(shared_ptr<PAPU> papu);
 	virtual ~ChannelNoise();
 	void clockLengthCounter();
 	void clockEnvDecay();
@@ -278,12 +281,12 @@ public:
 	void reset();
 };
 
-class ChannelSquare : public IPapuChannel {
+class ChannelSquare : public IPapuChannel, public enable_shared_from_this<ChannelSquare> {
 public:
 	static const int dutyLookup[32];
 	static const int impLookup[32];
 
-	PAPU* papu;
+	shared_ptr<PAPU> papu;
 	bool sqr1;
 	bool _isEnabled;
 	bool lengthCounterEnable;
@@ -310,7 +313,8 @@ public:
 	int sampleValue;
 	int vol;
 
-	ChannelSquare(PAPU* papu, bool square1);
+	ChannelSquare();
+	shared_ptr<ChannelSquare> Init(shared_ptr<PAPU> papu, bool square1);
 	virtual ~ChannelSquare();
 	void clockLengthCounter();
 	void clockEnvDecay();
@@ -323,9 +327,9 @@ public:
 	void reset();
 };
 
-class ChannelTriangle : public IPapuChannel {
+class ChannelTriangle : public IPapuChannel, public enable_shared_from_this<ChannelTriangle> {
 public:
-	PAPU* papu;
+	shared_ptr<PAPU> papu;
 	bool _isEnabled;
 	bool sampleCondition;
 	bool lengthCounterEnable;
@@ -340,7 +344,8 @@ public:
 	int sampleValue;
 	int tmp;
 
-	explicit ChannelTriangle(PAPU* papu);
+	explicit ChannelTriangle();
+	shared_ptr<ChannelTriangle> Init(shared_ptr<PAPU> papu);
 	virtual ~ChannelTriangle();
 	void clockLengthCounter();
 	void clockLinearCounter();
@@ -355,7 +360,7 @@ public:
 	void reset();
 };
 
-class CPU {
+class CPU : public enable_shared_from_this<CPU> {
 public:
 	// IRQ Types:
 	static const int IRQ_NORMAL = 0;
@@ -363,8 +368,8 @@ public:
 	static const int IRQ_RESET  = 2;
 
 	// References to other parts of NES :
-	NES* nes;
-	MapperDefault* mmap;
+	shared_ptr<NES> nes;
+	shared_ptr<MapperDefault> mmap;
 	vector<uint16_t>* mem;
 
 	// Registers:
@@ -422,7 +427,8 @@ public:
 	bool stopRunning;
 	bool crash;
 
-	explicit CPU(NES* nes);
+	explicit CPU();
+	shared_ptr<CPU> Init(shared_ptr<NES> nes);
 	~CPU();
 	void init();
 	void stateLoad(ByteBuffer* buf);
@@ -446,19 +452,19 @@ public:
 	int getStatus();
 	void setStatus(int st);
 	void setCrashed(bool value);
-	void setMapper(MapperDefault* mapper);
+	void setMapper(shared_ptr<MapperDefault> mapper);
 };
 
 class CpuInfo {
 public:
 	// Opdata array:
 	static bool isOp;
-	static vector<int> opdata;
+	static array<int, 256> opdata;
 	// Instruction names:
-	static const vector<string> instname;
+	static const array<string, 56> instname;
 	// Address mode descriptions:
-	static const vector<string> addrDesc;
-	static const vector<int> cycTable;
+	static const array<string, 13> addrDesc;
+	static const array<int, 256> cycTable;
 	// Instruction types:
 	// -------------------------------- //
 	static const int INS_ADC;
@@ -534,15 +540,15 @@ public:
 	static const int ADDR_POSTIDXIND;
 	static const int ADDR_INDABS;
 
-	static vector<string> getInstNames();
+	static array<string, 56> getInstNames();
 	static string getInstName(size_t inst);
-	static vector<string> getAddressModeNames();
+	static array<string, 13> getAddressModeNames();
 	static string getAddressModeName(int addrMode);
 	static void initOpData();
 	static void setOp(int inst, int op, int addr, int size, int cycles);
 };
 
-class InputHandler {
+class InputHandler : public enable_shared_from_this<InputHandler> {
 public:
 	static const float AXES_DEAD_ZONE;
 	bool _is_gamepad_connected;
@@ -627,12 +633,13 @@ public:
 	static void flush();
 };
 
-class Memory {
+class Memory : public enable_shared_from_this<Memory> {
 public:
-	NES* nes;
+	shared_ptr<NES> nes;
 	vector<uint16_t> mem;
 
-	Memory(NES* nes, size_t byteCount);
+	Memory();
+	shared_ptr<Memory> Init(shared_ptr<NES> nes, size_t byteCount);
 	~Memory();
 	void stateLoad(ByteBuffer* buf);
 	void stateSave(ByteBuffer* buf);
@@ -642,19 +649,19 @@ public:
 	uint16_t load(size_t address);
 	void dump(string file);
 	void dump(string file, size_t offset, size_t length);
-	void write(size_t address, vector<uint16_t>* array, size_t length);
-	void write(size_t address, vector<uint16_t>* array, size_t arrayoffset, size_t length);
+	void write(size_t address, array<uint16_t, 16384>* array, size_t length);
+	void write(size_t address, array<uint16_t, 16384>* array, size_t arrayoffset, size_t length);
 };
 
-class MapperDefault {
+class MapperDefault : public enable_shared_from_this<MapperDefault> {
 public:
-	NES* nes;
-	Memory* cpuMem;
-	Memory* ppuMem;
+	shared_ptr<NES> nes;
+	shared_ptr<Memory> cpuMem;
+	shared_ptr<Memory> ppuMem;
 	vector<uint16_t>* cpuMemArray;
-	ROM* rom;
-	CPU* cpu;
-	PPU* ppu;
+	shared_ptr<ROM> rom;
+	shared_ptr<CPU> cpu;
+	shared_ptr<PPU> ppu;
 	int cpuMemSize;
 	int joy1StrobeState;
 	int joy2StrobeState;
@@ -666,10 +673,10 @@ public:
 	int tmp;
 
 	MapperDefault();
+	shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	virtual ~MapperDefault();
 	virtual void write(int address, uint16_t value);
-	virtual void init(NES* nes);
-	void base_init(NES* nes);
+	void base_init(shared_ptr<NES> nes);
 	void stateLoad(ByteBuffer* buf);
 	void stateSave(ByteBuffer* buf);
 	void base_mapperInternalStateLoad(ByteBuffer* buf);
@@ -684,7 +691,7 @@ public:
 	void regWrite(int address, uint16_t value);
 	uint16_t joy1Read();
 	uint16_t joy2Read();
-	virtual void loadROM(ROM* rom);
+	virtual void loadROM(shared_ptr<ROM> rom);
 	void loadPRGROM();
 	void loadCHRROM();
 	void loadBatteryRam();
@@ -729,13 +736,13 @@ public:
 	int regBufferCounter;
 
 	Mapper001();
-	void init(NES* nes);
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	void mapperInternalStateLoad(ByteBuffer* buf);
 	void mapperInternalStateSave(ByteBuffer* buf);
 	virtual void write(int address, uint16_t value);
 	void setReg(int reg, int value);
 	int getRegNumber(int address);
-	virtual void loadROM(ROM* rom);
+	virtual void loadROM(shared_ptr<ROM> rom);
 	virtual void reset();
 	void switchLowHighPrgRom(int oldSetting);
 	void switch16to32();
@@ -744,14 +751,16 @@ public:
 
 class Mapper002 : public MapperDefault {
 public:
-	void init(NES* nes);
+	Mapper002();
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	virtual void write(int address, uint16_t value);
-	virtual void loadROM(ROM* rom);
+	virtual void loadROM(shared_ptr<ROM> rom);
 };
 
 class Mapper003 : public MapperDefault {
 public:
-	virtual void init(NES* nes);
+	Mapper003();
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	virtual void write(int address, uint16_t value);
 };
 
@@ -775,12 +784,12 @@ public:
 	bool prgAddressChanged;
 
 	Mapper004();
-	virtual void init(NES* nes);
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	void mapperInternalStateLoad(ByteBuffer* buf);
 	void mapperInternalStateSave(ByteBuffer* buf);
 	virtual void write(int address, uint16_t value);
 	virtual void executeCommand(int cmd, int arg);
-	virtual void loadROM(ROM* rom);
+	virtual void loadROM(shared_ptr<ROM> rom);
 	virtual void clockIrqCounter();
 	virtual void reset();
 };
@@ -791,7 +800,8 @@ public:
 	int currentMirroring;
 	vector<uint16_t> prgrom;
 
-	virtual void init(NES* nes);
+	Mapper007();
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	virtual uint16_t load(int address);
 	virtual void write(int address, uint16_t value);
 	void mapperInternalStateLoad(ByteBuffer* buf);
@@ -808,9 +818,10 @@ public:
 	int latchHiVal1;
 	int latchHiVal2;
 
-	virtual void init(NES* nes);
+	Mapper009();
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	virtual void write(int address, uint16_t value);
-	virtual void loadROM(ROM* rom);
+	virtual void loadROM(shared_ptr<ROM> rom);
 	virtual void latchAccess(int address);
 	void mapperInternalStateLoad(ByteBuffer* buf);
 	void mapperInternalStateSave(ByteBuffer* buf);
@@ -832,19 +843,20 @@ public:
 	static string binStr(uint32_t value, int bitcount);
 	static string pad(string str, string padStr, int length);
 	static float random();
-	static string from_vector_to_hex_string(vector<uint16_t>* data);
+	static string from_vector_to_hex_string(array<uint16_t, 0x2000>* data);
 	static vector<uint16_t>* from_hex_string_to_vector(string data);
 };
 
 class NameTable {
 public:
 	string name;
-	vector<uint16_t>* tile;
-	vector<uint16_t>* attrib;
+	array<uint16_t, 32*32> tile;
+	array<uint16_t, 32*32> attrib;
 	int width;
 	int height;
 
-	NameTable(int width, int height, string name);
+	NameTable();
+	NameTable(string name);
 	~NameTable();
 	uint16_t getTileIndex(int x, int y);
 	uint16_t getAttrib(int x, int y);
@@ -854,24 +866,25 @@ public:
 	void stateLoad(ByteBuffer* buf);
 };
 
-class NES {
+class NES : public enable_shared_from_this<NES> {
 public:
 	bool _is_paused;
-	CPU* cpu;
-	PPU* ppu;
-	PAPU* papu;
-	InputHandler* _joy1;
-	InputHandler* _joy2;
-	Memory* cpuMem;
-	Memory* ppuMem;
-	Memory* sprMem;
-	MapperDefault* memMapper;
-	PaletteTable* palTable;
-	ROM* rom;
+	shared_ptr<CPU> cpu;
+	shared_ptr<PPU> ppu;
+	shared_ptr<PAPU> papu;
+	shared_ptr<InputHandler> _joy1;
+	shared_ptr<InputHandler> _joy2;
+	shared_ptr<Memory> cpuMem;
+	shared_ptr<Memory> ppuMem;
+	shared_ptr<Memory> sprMem;
+	shared_ptr<MapperDefault> memMapper;
+	shared_ptr<PaletteTable> palTable;
+	shared_ptr<ROM> rom;
 	int cc;
 	bool _isRunning;
 
-	NES(InputHandler* joy1, InputHandler* joy2);
+	NES();
+	shared_ptr<NES> Init(shared_ptr<InputHandler> joy1, shared_ptr<InputHandler> joy2);
 	~NES();
 	bool stateLoad(ByteBuffer* buf);
 	void stateSave(ByteBuffer* buf);
@@ -882,21 +895,21 @@ public:
 	void dumpRomMemory(ofstream* writer);
 	void dumpCPUMemory(ofstream* writer);
 	void setGameGenieState(bool enable);
-	CPU* getCpu();
-	PPU* getPpu();
-	PAPU* getPapu();
-	Memory* getCpuMemory();
-	Memory* getPpuMemory();
-	Memory* getSprMemory();
-	ROM* getRom();
-	MapperDefault* getMemoryMapper();
-	bool load_rom_from_data(string rom_name, uint8_t* data, size_t length, vector<uint16_t>* save_ram);
+	shared_ptr<CPU> getCpu();
+	shared_ptr<PPU> getPpu();
+	shared_ptr<PAPU> getPapu();
+	shared_ptr<Memory> getCpuMemory();
+	shared_ptr<Memory> getPpuMemory();
+	shared_ptr<Memory> getSprMemory();
+	shared_ptr<ROM> getRom();
+	shared_ptr<MapperDefault> getMemoryMapper();
+	bool load_rom_from_data(string rom_name, uint8_t* data, size_t length, array<uint16_t, 0x2000>* save_ram);
 	void reset();
 	void enableSound(bool enable);
 //	void setFramerate(int rate);
 };
 
-class PaletteTable {
+class PaletteTable : public enable_shared_from_this<PaletteTable> {
 public:
 	static int curTable[64];
 	static int origTable[64];
@@ -906,6 +919,7 @@ public:
 	int currentHue, currentSaturation, currentLightness, currentContrast;
 
 	PaletteTable();
+	shared_ptr<PaletteTable> Init();
 	bool loadNTSCPalette();
 	void makeTables();
 	void setEmphasis(int emph);
@@ -930,7 +944,7 @@ public:
 	void reset();
 };
 
- class PAPU {
+ class PAPU : public enable_shared_from_this<PAPU> {
  public:
 	// Panning:
 	static const uint8_t panning[];
@@ -942,15 +956,15 @@ public:
 	mutable pthread_mutex_t _mutex;
 	bool _is_muted;
 	bool _is_running;
-	NES* nes;
-	Memory* cpuMem;
-	ChannelSquare* square1;
-	ChannelSquare* square2;
-	ChannelTriangle* triangle;
-	ChannelNoise* noise;
-	ChannelDM* dmc;
-	vector<int> square_table;
-	vector<int> tnd_table;
+	shared_ptr<NES> nes;
+	shared_ptr<Memory> cpuMem;
+	shared_ptr<ChannelSquare> square1;
+	shared_ptr<ChannelSquare> square2;
+	shared_ptr<ChannelTriangle> triangle;
+	shared_ptr<ChannelNoise> noise;
+	shared_ptr<ChannelDM> dmc;
+	array<int, 32 * 16> square_table;
+	array<int, 204 * 16> tnd_table;
 	vector<int> ismpbuffer;
 	vector<uint8_t> sampleBuffer;
 	bool ready_for_buffer_write;
@@ -1016,12 +1030,13 @@ public:
 
 	void lock_mutex();
 	void unlock_mutex();
-	explicit PAPU(NES* nes);
+	explicit PAPU();
+	shared_ptr<PAPU> Init(shared_ptr<NES> nes);
 	~PAPU();
 	void stateLoad(ByteBuffer* buf);
 	void stateSave(ByteBuffer* buf);
 	void synchronized_start();
-	NES* getNes();
+	shared_ptr<NES> getNes();
 	uint16_t readReg();
 	void writeReg(int address, uint16_t value);
 	void resetCounter();
@@ -1049,17 +1064,44 @@ public:
 	void initDACtables();
 };
 
-class PPU {
+class Tile {
 public:
-	NES* nes;
+	// Tile data:
+	array<int, 64> pix;
+	int fbIndex;
+	int tIndex;
+	int x, y;
+	int w, h;
+	int incX, incY;
+	int palIndex;
+	int tpri;
+	int c;
+	bool initialized;
+	array<bool, 8> opaque;
+
+	Tile();
+	void setBuffer(vector<uint16_t>* scanline);
+	void setScanline(int sline, uint16_t b1, uint16_t b2);
+	void renderSimple(int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette);
+	void renderSmall(int dx, int dy, vector<int>* buffer, int palAdd, int* palette);
+	void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, array<int, 256 * 240>* fBuffer, int palAdd, array<int, 16>* palette, bool flipHorizontal, bool flipVertical, int pri, array<int, 256 * 240>* priTable);
+	bool isTransparent(int x, int y);
+	void dumpData(string file);
+	void stateSave(ByteBuffer* buf);
+	void stateLoad(ByteBuffer* buf);
+};
+
+class PPU : public enable_shared_from_this<PPU> {
+public:
+	shared_ptr<NES> nes;
 	static const size_t UNDER_SCAN;
 	int _zoom;
 	struct timeval _frame_start;
 	struct timeval _frame_end;
 	double _ticks_since_second;
 	uint32_t frameCounter;
-	Memory* ppuMem;
-	Memory* sprMem;
+	shared_ptr<Memory> ppuMem;
+	shared_ptr<Memory> sprMem;
 	// Rendering Options:
 	bool showSpr0Hit;
 	// Control Flags Register 1:
@@ -1086,7 +1128,7 @@ public:
 	int vramTmpAddress;
 	uint16_t vramBufferedReadValue;
 	bool firstWrite; 		// VRAM/Scroll Hi/Lo latch
-	vector<int> vramMirrorTable; // Mirroring Lookup Table.
+	array<int, 0x8000> vramMirrorTable; // Mirroring Lookup Table.
 	int i;
 
 	// SPR-RAM I/O:
@@ -1115,27 +1157,27 @@ public:
 	int lastRenderedScanline;
 	int mapperIrqCounter;
 	// Sprite data:
-	vector<int> sprX;				// X coordinate
-	vector<int> sprY;				// Y coordinate
-	vector<int> sprTile;			// Tile Index (into pattern table)
-	vector<int> sprCol;			// Upper two bits of color
-	vector<bool> vertFlip;		// Vertical Flip
-	vector<bool> horiFlip;		// Horizontal Flip
-	vector<bool> bgPriority;	// Background priority
+	array<int, 64> sprX;				// X coordinate
+	array<int, 64> sprY;				// Y coordinate
+	array<int, 64> sprTile;			// Tile Index (into pattern table)
+	array<int, 64> sprCol;			// Upper two bits of color
+	array<bool, 64> vertFlip;		// Vertical Flip
+	array<bool, 64> horiFlip;		// Horizontal Flip
+	array<bool, 64> bgPriority;	// Background priority
 	int spr0HitX;	// Sprite #0 hit X coordinate
 	int spr0HitY;	// Sprite #0 hit Y coordinate
 	bool hitSpr0;
 
 	// Tiles:
-	vector<Tile*> ptTile;
+	array<Tile, 512> ptTile;
 	// Name table data:
-	vector<int> ntable1;
-	vector<NameTable*> nameTable;
+	array<int, 4> ntable1;
+	array<NameTable, 4> nameTable;
 	int currentMirroring;
 
 	// Palette data:
-	vector<int> sprPalette;
-	vector<int> imgPalette;
+	array<int, 16> sprPalette;
+	array<int, 16> imgPalette;
 	// Misc:
 	bool scanlineAlreadyRendered;
 	bool requestEndFrame;
@@ -1147,15 +1189,15 @@ public:
 	// Vars used when updating regs/address:
 	int address, b1, b2;
 	// Variables used when rendering:
-	vector<int> attrib;
-	vector<int> bgbuffer;
-	vector<int> pixrendered;
+	array<int, 32> attrib;
+	array<int, 256 * 240> bgbuffer;
+	array<int, 256 * 240> pixrendered;
 	//vector<int> dummyPixPriTable;
-	vector<int>* tpix;
+	array<int, 64>* tpix;
 	bool requestRenderAll;
 	bool validTileData;
 	int att;
-	vector<Tile*> scantile;
+	array<Tile*, 32> scantile;
 	Tile* t;
 	// These are temporary variables used in rendering and sound procedures.
 	// Their states outside of those procedures can be ignored.
@@ -1170,14 +1212,15 @@ public:
 	int srcy1, srcy2;
 	int bufferSize, available;
 	int cycles;
-	vector<int> _screen_buffer;
+	array<int, 256 * 240> _screen_buffer;
 
-	vector<int>* get_screen_buffer();
+	array<int, 256 * 240>* get_screen_buffer();
 	vector<int>* get_pattern_buffer();
 	vector<int>* get_name_buffer();
 	vector<int>* get_img_palette_buffer();
 	vector<int>* get_spr_palette_buffer();
-	explicit PPU(NES* nes);
+	explicit PPU();
+	shared_ptr<PPU> Init(shared_ptr<NES> nes);
 	~PPU();
 	void init();
 	void setMirroring(int mirroring);
@@ -1208,7 +1251,7 @@ public:
 	void mirroredWrite(int address, uint16_t value);
 	void triggerRendering();
 	void renderFramePartially(int startScan, int scanCount);
-	void renderBgScanline(vector<int>* buffer, int scan);
+	void renderBgScanline(array<int, 256 * 240>* buffer, int scan);
 	void renderSpritesPartially(int startscan, int scancount, bool bgPri);
 	bool checkSprite0(int scan);
 	void renderPattern();
@@ -1241,7 +1284,20 @@ public:
 	void drawTile(Raster* srcRaster, int srcx, int srcy, int dstx, int dsty, int w, int h);
 };
 
-class ROM {
+class MapperStatus {
+public:
+	int number;
+	bool is_supported;
+	string name;
+	
+	MapperStatus(int number, bool is_supported, string name) {
+		this->number = number;
+		this->is_supported = is_supported;
+		this->name = name;
+	}
+};
+
+class ROM : public enable_shared_from_this<ROM> {
 public:
 	// Mirroring types:
 	static const int VERTICAL_MIRRORING = 0;
@@ -1252,17 +1308,16 @@ public:
 	static const int SINGLESCREEN_MIRRORING3 = 5;
 	static const int SINGLESCREEN_MIRRORING4 = 6;
 	static const int CHRROM_MIRRORING = 7;
-	static vector<string>* _mapperName;
-	static vector<bool>* _mapperSupported;
+	static const array<MapperStatus, 255> _mapperStatus;
 
 	bool failedSaveFile;
 	bool saveRamUpToDate;
-	uint16_t* header;
-	vector<vector<uint16_t>*>* rom;
-	vector<vector<uint16_t>*>* vrom;
-	vector<uint16_t>* saveRam;
-	vector<vector<Tile*>*>* vromTile;
-	NES* nes;
+	array<uint16_t, 16> header;
+	vector<array<uint16_t, 16384>> rom;
+	vector<array<uint16_t, 4096>> vrom;
+	array<uint16_t, 0x2000>* saveRam;
+	vector<array<Tile, 256>> vromTile;
+	shared_ptr<NES> nes;
 	size_t romCount;
 	size_t vromCount;
 	int mirroring;
@@ -1275,19 +1330,19 @@ public:
 	bool enableSave;
 	bool valid;
 
-	explicit ROM(NES* nes);
+	explicit ROM();
+	shared_ptr<ROM> Init(shared_ptr<NES> nes);
 	~ROM();
 	string sha256sum(uint8_t* data, size_t length);
 	string getmapperName();
-	static vector<bool>* getmapperSupported();
-	void load_from_data(string file_name, uint8_t* data, size_t length, vector<uint16_t>* save_ram);
+	void load_from_data(string file_name, uint8_t* data, size_t length, array<uint16_t, 0x2000>* save_ram);
 	bool isValid();
 	int getRomBankCount();
 	int getVromBankCount();
-	uint16_t* getHeader();
-	vector<uint16_t>* getRomBank(int bank);
-	vector<uint16_t>* getVromBank(int bank);
-	vector<Tile*>* getVromBankTiles(int bank);
+	array<uint16_t, 16> getHeader();
+	array<uint16_t, 16384>* getRomBank(int bank);
+	array<uint16_t, 4096>* getVromBank(int bank);
+	array<Tile, 256>* getVromBankTiles(int bank);
 	int getMirroringType();
 	size_t getMapperType();
 	string getMapperName();
@@ -1295,46 +1350,19 @@ public:
 	bool hasTrainer();
 	string getFileName();
 	bool mapperSupported();
-	MapperDefault* createMapper();
+	shared_ptr<MapperDefault> createMapper();
 	void setSaveState(bool enableSave);
-	vector<uint16_t>* getBatteryRam();
+	array<uint16_t, 0x2000>* getBatteryRam();
 	void loadBatteryRam();
 	void writeBatteryRam(int address, uint16_t value);
 	void closeRom();
-};
-
-class Tile {
-public:
-	// Tile data:
-	vector<int> pix;
-	int fbIndex;
-	int tIndex;
-	int x, y;
-	int w, h;
-	int incX, incY;
-	int palIndex;
-	int tpri;
-	int c;
-	bool initialized;
-	vector<bool> opaque;
-
-	Tile();
-	void setBuffer(vector<uint16_t>* scanline);
-	void setScanline(int sline, uint16_t b1, uint16_t b2);
-	void renderSimple(int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette);
-	void renderSmall(int dx, int dy, vector<int>* buffer, int palAdd, int* palette);
-	void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, vector<int>* fBuffer, int palAdd, vector<int>* palette, bool flipHorizontal, bool flipVertical, int pri, vector<int>* priTable);
-	bool isTransparent(int x, int y);
-	void dumpData(string file);
-	void stateSave(ByteBuffer* buf);
-	void stateLoad(ByteBuffer* buf);
 };
 
 class SaltyNES {
 public:
 	int samplerate;
 	int progress;
-	NES* nes;
+	shared_ptr<NES> nes;
 	string _rom_name;
 	uint8_t* _rom_data;
 	size_t _rom_data_length;
@@ -1343,44 +1371,14 @@ public:
 	~SaltyNES();
 	void init(string rom_name);
 	void init_data(uint8_t* rom_data, size_t length);
-	void pre_run_setup(vector<uint16_t>* save_ram);
+	void pre_run_setup(array<uint16_t, 0x2000>* save_ram);
 	void run();
 	void stop();
 	void readParams();
 	void initKeyCodes();
 };
 
-template<class T> inline void delete_n_null(T*& obj) {
-	if(obj == nullptr)
-		return;
-
-	delete obj;
-	obj = nullptr;
-}
-
-template<class T> inline void delete_n_null_array(T*& obj) {
-	if(obj == nullptr)
-		return;
-
-	delete[] obj;
-	obj = nullptr;
-}
-
-inline void arraycopy_short(vector<uint16_t>* src, size_t srcPos, vector<uint16_t>* dest, size_t destPos, size_t length) {
-	assert(srcPos+length <= src->size());
-	assert(destPos+length <= dest->size());
-
-	std::copy(src->begin()+srcPos, src->begin()+srcPos+length, dest->begin()+destPos);
-}
-
-inline void arraycopy_Tile(vector<Tile*>* src, size_t srcPos, vector<Tile*>* dest, size_t destPos, size_t length) {
-	assert(srcPos+length <= src->size());
-	assert(destPos+length <= dest->size());
-
-	std::copy(src->begin()+srcPos, src->begin()+srcPos+length, dest->begin()+destPos);
-}
-
-inline void arraycopy_int(vector<int>* src, size_t srcPos, vector<int>* dest, size_t destPos, size_t length) {
+template<typename SRC, typename DST> inline void array_copy(SRC src, size_t srcPos, DST dest, size_t destPos, size_t length) {
 	assert(srcPos+length <= src->size());
 	assert(destPos+length <= dest->size());
 

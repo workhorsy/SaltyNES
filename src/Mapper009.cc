@@ -8,9 +8,11 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-void Mapper009::init(NES* nes) {
-	this->base_init(nes);
+Mapper009::Mapper009() : MapperDefault() {
 
+}
+
+shared_ptr<MapperDefault> Mapper009::Init(shared_ptr<NES> nes) {
 	latchLo = 0;
 	latchHi = 0;
 	latchLoVal1 = 0;
@@ -19,6 +21,9 @@ void Mapper009::init(NES* nes) {
 	latchHiVal2 = 0;
 
 	reset();
+
+	this->base_init(nes);
+	return shared_from_this();
 }
 
 void Mapper009::write(int address, uint16_t value) {
@@ -101,7 +106,7 @@ void Mapper009::write(int address, uint16_t value) {
 	}
 }
 
-void Mapper009::loadROM(ROM* rom) {
+void Mapper009::loadROM(shared_ptr<ROM> rom) {
 	//System.out.println("Loading ROM.");
 
 	if(!rom->isValid()) {
