@@ -85,6 +85,16 @@ window.onerror = function(event) {
 	};
 };
 
+$('#button_toggle_console').addEventListener('click', function() {
+	if (is_hidden('#output')) {
+		show('#output');
+		this.value = "Console On";
+	} else {
+		hide('#output');
+		this.value = "Console Off";
+	}
+}, false);
+
 $('#button_toggle_sound').addEventListener('click', function() {
 	let toggle_sound = Module.cwrap('toggle_sound', null, []);
 	let is_on = (toggle_sound() == 1);
