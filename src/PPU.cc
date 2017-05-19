@@ -118,7 +118,7 @@ shared_ptr<PPU> PPU::Init(shared_ptr<NES> nes) {
 	hitSpr0 = false;
 
 	// Tiles:
-	ptTile.fill(nullptr);
+	//ptTile.fill(nullptr);
 	// Name table data:
 	ntable1.fill(0);
 	//nameTable.fill(nullptr);
@@ -195,7 +195,7 @@ void PPU::init() {
 
 	// Create pattern table tile buffers:
 	for(size_t i = 0; i < ptTile.size(); ++i) {
-		ptTile[i] = new Tile();
+		ptTile[i] = Tile();
 	}
 
 	// Create nametable buffers:
@@ -1006,7 +1006,7 @@ void PPU::renderBgScanline(array<int, 256 * 240>* buffer, int scan) {
 					att = attrib[tile];
 				} else {
 					// Fetch data:
-					t = ptTile[baseTile + nameTable[curNt].getTileIndex(cntHT, cntVT)];
+					t = &(ptTile[baseTile + nameTable[curNt].getTileIndex(cntHT, cntVT)]);
 					tpix = &t->pix;
 					att = nameTable[curNt].getAttrib(cntHT, cntVT);
 					scantile[tile] = t;
@@ -1100,9 +1100,9 @@ void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 					}
 
 					if(f_spPatternTable == 0) {
-						ptTile[sprTile[i]]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+						ptTile[sprTile[i]].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 					} else {
-						ptTile[sprTile[i] + 256]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+						ptTile[sprTile[i] + 256].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 					}
 				} else {
 					// 8x16 sprites
@@ -1122,7 +1122,7 @@ void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 						srcy2 = startscan + scancount - sprY[i];
 					}
 
-					ptTile[top + (vertFlip[i] ? 1 : 0)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+					ptTile[top + (vertFlip[i] ? 1 : 0)].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 
 					srcy1 = 0;
 					srcy2 = 8;
@@ -1135,7 +1135,7 @@ void PPU::renderSpritesPartially(int startscan, int scancount, bool bgPri) {
 						srcy2 = startscan + scancount - (sprY[i] + 8);
 					}
 
-					ptTile[top + (vertFlip[i] ? 0 : 1)]->render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
+					ptTile[top + (vertFlip[i] ? 0 : 1)].render(0, srcy1, 8, srcy2, sprX[i], sprY[i] + 1 + 8, &_screen_buffer, sprCol[i], &sprPalette, horiFlip[i], vertFlip[i], i, &pixrendered);
 
 				}
 			}
@@ -1168,7 +1168,7 @@ bool PPU::checkSprite0(int scan) {
 
 			// Sprite is in range.
 			// Draw scanline:
-			t = ptTile[sprTile[0] + tIndexAdd];
+			t = &(ptTile[sprTile[0] + tIndexAdd]);
 			//col = sprCol[0];
 			//bgPri = bgPriority[0];
 
@@ -1234,10 +1234,10 @@ bool PPU::checkSprite0(int scan) {
 
 			if(toffset < 8) {
 				// first half of sprite.
-				t = ptTile[sprTile[0] + (vertFlip[0] ? 1 : 0) + ((sprTile[0] & 1) != 0 ? 255 : 0)];
+				t = &(ptTile[sprTile[0] + (vertFlip[0] ? 1 : 0) + ((sprTile[0] & 1) != 0 ? 255 : 0)]);
 			} else {
 				// second half of sprite.
-				t = ptTile[sprTile[0] + (vertFlip[0] ? 0 : 1) + ((sprTile[0] & 1) != 0 ? 255 : 0)];
+				t = &(ptTile[sprTile[0] + (vertFlip[0] ? 0 : 1) + ((sprTile[0] & 1) != 0 ? 255 : 0)]);
 				if(vertFlip[0]) {
 					toffset = 15 - toffset;
 				} else {
@@ -1468,9 +1468,9 @@ void PPU::patternWrite(int address, uint16_t value) {
 	int tileIndex = address / 16;
 	int leftOver = address % 16;
 	if(leftOver < 8) {
-		ptTile[tileIndex]->setScanline(leftOver, value, ppuMem->load(address + 8));
+		ptTile[tileIndex].setScanline(leftOver, value, ppuMem->load(address + 8));
 	} else {
-		ptTile[tileIndex]->setScanline(leftOver - 8, ppuMem->load(address - 8), value);
+		ptTile[tileIndex].setScanline(leftOver - 8, ppuMem->load(address - 8), value);
 	}
 }
 
@@ -1484,9 +1484,9 @@ void PPU::patternWrite(int address, vector<uint16_t>* value, size_t offset, size
 		leftOver = (address + i) % 16;
 
 		if(leftOver < 8) {
-			ptTile[tileIndex]->setScanline(leftOver, (*value)[offset + i], ppuMem->load(address + 8 + i));
+			ptTile[tileIndex].setScanline(leftOver, (*value)[offset + i], ppuMem->load(address + 8 + i));
 		} else {
-			ptTile[tileIndex]->setScanline(leftOver - 8, ppuMem->load(address - 8 + i), (*value)[offset + i]);
+			ptTile[tileIndex].setScanline(leftOver - 8, ppuMem->load(address - 8 + i), (*value)[offset + i]);
 		}
 
 	}
@@ -1669,7 +1669,7 @@ void PPU::stateLoad(ByteBuffer* buf) {
 
 		// Pattern data:
 		for(size_t i = 0; i < ptTile.size(); ++i) {
-			ptTile[i]->stateLoad(buf);
+			ptTile[i].stateLoad(buf);
 		}
 
 		// Update internally stored stuff from VRAM memory:
@@ -1766,7 +1766,7 @@ void PPU::stateSave(ByteBuffer* buf) {
 
 	// Pattern data:
 	for(size_t i = 0; i < ptTile.size(); ++i) {
-		ptTile[i]->stateSave(buf);
+		ptTile[i].stateSave(buf);
 	}
 
 }

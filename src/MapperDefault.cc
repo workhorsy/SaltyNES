@@ -594,7 +594,7 @@ void MapperDefault::loadBatteryRam() {
 void MapperDefault::loadRomBank(int bank, int address) {
 	// Loads a ROM bank into the specified address.
 	bank %= rom->getRomBankCount();
-	//vector<uint16_t>* data = rom->getRomBank(bank);
+	//array<uint16_t, 16384>* data = rom->getRomBank(bank);
 	//cpuMem->write(address,data,data.length);
 	array_copy(rom->getRomBank(bank), 0, &cpuMem->mem, address, 16384);
 
@@ -608,7 +608,7 @@ void MapperDefault::loadVromBank(int bank, int address) {
 
 	array_copy(rom->getVromBank(bank % rom->getVromBankCount()), 0, &nes->ppuMem->mem, address, 4096);
 
-	vector<Tile*>* vromTile = rom->getVromBankTiles(bank % rom->getVromBankCount());
+	array<Tile, 256>* vromTile = rom->getVromBankTiles(bank % rom->getVromBankCount());
 	array_copy(vromTile, 0, &ppu->ptTile, address >> 4, 256);
 }
 
@@ -638,7 +638,7 @@ void MapperDefault::load1kVromBank(int bank1k, int address) {
 	array_copy(rom->getVromBank(bank4k), 0, &nes->ppuMem->mem, bankoffset, 1024);
 
 	// Update tiles:
-	vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);
+	array<Tile, 256>* vromTile = rom->getVromBankTiles(bank4k);
 	int baseIndex = address >> 4;
 	for(int i = 0; i < 64; ++i) {
 		ppu->ptTile[baseIndex + i] = (*vromTile)[((bank1k % 4) << 6) + i];
@@ -656,7 +656,7 @@ void MapperDefault::load2kVromBank(int bank2k, int address) {
 	array_copy(rom->getVromBank(bank4k), bankoffset, &nes->ppuMem->mem, address, 2048);
 
 	// Update tiles:
-	vector<Tile*>* vromTile = rom->getVromBankTiles(bank4k);
+	array<Tile, 256>* vromTile = rom->getVromBankTiles(bank4k);
 	int baseIndex = address >> 4;
 	for(int i = 0; i < 128; ++i) {
 		ppu->ptTile[baseIndex + i] = (*vromTile)[((bank2k % 2) << 7) + i];
@@ -667,7 +667,7 @@ void MapperDefault::load8kRomBank(int bank8k, int address) {
 	int bank16k = (bank8k / 2) % rom->getRomBankCount();
 	int offset = (bank8k % 2) * 8192;
 
-	vector<uint16_t>* bank = rom->getRomBank(bank16k);
+	array<uint16_t, 16384>* bank = rom->getRomBank(bank16k);
 	cpuMem->write(address, bank, offset, 8192);
 }
 

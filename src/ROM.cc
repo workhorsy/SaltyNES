@@ -28,10 +28,10 @@ shared_ptr<ROM> ROM::Init(shared_ptr<NES> nes) {
 	failedSaveFile = false;
 	saveRamUpToDate = true;
 	header.fill(0);
-	rom = nullptr;
-	vrom = nullptr;
+	//rom = nullptr;
+	//vrom = nullptr;
 	saveRam = nullptr;
-	vromTile = nullptr;
+	//vromTile = nullptr;
 	this->nes = nes;
 	romCount = 0;
 	vromCount = 0;
@@ -49,32 +49,7 @@ shared_ptr<ROM> ROM::Init(shared_ptr<NES> nes) {
 ROM::~ROM() {
 	closeRom();
 
-	if(rom != nullptr) {
-		for(size_t i=0; i<rom->size(); ++i) {
-			delete_n_null((*rom)[i]);
-		}
-		delete_n_null(rom);
-	}
-
-	if(vrom != nullptr) {
-		for(size_t i=0; i<vrom->size(); ++i) {
-			delete_n_null((*vrom)[i]);
-		}
-		delete_n_null(vrom);
-	}
-
 	delete_n_null(saveRam);
-
-	if(vromTile != nullptr) {
-		for(size_t i=0; i<vromTile->size(); ++i) {
-			for(size_t j=0; j<(*vromTile)[i]->size(); ++j) {
-				delete_n_null((*(*vromTile)[i])[j]);
-			}
-			delete_n_null((*vromTile)[i]);
-		}
-		delete_n_null(vromTile);
-	}
-
 	delete_n_null(_mapperName);
 	delete_n_null(_mapperSupported);
 
@@ -305,19 +280,21 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 		mapperType &= 0xF;
 	}
 
-	rom = new vector<vector<uint16_t>*>(romCount);
+	rom = vector<array<uint16_t, 16384>>(romCount);
 	for(size_t i=0; i<romCount; ++i) {
-		(*rom)[i] = new vector<uint16_t>(16384, 0);
+		rom[i].fill(0);
 	}
 
-	vrom = new vector<vector<uint16_t>*>(vromCount);
+	vrom = vector<array<uint16_t, 4096>>(vromCount);
 	for(size_t i=0; i<vromCount; ++i) {
-		(*vrom)[i] = new vector<uint16_t>(4096, 0);
+		vrom[i].fill(0);
 	}
 
-	vromTile = new vector<vector<Tile*>*>(vromCount);
-	for(size_t i=0; i<vromCount; ++i) {
-		(*vromTile)[i] = new vector<Tile*>(256, nullptr);
+	vromTile = vector<array<Tile, 256>>(vromCount);
+	for(size_t i=0; i<vromTile.size(); ++i) {
+		for(size_t j=0; j<vromTile[i].size(); ++j) {
+			vromTile[i][j] = Tile();
+		}
 	}
 
 	//try{
@@ -329,7 +306,7 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 			if(offset + j >= length) {
 				break;
 			}
-			(*(*rom)[i])[j] = sdata[offset + j];
+			rom[i][j] = sdata[offset + j];
 		}
 		offset += 16384;
 	}
@@ -340,7 +317,7 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 			if(offset + j >= length) {
 				break;
 			}
-			(*(*vrom)[i])[j] = sdata[offset + j];
+			vrom[i][j] = sdata[offset + j];
 		}
 		offset += 4096;
 	}
@@ -348,7 +325,7 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 	// Create VROM tiles:
 	for(size_t i = 0; i < vromCount; ++i) {
 		for(size_t j = 0; j < 256; ++j) {
-			(*(*vromTile)[i])[j] = new Tile();
+			vromTile[i][j] = Tile();
 		}
 	}
 
@@ -362,9 +339,9 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, vector<
 			tileIndex = i >> 4;
 			leftOver = i % 16;
 			if(leftOver < 8) {
-				(*(*vromTile)[v])[tileIndex]->setScanline(leftOver, (*(*vrom)[v])[i], (*(*vrom)[v])[i + 8]);
+				vromTile[v][tileIndex].setScanline(leftOver, vrom[v][i], vrom[v][i + 8]);
 			} else {
-				(*(*vromTile)[v])[tileIndex]->setScanline(leftOver - 8, (*(*vrom)[v])[i - 8], (*(*vrom)[v])[i]);
+				vromTile[v][tileIndex].setScanline(leftOver - 8, vrom[v][i - 8], vrom[v][i]);
 			}
 		}
 	}
@@ -406,16 +383,16 @@ array<uint16_t, 16> ROM::getHeader() {
 	return header;
 }
 
-vector<uint16_t>* ROM::getRomBank(int bank) {
-	return (*rom)[bank];
+array<uint16_t, 16384>* ROM::getRomBank(int bank) {
+	return &(rom[bank]);
 }
 
-vector<uint16_t>* ROM::getVromBank(int bank) {
-	return (*vrom)[bank];
+array<uint16_t, 4096>* ROM::getVromBank(int bank) {
+	return &(vrom[bank]);
 }
 
-vector<Tile*>* ROM::getVromBankTiles(int bank) {
-	return (*vromTile)[bank];
+array<Tile, 256>* ROM::getVromBankTiles(int bank) {
+	return &(vromTile[bank]);
 }
 
 int ROM::getMirroringType() {

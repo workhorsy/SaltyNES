@@ -650,8 +650,8 @@ public:
 	uint16_t load(size_t address);
 	void dump(string file);
 	void dump(string file, size_t offset, size_t length);
-	void write(size_t address, vector<uint16_t>* array, size_t length);
-	void write(size_t address, vector<uint16_t>* array, size_t arrayoffset, size_t length);
+	void write(size_t address, array<uint16_t, 16384>* array, size_t length);
+	void write(size_t address, array<uint16_t, 16384>* array, size_t arrayoffset, size_t length);
 };
 
 class MapperDefault : public enable_shared_from_this<MapperDefault> {
@@ -1065,6 +1065,33 @@ public:
 	void initDACtables();
 };
 
+class Tile {
+public:
+	// Tile data:
+	array<int, 64> pix;
+	int fbIndex;
+	int tIndex;
+	int x, y;
+	int w, h;
+	int incX, incY;
+	int palIndex;
+	int tpri;
+	int c;
+	bool initialized;
+	array<bool, 8> opaque;
+
+	Tile();
+	void setBuffer(vector<uint16_t>* scanline);
+	void setScanline(int sline, uint16_t b1, uint16_t b2);
+	void renderSimple(int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette);
+	void renderSmall(int dx, int dy, vector<int>* buffer, int palAdd, int* palette);
+	void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, array<int, 256 * 240>* fBuffer, int palAdd, array<int, 16>* palette, bool flipHorizontal, bool flipVertical, int pri, array<int, 256 * 240>* priTable);
+	bool isTransparent(int x, int y);
+	void dumpData(string file);
+	void stateSave(ByteBuffer* buf);
+	void stateLoad(ByteBuffer* buf);
+};
+
 class PPU : public enable_shared_from_this<PPU> {
 public:
 	shared_ptr<NES> nes;
@@ -1143,7 +1170,7 @@ public:
 	bool hitSpr0;
 
 	// Tiles:
-	array<Tile*, 512> ptTile;
+	array<Tile, 512> ptTile;
 	// Name table data:
 	array<int, 4> ntable1;
 	array<NameTable, 4> nameTable;
@@ -1275,10 +1302,10 @@ public:
 	bool failedSaveFile;
 	bool saveRamUpToDate;
 	array<uint16_t, 16> header;
-	vector<vector<uint16_t>*>* rom;
-	vector<vector<uint16_t>*>* vrom;
+	vector<array<uint16_t, 16384>> rom;
+	vector<array<uint16_t, 4096>> vrom;
 	vector<uint16_t>* saveRam;
-	vector<vector<Tile*>*>* vromTile;
+	vector<array<Tile, 256>> vromTile;
 	shared_ptr<NES> nes;
 	size_t romCount;
 	size_t vromCount;
@@ -1303,9 +1330,9 @@ public:
 	int getRomBankCount();
 	int getVromBankCount();
 	array<uint16_t, 16> getHeader();
-	vector<uint16_t>* getRomBank(int bank);
-	vector<uint16_t>* getVromBank(int bank);
-	vector<Tile*>* getVromBankTiles(int bank);
+	array<uint16_t, 16384>* getRomBank(int bank);
+	array<uint16_t, 4096>* getVromBank(int bank);
+	array<Tile, 256>* getVromBankTiles(int bank);
 	int getMirroringType();
 	size_t getMapperType();
 	string getMapperName();
@@ -1319,33 +1346,6 @@ public:
 	void loadBatteryRam();
 	void writeBatteryRam(int address, uint16_t value);
 	void closeRom();
-};
-
-class Tile {
-public:
-	// Tile data:
-	array<int, 64> pix;
-	int fbIndex;
-	int tIndex;
-	int x, y;
-	int w, h;
-	int incX, incY;
-	int palIndex;
-	int tpri;
-	int c;
-	bool initialized;
-	array<bool, 8> opaque;
-
-	Tile();
-	void setBuffer(vector<uint16_t>* scanline);
-	void setScanline(int sline, uint16_t b1, uint16_t b2);
-	void renderSimple(int dx, int dy, vector<int>* fBuffer, int palAdd, int* palette);
-	void renderSmall(int dx, int dy, vector<int>* buffer, int palAdd, int* palette);
-	void render(int srcx1, int srcy1, int srcx2, int srcy2, int dx, int dy, array<int, 256 * 240>* fBuffer, int palAdd, array<int, 16>* palette, bool flipHorizontal, bool flipVertical, int pri, array<int, 256 * 240>* priTable);
-	bool isTransparent(int x, int y);
-	void dumpData(string file);
-	void stateSave(ByteBuffer* buf);
-	void stateLoad(ByteBuffer* buf);
 };
 
 class SaltyNES {

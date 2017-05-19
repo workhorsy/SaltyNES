@@ -84,10 +84,10 @@ NES::~NES() {
 
 void NES::dumpRomMemory(ofstream* writer) {
 	//ofstream writer("rom_mem_cpp.txt", ios::out|ios::binary);
-	for(size_t i = 0;i<rom->rom->size(); ++i) {
-		for(size_t j = 0;j<(*rom->rom)[i]->size(); ++j) {
+	for(size_t i = 0;i<rom->rom.size(); ++i) {
+		for(size_t j = 0;j<rom->rom[i].size(); ++j) {
 			stringstream out;
-			out << "@" << j << " " << (*(*rom->rom)[i])[j] << "\n";
+			out << "@" << j << " " << rom->rom[i][j] << "\n";
 			writer->write(out.str().c_str(), out.str().length());
 		}
 	}
