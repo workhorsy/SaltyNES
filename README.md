@@ -16,8 +16,6 @@ python3 -m http.server 9999
 TODO
 * Move the old SaltyNES to a repo called SaltyNESLegacy
 * Make sure all supported mappers actually work
-* Auto hide the mouse cursor in fullscteen mode
-* Remove pointerlock from ui.
 * Make a trivial SDL audio app to see why sound playing is broken.
 * Try using opengl for the screen to see if it makes painting faster.
 * make main loops for desktop and web not have nested while loops

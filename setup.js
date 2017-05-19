@@ -6,6 +6,7 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 */
 
 let g_zoom = 1;
+let g_mouse_move_timeout = null;
 
 let statusElement = $('#status');
 let progressElement = $('#progress');
@@ -85,6 +86,35 @@ window.onerror = function(event) {
 	};
 };
 
+document.addEventListener('mousemove', function() {
+	// Show the cursor when the mouse moves
+	document.body.style.cursor = '';
+	$('#screen').style.cursor = '';
+
+	// Just return if not fullscreen
+	const is_full_screen = (
+		document.fullscreen ||
+		document.webkitIsFullScreen ||
+		document.mozFullScreen
+	);
+	if (! is_full_screen) {
+		return;
+	}
+
+	// Clear the previous mouse timeout
+	if (g_mouse_move_timeout) {
+		clearTimeout(g_mouse_move_timeout);
+		g_mouse_move_timeout = null;
+	}
+
+	// Hide the cursor after 3 seconds
+	g_mouse_move_timeout = setTimeout(function() {
+		document.body.style.cursor = 'none';
+		$('#screen').style.cursor = 'none';
+		g_mouse_move_timeout = null;
+	}, 3000);
+}, false);
+
 $('#button_toggle_console').addEventListener('click', function() {
 	if (is_hidden('#output')) {
 		show('#output');
@@ -107,7 +137,7 @@ $('#button_toggle_sound').addEventListener('click', function() {
 
 $('#button_full_screen').addEventListener('click', function() {
 	Module.requestFullscreen(
-		$('#check_lock_pointer').checked,
+		false,
 		false
 	);
 	g_zoom = 1;
