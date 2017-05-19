@@ -9,7 +9,6 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 #ifndef _SALTY_NES_H_
 #define _SALTY_NES_H_
 
-extern "C" int toggle_sound();
 
 #include <map>
 #include <vector>
