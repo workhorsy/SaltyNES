@@ -8,11 +8,10 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-ChannelDM::ChannelDM() : enable_shared_from_this<ChannelDM>() {
-
+ChannelDM::ChannelDM() {
 }
 
-shared_ptr<ChannelDM> ChannelDM::Init(shared_ptr<PAPU>  papu) {
+ChannelDM::ChannelDM(shared_ptr<PAPU>  papu) {
 	this->papu = papu;
 
 	this->_isEnabled = false;
@@ -33,7 +32,6 @@ shared_ptr<ChannelDM> ChannelDM::Init(shared_ptr<PAPU>  papu) {
 	this->sample = 0;
 	this->dacLsb = 0;
 	this->data = 0;
-	return shared_from_this();
 }
 
 ChannelDM::~ChannelDM() {

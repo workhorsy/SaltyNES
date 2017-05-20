@@ -9,11 +9,10 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 #include "SaltyNES.h"
 
 
-ChannelNoise::ChannelNoise() : enable_shared_from_this<ChannelNoise>() {
-
+ChannelNoise::ChannelNoise() {
 }
 
-shared_ptr<ChannelNoise> ChannelNoise::Init(shared_ptr<PAPU>  papu) {
+ChannelNoise::ChannelNoise(shared_ptr<PAPU>  papu) {
 	this->papu = papu;
 
 	_isEnabled = false;
@@ -36,7 +35,6 @@ shared_ptr<ChannelNoise> ChannelNoise::Init(shared_ptr<PAPU>  papu) {
 	accValue = 0;
 	accCount = 1;
 	tmp = 0;
-	return shared_from_this();
 }
 
 ChannelNoise::~ChannelNoise() {

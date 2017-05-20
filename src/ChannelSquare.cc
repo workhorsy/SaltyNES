@@ -20,11 +20,10 @@ const int ChannelSquare::impLookup[32] = {
 				1, 0, 0, 0, -1, 0, 0, 0,
 				-1, 0, 1, 0, 0, 0, 0, 0};
 
-ChannelSquare::ChannelSquare() : enable_shared_from_this<ChannelSquare>() {
-
+ChannelSquare::ChannelSquare() {
 }
 
-shared_ptr<ChannelSquare> ChannelSquare::Init(shared_ptr<PAPU> papu, bool square1) {
+ChannelSquare::ChannelSquare(shared_ptr<PAPU> papu, bool square1) {
 	this->papu = papu;
 	sqr1 = square1;
 	_isEnabled = false;
@@ -51,7 +50,6 @@ shared_ptr<ChannelSquare> ChannelSquare::Init(shared_ptr<PAPU> papu, bool square
 	sweepResult = 0;
 	sampleValue = 0;
 	vol = 0;
-	return shared_from_this();
 }
 
 ChannelSquare::~ChannelSquare() {

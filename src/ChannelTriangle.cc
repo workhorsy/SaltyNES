@@ -8,11 +8,10 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include "SaltyNES.h"
 
-ChannelTriangle::ChannelTriangle() : enable_shared_from_this<ChannelTriangle>() {
-
+ChannelTriangle::ChannelTriangle() {
 }
 
-shared_ptr<ChannelTriangle> ChannelTriangle::Init(shared_ptr<PAPU>  papu) {
+ChannelTriangle::ChannelTriangle(shared_ptr<PAPU> papu) {
 	this->papu = papu;
 	this->_isEnabled = false;
 	this->sampleCondition = false;
@@ -27,7 +26,6 @@ shared_ptr<ChannelTriangle> ChannelTriangle::Init(shared_ptr<PAPU>  papu) {
 	this->lcLoadValue = 0;
 	this->sampleValue = 0;
 	this->tmp = 0;
-	return shared_from_this();
 }
 
 ChannelTriangle::~ChannelTriangle() {

@@ -193,11 +193,11 @@ shared_ptr<PAPU> PAPU::Init(shared_ptr<NES> nes) {
 	bufferIndex = 0;
 	frameIrqEnabled = false;
 	initCounter = 2048;
-	square1 = make_shared<ChannelSquare>()->Init(shared_from_this(), true);
-	square2 = make_shared<ChannelSquare>()->Init(shared_from_this(), false);
-	triangle = make_shared<ChannelTriangle>()->Init(shared_from_this());
-	noise = make_shared<ChannelNoise>()->Init(shared_from_this());
-	dmc = make_shared<ChannelDM>()->Init(shared_from_this());
+	square1 = ChannelSquare(shared_from_this(), true);
+	square2 = ChannelSquare(shared_from_this(), false);
+	triangle = ChannelTriangle(shared_from_this());
+	noise = ChannelNoise(shared_from_this());
+	dmc = ChannelDM(shared_from_this());
 
 	masterVolume = 256;
 	updateStereoPos();
@@ -285,16 +285,16 @@ shared_ptr<NES> PAPU::getNes() {
 uint16_t PAPU::readReg() {
 	// Read 0x4015:
 	int tmp = 0;
-	tmp |= (square1->getLengthStatus());
-	tmp |= (square2->getLengthStatus() << 1);
-	tmp |= (triangle->getLengthStatus() << 2);
-	tmp |= (noise->getLengthStatus() << 3);
-	tmp |= (dmc->getLengthStatus() << 4);
+	tmp |= (square1.getLengthStatus());
+	tmp |= (square2.getLengthStatus() << 1);
+	tmp |= (triangle.getLengthStatus() << 2);
+	tmp |= (noise.getLengthStatus() << 3);
+	tmp |= (dmc.getLengthStatus() << 4);
 	tmp |= (((frameIrqActive && frameIrqEnabled) ? 1 : 0) << 6);
-	tmp |= (dmc->getIrqStatus() << 7);
+	tmp |= (dmc.getIrqStatus() << 7);
 
 	frameIrqActive = false;
-	dmc->irqGenerated = false;
+	dmc.irqGenerated = false;
 
 	////System.out.println("$4015 read. Value = "+Misc.bin8(tmp)+" countseq = "+countSequence);
 	return static_cast<uint16_t>(tmp);
@@ -304,43 +304,43 @@ void PAPU::writeReg(int address, uint16_t value) {
 	if(address >= 0x4000 && address < 0x4004) {
 
 		// Square Wave 1 Control
-		square1->writeReg(address, value);
+		square1.writeReg(address, value);
 	////System.out.println("Square Write");
 
 	} else if(address >= 0x4004 && address < 0x4008) {
 
 		// Square 2 Control
-		square2->writeReg(address, value);
+		square2.writeReg(address, value);
 
 	} else if(address >= 0x4008 && address < 0x400C) {
 
 		// Triangle Control
-		triangle->writeReg(address, value);
+		triangle.writeReg(address, value);
 
 	} else if(address >= 0x400C && address <= 0x400F) {
 
 		// Noise Control
-		noise->writeReg(address, value);
+		noise.writeReg(address, value);
 
 	} else if(address == 0x4010) {
 
 		// DMC Play mode & DMA frequency
-		dmc->writeReg(address, value);
+		dmc.writeReg(address, value);
 
 	} else if(address == 0x4011) {
 
 		// DMC Delta Counter
-		dmc->writeReg(address, value);
+		dmc.writeReg(address, value);
 
 	} else if(address == 0x4012) {
 
 		// DMC Play code starting address
-		dmc->writeReg(address, value);
+		dmc.writeReg(address, value);
 
 	} else if(address == 0x4013) {
 
 		// DMC Play code length
-		dmc->writeReg(address, value);
+		dmc.writeReg(address, value);
 
 	} else if(address == 0x4015) {
 
@@ -355,7 +355,7 @@ void PAPU::writeReg(int address, uint16_t value) {
 		}
 
 		// DMC/IRQ Status
-		dmc->writeReg(address, value);
+		dmc.writeReg(address, value);
 
 	} else if(address == 0x4017) {
 
@@ -405,11 +405,11 @@ void PAPU::resetCounter() {
 // in the GUI.
 void PAPU::updateChannelEnable(int value) {
 	channelEnableValue = static_cast<uint16_t>(value);
-	square1->setEnabled(userEnableSquare1 && (value & 1) != 0);
-	square2->setEnabled(userEnableSquare2 && (value & 2) != 0);
-	triangle->setEnabled(userEnableTriangle && (value & 4) != 0);
-	noise->setEnabled(userEnableNoise && (value & 8) != 0);
-	dmc->setEnabled(userEnableDmc && (value & 16) != 0);
+	square1.setEnabled(userEnableSquare1 && (value & 1) != 0);
+	square2.setEnabled(userEnableSquare2 && (value & 2) != 0);
+	triangle.setEnabled(userEnableTriangle && (value & 4) != 0);
+	noise.setEnabled(userEnableNoise && (value & 8) != 0);
+	dmc.setEnabled(userEnableDmc && (value & 16) != 0);
 }
 
 // Clocks the frame counter. It should be clocked at
@@ -442,37 +442,37 @@ void PAPU::clockFrameCounter(int nCycles) {
 	}
 
 	// Clock DMC:
-	if(dmc->isEnabled()) {
+	if(dmc.isEnabled()) {
 
-		dmc->shiftCounter -= (nCycles << 3);
-		while(dmc->shiftCounter <= 0 && dmc->dmaFrequency > 0) {
-			dmc->shiftCounter += dmc->dmaFrequency;
-			dmc->clockDmc();
+		dmc.shiftCounter -= (nCycles << 3);
+		while(dmc.shiftCounter <= 0 && dmc.dmaFrequency > 0) {
+			dmc.shiftCounter += dmc.dmaFrequency;
+			dmc.clockDmc();
 		}
 
 	}
 
 	// Clock Triangle channel Prog timer:
-	if(triangle->progTimerMax > 0) {
+	if(triangle.progTimerMax > 0) {
 
-		triangle->progTimerCount -= nCycles;
-		while(triangle->progTimerCount <= 0) {
+		triangle.progTimerCount -= nCycles;
+		while(triangle.progTimerCount <= 0) {
 
-			triangle->progTimerCount += triangle->progTimerMax + 1;
-			if(triangle->linearCounter > 0 && triangle->lengthCounter > 0) {
+			triangle.progTimerCount += triangle.progTimerMax + 1;
+			if(triangle.linearCounter > 0 && triangle.lengthCounter > 0) {
 
-				++triangle->triangleCounter;
-				triangle->triangleCounter &= 0x1F;
+				++triangle.triangleCounter;
+				triangle.triangleCounter &= 0x1F;
 
-				if(triangle->isEnabled()) {
-					if(triangle->triangleCounter >= 0x10) {
+				if(triangle.isEnabled()) {
+					if(triangle.triangleCounter >= 0x10) {
 						// Normal value.
-						triangle->sampleValue = (triangle->triangleCounter & 0xF);
+						triangle.sampleValue = (triangle.triangleCounter & 0xF);
 					} else {
 						// Inverted value.
-						triangle->sampleValue = (0xF - (triangle->triangleCounter & 0xF));
+						triangle.sampleValue = (0xF - (triangle.triangleCounter & 0xF));
 					}
-					triangle->sampleValue <<= 4;
+					triangle.sampleValue <<= 4;
 				}
 
 			}
@@ -481,73 +481,73 @@ void PAPU::clockFrameCounter(int nCycles) {
 	}
 
 	// Clock Square channel 1 Prog timer:
-	square1->progTimerCount -= nCycles;
-	if(square1->progTimerCount <= 0) {
+	square1.progTimerCount -= nCycles;
+	if(square1.progTimerCount <= 0) {
 
-		square1->progTimerCount += (square1->progTimerMax + 1) << 1;
+		square1.progTimerCount += (square1.progTimerMax + 1) << 1;
 
-		++square1->squareCounter;
-		square1->squareCounter &= 0x7;
-		square1->updateSampleValue();
+		++square1.squareCounter;
+		square1.squareCounter &= 0x7;
+		square1.updateSampleValue();
 
 	}
 
 	// Clock Square channel 2 Prog timer:
-	square2->progTimerCount -= nCycles;
-	if(square2->progTimerCount <= 0) {
+	square2.progTimerCount -= nCycles;
+	if(square2.progTimerCount <= 0) {
 
-		square2->progTimerCount += (square2->progTimerMax + 1) << 1;
+		square2.progTimerCount += (square2.progTimerMax + 1) << 1;
 
-		++square2->squareCounter;
-		square2->squareCounter &= 0x7;
-		square2->updateSampleValue();
+		++square2.squareCounter;
+		square2.squareCounter &= 0x7;
+		square2.updateSampleValue();
 
 	}
 
 	// Clock noise channel Prog timer:
 	int acc_c = nCycles;
-	if(noise->progTimerCount - acc_c > 0) {
+	if(noise.progTimerCount - acc_c > 0) {
 
 		// Do all cycles at once:
-		noise->progTimerCount -= acc_c;
-		noise->accCount += acc_c;
-		noise->accValue += acc_c * noise->sampleValue;
+		noise.progTimerCount -= acc_c;
+		noise.accCount += acc_c;
+		noise.accValue += acc_c * noise.sampleValue;
 
 	} else {
 
 		// Slow-step:
 		while((acc_c--) > 0) {
 
-			if(--noise->progTimerCount <= 0 && noise->progTimerMax > 0) {
+			if(--noise.progTimerCount <= 0 && noise.progTimerMax > 0) {
 
 				// Update noise shift register:
-				noise->shiftReg <<= 1;
-				noise->tmp = (((noise->shiftReg << (noise->randomMode == 0 ? 1 : 6)) ^ noise->shiftReg) & 0x8000);
-				if(noise->tmp != 0) {
+				noise.shiftReg <<= 1;
+				noise.tmp = (((noise.shiftReg << (noise.randomMode == 0 ? 1 : 6)) ^ noise.shiftReg) & 0x8000);
+				if(noise.tmp != 0) {
 
 					// Sample value must be 0.
-					noise->shiftReg |= 0x01;
-					noise->randomBit = 0;
-					noise->sampleValue = 0;
+					noise.shiftReg |= 0x01;
+					noise.randomBit = 0;
+					noise.sampleValue = 0;
 
 				} else {
 
 					// Find sample value:
-					noise->randomBit = 1;
-					if(noise->isEnabled() && noise->lengthCounter > 0) {
-						noise->sampleValue = noise->masterVolume;
+					noise.randomBit = 1;
+					if(noise.isEnabled() && noise.lengthCounter > 0) {
+						noise.sampleValue = noise.masterVolume;
 					} else {
-						noise->sampleValue = 0;
+						noise.sampleValue = 0;
 					}
 
 				}
 
-				noise->progTimerCount += noise->progTimerMax;
+				noise.progTimerCount += noise.progTimerMax;
 
 			}
 
-			noise->accValue += noise->sampleValue;
-			++noise->accCount;
+			noise.accValue += noise.sampleValue;
+			++noise.accCount;
 
 		}
 	}
@@ -587,18 +587,18 @@ void PAPU::clockFrameCounter(int nCycles) {
 
 void PAPU::accSample(int cycles) {
 	// Special treatment for triangle channel - need to interpolate.
-	if(triangle->sampleCondition) {
+	if(triangle.sampleCondition) {
 
-		triValue = (triangle->progTimerCount << 4) / (triangle->progTimerMax + 1);
+		triValue = (triangle.progTimerCount << 4) / (triangle.progTimerMax + 1);
 		if(triValue > 16) {
 			triValue = 16;
 		}
-		if(triangle->triangleCounter >= 16) {
+		if(triangle.triangleCounter >= 16) {
 			triValue = 16 - triValue;
 		}
 
 		// Add non-interpolated sample value:
-		triValue += triangle->sampleValue;
+		triValue += triangle.sampleValue;
 
 	}
 
@@ -607,25 +607,25 @@ void PAPU::accSample(int cycles) {
 	if(cycles == 2) {
 
 		smpTriangle += triValue << 1;
-		smpDmc += dmc->sample << 1;
-		smpSquare1 += square1->sampleValue << 1;
-		smpSquare2 += square2->sampleValue << 1;
+		smpDmc += dmc.sample << 1;
+		smpSquare1 += square1.sampleValue << 1;
+		smpSquare2 += square2.sampleValue << 1;
 		accCount += 2;
 
 	} else if(cycles == 4) {
 
 		smpTriangle += triValue << 2;
-		smpDmc += dmc->sample << 2;
-		smpSquare1 += square1->sampleValue << 2;
-		smpSquare2 += square2->sampleValue << 2;
+		smpDmc += dmc.sample << 2;
+		smpSquare1 += square1.sampleValue << 2;
+		smpSquare2 += square2.sampleValue << 2;
 		accCount += 4;
 
 	} else {
 
 		smpTriangle += cycles * triValue;
-		smpDmc += cycles * dmc->sample;
-		smpSquare1 += cycles * square1->sampleValue;
-		smpSquare2 += cycles * square2->sampleValue;
+		smpDmc += cycles * dmc.sample;
+		smpSquare1 += cycles * square1.sampleValue;
+		smpSquare2 += cycles * square2.sampleValue;
 		accCount += cycles;
 	}
 }
@@ -638,20 +638,20 @@ void PAPU::frameCounterTick() {
 
 	if(derivedFrameCounter == 1 || derivedFrameCounter == 3) {
 		// Clock length & sweep:
-		triangle->clockLengthCounter();
-		square1->clockLengthCounter();
-		square2->clockLengthCounter();
-		noise->clockLengthCounter();
-		square1->clockSweep();
-		square2->clockSweep();
+		triangle.clockLengthCounter();
+		square1.clockLengthCounter();
+		square2.clockLengthCounter();
+		noise.clockLengthCounter();
+		square1.clockSweep();
+		square2.clockSweep();
 	}
 
 	if(derivedFrameCounter >= 0 && derivedFrameCounter < 4) {
 		// Clock linear & decay:
-		square1->clockEnvDecay();
-		square2->clockEnvDecay();
-		noise->clockEnvDecay();
-		triangle->clockLinearCounter();
+		square1.clockEnvDecay();
+		square2.clockEnvDecay();
+		noise.clockEnvDecay();
+		triangle.clockLinearCounter();
 	}
 
 	if(derivedFrameCounter == 3 && countSequence == 0) {
@@ -681,16 +681,16 @@ void PAPU::sample() {
 
 	} else {
 
-		smpSquare1 = square1->sampleValue << 4;
-		smpSquare2 = square2->sampleValue << 4;
-		smpTriangle = triangle->sampleValue;
-		smpDmc = dmc->sample << 4;
+		smpSquare1 = square1.sampleValue << 4;
+		smpSquare2 = square2.sampleValue << 4;
+		smpTriangle = triangle.sampleValue;
+		smpDmc = dmc.sample << 4;
 
 	}
 
-	smpNoise = static_cast<int>((noise->accValue << 4) / noise->accCount);
-	noise->accValue = smpNoise >> 4;
-	noise->accCount = 1;
+	smpNoise = static_cast<int>((noise.accValue << 4) / noise.accCount);
+	noise.accValue = smpNoise >> 4;
+	noise.accCount = 1;
 
 	if(stereo) {
 
@@ -807,11 +807,11 @@ void PAPU::reset() {
 
 	resetCounter();
 
-	square1->reset();
-	square2->reset();
-	triangle->reset();
-	noise->reset();
-	dmc->reset();
+	square1.reset();
+	square2.reset();
+	triangle.reset();
+	noise.reset();
+	dmc.reset();
 
 	bufferIndex = 0;
 	accCount = 0;

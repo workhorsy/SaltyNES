@@ -204,7 +204,7 @@ public:
 	//static ByteBuffer* readFromZipFile(File f);
 };
 
-class ChannelDM : public IPapuChannel, public enable_shared_from_this<ChannelDM> {
+class ChannelDM : public IPapuChannel {
 public:
 	static const int MODE_NORMAL = 0;
 	static const int MODE_LOOP = 1;
@@ -230,7 +230,7 @@ public:
 	int data;
 
 	explicit ChannelDM();
-	shared_ptr<ChannelDM> Init(shared_ptr<PAPU> papu);
+	explicit ChannelDM(shared_ptr<PAPU> papu);
 	virtual ~ChannelDM();
 	void clockDmc();
 	void endOfSample();
@@ -244,7 +244,7 @@ public:
 };
 
 
-class ChannelNoise : public IPapuChannel, public enable_shared_from_this<ChannelNoise> {
+class ChannelNoise : public IPapuChannel {
 public:
 	shared_ptr<PAPU> papu;
 	bool _isEnabled;
@@ -269,7 +269,7 @@ public:
 	int tmp;
 
 	explicit ChannelNoise();
-	shared_ptr<ChannelNoise> Init(shared_ptr<PAPU> papu);
+	explicit ChannelNoise(shared_ptr<PAPU> papu);
 	virtual ~ChannelNoise();
 	void clockLengthCounter();
 	void clockEnvDecay();
@@ -281,7 +281,7 @@ public:
 	void reset();
 };
 
-class ChannelSquare : public IPapuChannel, public enable_shared_from_this<ChannelSquare> {
+class ChannelSquare : public IPapuChannel {
 public:
 	static const int dutyLookup[32];
 	static const int impLookup[32];
@@ -314,7 +314,7 @@ public:
 	int vol;
 
 	ChannelSquare();
-	shared_ptr<ChannelSquare> Init(shared_ptr<PAPU> papu, bool square1);
+	ChannelSquare(shared_ptr<PAPU> papu, bool square1);
 	virtual ~ChannelSquare();
 	void clockLengthCounter();
 	void clockEnvDecay();
@@ -327,7 +327,7 @@ public:
 	void reset();
 };
 
-class ChannelTriangle : public IPapuChannel, public enable_shared_from_this<ChannelTriangle> {
+class ChannelTriangle : public IPapuChannel {
 public:
 	shared_ptr<PAPU> papu;
 	bool _isEnabled;
@@ -345,7 +345,7 @@ public:
 	int tmp;
 
 	explicit ChannelTriangle();
-	shared_ptr<ChannelTriangle> Init(shared_ptr<PAPU> papu);
+	explicit ChannelTriangle(shared_ptr<PAPU> papu);
 	virtual ~ChannelTriangle();
 	void clockLengthCounter();
 	void clockLinearCounter();
@@ -958,11 +958,11 @@ public:
 	bool _is_running;
 	shared_ptr<NES> nes;
 	shared_ptr<Memory> cpuMem;
-	shared_ptr<ChannelSquare> square1;
-	shared_ptr<ChannelSquare> square2;
-	shared_ptr<ChannelTriangle> triangle;
-	shared_ptr<ChannelNoise> noise;
-	shared_ptr<ChannelDM> dmc;
+	ChannelSquare square1;
+	ChannelSquare square2;
+	ChannelTriangle triangle;
+	ChannelNoise noise;
+	ChannelDM dmc;
 	array<int, 32 * 16> square_table;
 	array<int, 204 * 16> tnd_table;
 	vector<int> ismpbuffer;
