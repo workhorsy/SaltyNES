@@ -1,7 +1,6 @@
 
 roms/
-build_desktop/
-build_web/
+build/
 index.wasm
 index.js
 saltynes
