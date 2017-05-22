@@ -109,14 +109,7 @@ PAPU::PAPU() : enable_shared_from_this<PAPU>() {
 shared_ptr<PAPU> PAPU::Init(shared_ptr<NES> nes) {
 	pthread_mutex_init(&_mutex, nullptr);
 
-	#ifdef DESKTOP
 	_is_muted = false;
-	#endif
-
-	#ifdef WEB
-	_is_muted = true;
-	#endif
-
 	_is_running = false;
 
 	channelEnableValue = 0;
@@ -211,22 +204,23 @@ shared_ptr<PAPU> PAPU::Init(shared_ptr<NES> nes) {
 	// Setup SDL for the format we want
 	SDL_AudioSpec desiredSpec;
 	desiredSpec.freq = 44100;
-	desiredSpec.format = AUDIO_S16SYS;
+	desiredSpec.format = AUDIO_S16LSB;
 	desiredSpec.channels = 2;
-	desiredSpec.samples = 4096;
+	desiredSpec.samples = 2048;//4096; NOTE: 4096 made it pulse in the browser
 	desiredSpec.callback = fill_audio_sdl_cb;
 	desiredSpec.userdata = this;
 
-	SDL_AudioSpec obtainedSpec;
-	if(SDL_OpenAudio(&desiredSpec, &obtainedSpec) != 0) {
+	if(SDL_OpenAudio(&desiredSpec, nullptr) != 0) {
 		fprintf(stderr, "Couldn't open audio: %s\n", SDL_GetError());
 		exit(1);
 	}
-	/*cout << "freq: " << obtainedSpec.freq << endl;
+	/*
+	cout << "freq: " << obtainedSpec.freq << endl;
 	cout << "format: " << obtainedSpec.format << endl;
-	cout << "channels: " << (s32) obtainedSpec.channels << endl;
+	cout << "channels: " << (int) obtainedSpec.channels << endl;
 	cout << "samples: " << obtainedSpec.samples << endl;
-	cout << "callback: " << obtainedSpec.callback << endl;*/
+	cout << "callback: " << obtainedSpec.callback << endl;
+	*/
 	return shared_from_this();
 }
 
