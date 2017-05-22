@@ -16,6 +16,7 @@ python3 -m http.server 9999
 ```
 
 TODO
+* move js, css, and wasm to static sub dir
 * in fullscreen on chrome, there is a white line on the bottom.
 * Add loading roms from gui.
 * see if smb3 and punchout work in vnes
