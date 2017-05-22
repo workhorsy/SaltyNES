@@ -16,6 +16,12 @@ python3 -m http.server 9999
 ```
 
 TODO
+* in fullscreen on chrome, there is a white line on the bottom.
+* Add loading roms from gui.
+* see if smb3 and punchout work in vnes
+* save memory to localstorage/indexeddb
+* tetris has no backgrounds
+
 * Try using opengl for the screen to see if it makes painting faster.
 * make main loops for desktop and web not have nested while loops
 * make fps show in html
