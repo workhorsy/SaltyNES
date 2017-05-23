@@ -144,9 +144,7 @@ $('#button_toggle_console').addEventListener('click', function() {
 }, false);
 
 $('#button_toggle_sound').addEventListener('click', function() {
-	let toggle_sound = Module.cwrap('toggle_sound', null, []);
-	let is_on = (toggle_sound() == 1);
-	if (is_on) {
+	if (Module.toggle_sound()) {
 		this.value = "Sound On";
 	} else {
 		this.value = "Sound Off";

@@ -15,11 +15,10 @@ string g_game_file_name;
 
 #ifdef WEB
 
-// FIXME: Change this function to use EMSCRIPTEN_BINDINGS
-extern "C" int toggle_sound() {
+bool toggle_sound() {
 	shared_ptr<PAPU> papu = salty_nes.nes->papu;
 	papu->_is_muted = ! papu->_is_muted;
-	return (papu->_is_muted ? 0 : 1);
+	return !papu->_is_muted;
 }
 
 void set_game_vector_size(size_t size) {
@@ -42,6 +41,7 @@ EMSCRIPTEN_BINDINGS(Wrappers) {
 	emscripten::function("set_game_vector_size", &set_game_vector_size);
 	emscripten::function("set_game_vector_data", &set_game_vector_data);
 	emscripten::function("start_emu", &start_emu);
+	emscripten::function("toggle_sound", &toggle_sound);
 };
 
 void onMainLoop() {

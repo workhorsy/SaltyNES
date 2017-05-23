@@ -34,5 +34,5 @@ done
 
 # Build the wasm file
 echo Building WASM ...
-$CC build/web/*.o $CFLAGS -s EXPORTED_FUNCTIONS="['_main', '_toggle_sound']" -o static/index.js
+$CC build/web/*.o $CFLAGS -o static/index.js
 mv static/index.wasm index.wasm
