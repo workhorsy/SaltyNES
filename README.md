@@ -17,7 +17,6 @@ python3 -m http.server 9999
 
 TODO
 * Remove the mutex, or replace it with std::mutex
-* Add loading roms from gui.
 * see if smb3 and punchout work in vnes
 * save memory to localstorage/indexeddb
 * tetris has no backgrounds
@@ -25,10 +24,9 @@ TODO
 * Try using opengl for the screen to see if it makes painting faster.
 * make main loops for desktop and web not have nested while loops
 * make fps show in html
-* Make it so the emulator can be restarted with out reloading the page
+* Make it so the emulator can be restarted without reloading the page
 * Add gamepad support
 * make the emulator easy to embed in other web apps by having hooks for all gui buttons
-* make it show progress for downloading games and wasm
 
 * Make it not cache the wasm file, even after shift reload
 * Is there a way to check if running asm.js instead of WebAssembly?
