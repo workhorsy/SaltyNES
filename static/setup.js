@@ -19,6 +19,7 @@ function onReady() {
 	show('#select_game');
 	show('#fileupload');
 	show('#screen');
+	hide('#progress');
 	Module.setStatus('');
 }
 
@@ -85,13 +86,6 @@ var Module = {
 		if (m && now - Date.now() < 30) return; // if this is a progress update, skip it if too soon
 		if (m) {
 			text = m[1];
-			progressElement.value = parseInt(m[2])*100;
-			progressElement.max = parseInt(m[4])*100;
-			progressElement.hidden = false;
-		} else {
-			progressElement.value = null;
-			progressElement.max = null;
-			progressElement.hidden = true;
 		}
 		statusElement.innerHTML = text;
 	},
@@ -221,6 +215,65 @@ $('#screen').addEventListener('contextmenu', function(event) {
 	event.preventDefault();
 }, false);
 
-documentOnReady(() => {
+function downloadBlobWithProgress(url, cb_progress, cb_done, cb_error) {
+	let oReq = new XMLHttpRequest();
+	oReq.open('GET', url, true);
+	oReq.responseType = 'blob';
 
+	oReq.addEventListener("progress", function(event) {
+	  if (event.lengthComputable) {
+	    let percent_complete = event.loaded / event.total;
+			cb_progress(percent_complete);
+	  }
+	}, false);
+	oReq.addEventListener("load", function(event) {
+		if (this.status === 200) {
+			let blob = new Blob([this.response]);
+			cb_done(blob);
+		} else {
+			cb_error(this.status);
+		}
+	}, false);
+	oReq.addEventListener("error", function(event) {
+		console.warn(event);
+	}, false);
+	oReq.addEventListener("abort", function(event) {
+		console.warn(event);
+	}, false);
+
+	oReq.timeout = 30000;
+	oReq.send();
+}
+
+function downloadAndLoadScript(url, mime_type, cb) {
+	downloadBlobWithProgress(url,
+		function(percent_complete) {
+			//console.log(percent_complete);
+			progressElement.value = percent_complete * 100;
+		},
+		function(blob) {
+			//console.log(blob);
+			let obj_url = URL.createObjectURL(blob);
+			let script = document.createElement('script');
+			script.type = mime_type;
+			script.onload = function() {
+				//URL.revokeObjectURL(obj_url);
+				//console.log('Revoking url: ' + url + ',  ' + obj_url);
+			};
+			script.setAttribute('src', obj_url);
+			document.head.appendChild(script);
+			cb();
+		},
+		function(status) {
+			console.warn(status);
+		}
+	);
+}
+
+documentOnReady(() => {
+	downloadAndLoadScript("index.wasm", "application/octet-binary", function() {
+		downloadAndLoadScript("static/index.js", "text/javascript", function() {
+
+		});
+	});
 });
