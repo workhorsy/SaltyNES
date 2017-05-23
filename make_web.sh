@@ -13,8 +13,8 @@ CFLAGS="-O3 -std=c++14 -lpthread -DWEB=true -s WASM=1 -s USE_SDL=2"
 source ../emsdk/emsdk_env.sh
 
 # Delete generated files
-rm -f *.wasm
-rm -f index.js
+rm -f static/*.wasm
+rm -f static/index.js
 
 #rm -f *.o
 #rm -f -rf build/web
@@ -34,4 +34,5 @@ done
 
 # Build the wasm file
 echo Building WASM ...
-$CC build/web/*.o $CFLAGS -s EXPORTED_FUNCTIONS="['_main', '_toggle_sound']" -o index.js
+$CC build/web/*.o $CFLAGS -s EXPORTED_FUNCTIONS="['_main', '_toggle_sound']" -o static/index.js
+mv static/index.wasm index.wasm

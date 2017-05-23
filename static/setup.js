@@ -164,7 +164,7 @@ $('#select_game').addEventListener('change', function(event) {
 
 	// Load the wasm boot strapper
 	let script = document.createElement('script');
-	script.setAttribute('src', 'index.js');
+	script.setAttribute('src', 'static/index.js');
 	document.head.appendChild(script);
 
 	// Hide the game selector, and enabled the full screen button

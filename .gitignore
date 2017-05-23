@@ -2,5 +2,5 @@
 roms/
 build/
 index.wasm
-index.js
+static/index.js
 saltynes
