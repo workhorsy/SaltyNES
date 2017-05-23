@@ -14,47 +14,30 @@ SaltyNES salty_nes;
 
 #ifdef WEB
 
+
 vector<uint8_t> g_game_data;
 
-vector<uint8_t>* vector_from_pointer(uintptr_t vec) {
-  return reinterpret_cast<vector<uint8_t>*>(vec);
+void set_game_vector_size(size_t size) {
+	g_game_data.resize(size);
+	std::fill(g_game_data.begin(), g_game_data.end(), 0);
 }
 
-void bind_g_game_data() {
-	EM_ASM_ARGS({
-		g_game_data = new Module.VectorUint8($0);
-	}, &g_game_data);
+void set_game_vector_data(size_t index, uint8_t data) {
+	g_game_data[index] = data;
 }
 
-void print_vector() {
-	printf("!!! g_game_data: %d\n", g_game_data[0]);
-	printf("!!! g_game_data: %d\n", g_game_data[1]);
-}
-
-EMSCRIPTEN_BINDINGS(Wrappers) {
-	emscripten::function("bind_g_game_data", &bind_g_game_data);
-	emscripten::function("print_vector", &print_vector);
-	emscripten::register_vector<uint8_t>("VectorUint8").constructor(&vector_from_pointer, emscripten::allow_raw_pointers());
-};
-
-extern "C" int toggle_sound() {
-	shared_ptr<PAPU> papu = salty_nes.nes->papu;
-	papu->_is_muted = ! papu->_is_muted;
-	return (papu->_is_muted ? 0 : 1);
-}
-
-void onGameDownloaded(void* userData, void* buffer, int size) {
-	printf("!!! onGameDownloaded\n");
-
+void start_emu() {
 	// Run the emulator
-	salty_nes.init_data((uint8_t*)buffer, size);
+	salty_nes.init_data(g_game_data.data(), g_game_data.size());
 	salty_nes.pre_run_setup(nullptr);
 	salty_nes.run();
 }
 
-void onGameFailed(void* userData) {
-	printf("!!! onGameFailed\n");
-}
+EMSCRIPTEN_BINDINGS(Wrappers) {
+	emscripten::function("set_game_vector_size", &set_game_vector_size);
+	emscripten::function("set_game_vector_data", &set_game_vector_data);
+	emscripten::function("start_emu", &start_emu);
+};
 
 void onMainLoop() {
 	if (salty_nes.nes && ! salty_nes.nes->getCpu()->stopRunning) {
@@ -69,20 +52,22 @@ void onMainLoop() {
 	}
 }
 
-void runMainLoop(string file_name) {
-	// Start downloading the game file
-	emscripten_async_wget_data(file_name.c_str(), nullptr, onGameDownloaded, onGameFailed);
-
-	// Run the main loop
+void runMainLoop() {
 	emscripten_set_main_loop(onMainLoop, 0, true);
+}
+
+extern "C" int toggle_sound() {
+	shared_ptr<PAPU> papu = salty_nes.nes->papu;
+	papu->_is_muted = ! papu->_is_muted;
+	return (papu->_is_muted ? 0 : 1);
 }
 
 #endif
 
 #ifdef DESKTOP
 
-void runMainLoop(string file_name) {
-	salty_nes.init(file_name);
+void runMainLoop() {
+	salty_nes.init("");
 	salty_nes.pre_run_setup(nullptr);
 	salty_nes.run();
 
@@ -99,20 +84,13 @@ void runMainLoop(string file_name) {
 
 #endif
 
-int main(int argc, char* argv[]) {
+int main() {
 	printf("%s\n", "");
 	printf("%s\n", "SaltyNES is a NES emulator in WebAssembly");
 	printf("%s\n", "SaltyNES (C) 2012-2017 Matthew Brennan Jones <matthew.brennan.jones@gmail.com>");
 	printf("%s\n", "vNES 2.14 (C) 2006-2011 Jamie Sanders thatsanderskid.com");
 	printf("%s\n", "This program is licensed under GPLV3 or later");
 	printf("%s\n", "");
-
-	// Make sure there is a rom file name
-	if (argc < 2) {
-		fprintf(stderr, "No rom file argument provided. Exiting ...\n");
-		return -1;
-	}
-	std::string file_name = argv[1];
 
 	// Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
@@ -150,7 +128,6 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	runMainLoop(file_name);
-
+	runMainLoop();
 	return 0;
 }

@@ -15,6 +15,24 @@ if (! ('WebAssembly' in window)) {
 	alert('This browser does not support WebAssembly.');
 }
 
+function play_game(game_data) {
+	Module.set_game_vector_size(game_data.length);
+
+	for (let i=0; i<game_data.length; ++i) {
+		Module.set_game_vector_data(i, game_data[i]);
+	}
+	
+	Module.start_emu();
+
+	// Hide the game selector, and enabled the full screen button
+	$('#button_full_screen').disabled = false;
+	$('#button_zoom_out').disabled = false;
+	$('#button_zoom_in').disabled = false;
+	$('#button_toggle_sound').disabled = false;
+	hide('#select_game');
+	hide('#fileupload');
+}
+
 var Module = {
 	preRun: [],
 	postRun: [],
@@ -170,36 +188,21 @@ $('#button_zoom_out').addEventListener('click', function() {
 $('#select_game').addEventListener('change', function(event) {
 	// Save the file name in the module args
 	Module.setStatus('Downloading ...');
-	Module.arguments = [ $('#select_game').value ];
-
-	// Load the wasm boot strapper
-	let script = document.createElement('script');
-	script.setAttribute('src', 'static/index.js');
-	document.head.appendChild(script);
-
-	// Hide the game selector, and enabled the full screen button
-	$('#button_full_screen').disabled = false;
-	$('#button_zoom_out').disabled = false;
-	$('#button_zoom_in').disabled = false;
-	$('#button_toggle_sound').disabled = false;
-	hide('#select_game');
+	let file_name = $('#select_game').value;
+	Module.arguments = [ file_name ];
+	fetch(file_name)
+		.then(response => response.arrayBuffer())
+		.then(data => {
+			 let game_data = new Uint8Array(data);
+			 play_game(game_data);
+		});
 }, false);
-
-var g_game_data = null;
 
 $('#fileupload').addEventListener('change', function(event) {
 	let fileReader = new FileReader();
 	fileReader.onload = function() {
-	 let uint8Array  = new Uint8Array(this.result);
-	 console.log(uint8Array);
-
-	 Module.bind_g_game_data();
-
-	 for (let i=0; i<uint8Array.length; ++i) {
-		 g_game_data.push_back(uint8Array[i]);
-	 }
-
-		Module.print_vector();
+	 let game_data  = new Uint8Array(this.result);
+	 play_game(game_data);
 	};
 	fileReader.readAsArrayBuffer(this.files[0]);
 }, false);
