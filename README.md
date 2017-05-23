@@ -1,5 +1,5 @@
 
-A NES emulator in WebAssembly.
+A NES emulator in WebAssembly. Try it live:  http://workhorsy.org/SaltyNES/
 
 Forked from the NaCl C++ version: https://github.com/workhorsylegacy/SaltyNESLegacy
 
