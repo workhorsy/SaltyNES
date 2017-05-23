@@ -22,10 +22,10 @@ function onReady() {
 }
 
 function play_game(game_data) {
-	Module.set_game_vector_size(game_data.length);
+	Module.set_game_data_size(game_data.length);
 
 	for (let i=0; i<game_data.length; ++i) {
-		Module.set_game_vector_data(i, game_data[i]);
+		Module.set_game_data_index(i, game_data[i]);
 	}
 
 	Module.start_emu();

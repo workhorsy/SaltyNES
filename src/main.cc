@@ -25,16 +25,16 @@ void start_emu() {
 	salty_nes.run();
 }
 
-void set_game_vector_size(size_t size) {
+void set_game_data_size(size_t size) {
 	g_game_data.resize(size);
 	std::fill(g_game_data.begin(), g_game_data.end(), 0);
 }
 
-void set_game_vector_data(size_t index, uint8_t data) {
+void set_game_data_index(size_t index, uint8_t data) {
 	g_game_data[index] = data;
 }
 
-void set_game_vector_data_from_file(string file_name) {
+void set_game_data_from_file(string file_name) {
 	ifstream reader(file_name.c_str(), ios::in|ios::binary);
 	if(reader.fail()) {
 		fprintf(stderr, "Error while loading rom '%s': %s\n", file_name.c_str(), strerror(errno));
@@ -54,13 +54,13 @@ void set_game_vector_data_from_file(string file_name) {
 #ifdef WEB
 
 EMSCRIPTEN_BINDINGS(Wrappers) {
-	emscripten::function("set_game_vector_size", &set_game_vector_size);
-	emscripten::function("set_game_vector_data", &set_game_vector_data);
+	emscripten::function("set_game_data_size", &set_game_data_size);
+	emscripten::function("set_game_data_index", &set_game_data_index);
 	emscripten::function("start_emu", &start_emu);
 	emscripten::function("toggle_sound", &toggle_sound);
 };
 
-void onMainLoop() {
+void on_main_loop() {
 	if (salty_nes.nes && ! salty_nes.nes->getCpu()->stopRunning) {
 		while (! salty_nes.nes->getCpu()->emulate()) {
 			// ..
@@ -73,20 +73,20 @@ void onMainLoop() {
 	}
 }
 
-void runMainLoop() {
+void run_main_loop() {
 	// Tell the web app that everything is loaded
 	EM_ASM_ARGS({
 		onReady();
 	}, 0);
 
-	emscripten_set_main_loop(onMainLoop, 0, true);
+	emscripten_set_main_loop(on_main_loop, 0, true);
 }
 
 #endif
 
 #ifdef DESKTOP
 
-void runMainLoop() {
+void run_main_loop() {
 	start_emu();
 
 	while (! salty_nes.nes->getCpu()->stopRunning) {
@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
 			fprintf(stderr, "No rom file argument provided. Exiting ...\n");
 			return -1;
 		}
-		set_game_vector_data_from_file(argv[1]);
+		set_game_data_from_file(argv[1]);
 	#endif
 	#ifdef WEB
 		g_game_file_name = "rom_from_browser.nes";
@@ -158,6 +158,6 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	runMainLoop();
+	run_main_loop();
 	return 0;
 }
