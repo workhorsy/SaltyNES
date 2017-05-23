@@ -13,12 +13,17 @@ SaltyNES salty_nes;
 vector<uint8_t> g_game_data;
 string g_game_file_name;
 
-#ifdef WEB
-
 bool toggle_sound() {
 	shared_ptr<PAPU> papu = salty_nes.nes->papu;
 	papu->_is_muted = ! papu->_is_muted;
 	return !papu->_is_muted;
+}
+
+void start_emu() {
+	// Run the emulator
+	salty_nes.init();
+	salty_nes.load_rom(g_game_file_name, &g_game_data, nullptr);
+	salty_nes.run();
 }
 
 void set_game_vector_size(size_t size) {
@@ -30,12 +35,24 @@ void set_game_vector_data(size_t index, uint8_t data) {
 	g_game_data[index] = data;
 }
 
-void start_emu() {
-	// Run the emulator
-	salty_nes.init();
-	salty_nes.load_rom(g_game_file_name, &g_game_data, nullptr);
-	salty_nes.run();
+void set_game_vector_data_from_file(string file_name) {
+	ifstream reader(file_name.c_str(), ios::in|ios::binary);
+	if(reader.fail()) {
+		fprintf(stderr, "Error while loading rom '%s': %s\n", file_name.c_str(), strerror(errno));
+		exit(1);
+	}
+
+	reader.seekg(0, ios::end);
+	size_t length = reader.tellg();
+	reader.seekg(0, ios::beg);
+	assert(length > 0);
+	g_game_data.resize(length);
+	reader.read(reinterpret_cast<char*>(g_game_data.data()), g_game_data.size());
+	reader.close();
+	g_game_file_name = file_name;
 }
+
+#ifdef WEB
 
 EMSCRIPTEN_BINDINGS(Wrappers) {
 	emscripten::function("set_game_vector_size", &set_game_vector_size);
@@ -69,23 +86,6 @@ void runMainLoop() {
 #endif
 
 #ifdef DESKTOP
-
-void set_game_vector_data_from_file(string file_name) {
-	ifstream reader(file_name.c_str(), ios::in|ios::binary);
-	if(reader.fail()) {
-		fprintf(stderr, "Error while loading rom '%s': %s\n", file_name.c_str(), strerror(errno));
-		exit(1);
-	}
-
-	reader.seekg(0, ios::end);
-	size_t length = reader.tellg();
-	reader.seekg(0, ios::beg);
-	assert(length > 0);
-	g_game_data.resize(length);
-	reader.read(reinterpret_cast<char*>(g_game_data.data()), g_game_data.size());
-	reader.close();
-	g_game_file_name = file_name;
-}
 
 void runMainLoop() {
 	salty_nes.init();
