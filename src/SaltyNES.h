@@ -437,6 +437,7 @@ public:
 	void reset();
 	void start();
 	void stop();
+	void emulate_frame();
 	bool emulate();
 	int load(int addr);
 	int load16bit(int addr);

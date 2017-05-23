@@ -62,9 +62,8 @@ EMSCRIPTEN_BINDINGS(Wrappers) {
 
 void on_main_loop() {
 	if (salty_nes.nes && ! salty_nes.nes->getCpu()->stopRunning) {
-		while (! salty_nes.nes->getCpu()->emulate()) {
-			// ..
-		}
+		salty_nes.nes->getCpu()->emulate_frame();
+
 		if (salty_nes.nes->getCpu()->stopRunning) {
 			// Clanup the SDL resources then exit
 			SDL_Quit();
@@ -90,9 +89,7 @@ void run_main_loop() {
 	start_emu();
 
 	while (! salty_nes.nes->getCpu()->stopRunning) {
-		while (! salty_nes.nes->getCpu()->emulate()) {
-			// ..
-		}
+		salty_nes.nes->getCpu()->emulate_frame();
 	}
 	if (salty_nes.nes->getCpu()->stopRunning) {
 		// Clanup the SDL resources then exit

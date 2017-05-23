@@ -204,6 +204,12 @@ void CPU::stop() {
 	F_SIGN_NEW 	= F_SIGN;
 }
 
+void CPU::emulate_frame() {
+	while (! this->emulate()) {
+		// ..
+	}
+}
+
 // Emulates cpu instructions until screen is drawn.
 bool CPU::emulate() {
 	// NES Memory
