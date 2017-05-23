@@ -53,9 +53,11 @@ void SaltyNES::run() {
 }
 
 void SaltyNES::stop() {
-	nes->stopEmulation();
-	//System.out.println("vNES has stopped the processor.");
-	nes->getPapu()->stop();
+	if (nes) {
+		nes->stopEmulation();
+		//System.out.println("vNES has stopped the processor.");
+		nes->getPapu()->stop();
+	}
 }
 
 void SaltyNES::readParams() {
