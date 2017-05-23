@@ -32,4 +32,3 @@ TODO
 * Make it not cache the wasm file, even after shift reload
 * Is there a way to check if running asm.js instead of WebAssembly?
 * Shrink wasm file by removing complex libraries
-* Make it show a message if WebAssembly is not supported
