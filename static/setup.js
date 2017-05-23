@@ -185,6 +185,25 @@ $('#select_game').addEventListener('change', function(event) {
 	hide('#select_game');
 }, false);
 
+var g_game_data = null;
+
+$('#fileupload').addEventListener('change', function(event) {
+	let fileReader = new FileReader();
+	fileReader.onload = function() {
+	 let uint8Array  = new Uint8Array(this.result);
+	 console.log(uint8Array);
+
+	 Module.bind_g_game_data();
+
+	 for (let i=0; i<uint8Array.length; ++i) {
+		 g_game_data.push_back(uint8Array[i]);
+	 }
+
+		Module.print_vector();
+	};
+	fileReader.readAsArrayBuffer(this.files[0]);
+}, false);
+
 $('#screen').addEventListener('contextmenu', function(event) {
 	event.preventDefault();
 }, false);

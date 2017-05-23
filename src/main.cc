@@ -6,12 +6,36 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 */
 
 #include "SaltyNES.h"
+#include <emscripten/bind.h>
 
 using namespace std;
 
 SaltyNES salty_nes;
 
 #ifdef WEB
+
+vector<uint8_t> g_game_data;
+
+vector<uint8_t>* vector_from_pointer(uintptr_t vec) {
+  return reinterpret_cast<vector<uint8_t>*>(vec);
+}
+
+void bind_g_game_data() {
+	EM_ASM_ARGS({
+		g_game_data = new Module.VectorUint8($0);
+	}, &g_game_data);
+}
+
+void print_vector() {
+	printf("!!! g_game_data: %d\n", g_game_data[0]);
+	printf("!!! g_game_data: %d\n", g_game_data[1]);
+}
+
+EMSCRIPTEN_BINDINGS(Wrappers) {
+	emscripten::function("bind_g_game_data", &bind_g_game_data);
+	emscripten::function("print_vector", &print_vector);
+	emscripten::register_vector<uint8_t>("VectorUint8").constructor(&vector_from_pointer, emscripten::allow_raw_pointers());
+};
 
 extern "C" int toggle_sound() {
 	shared_ptr<PAPU> papu = salty_nes.nes->papu;
