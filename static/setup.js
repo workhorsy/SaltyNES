@@ -15,6 +15,24 @@ if (! ('WebAssembly' in window)) {
 	alert('This browser does not support WebAssembly.');
 }
 
+function play_game(game_data) {
+	Module.set_game_vector_size(game_data.length);
+
+	for (let i=0; i<game_data.length; ++i) {
+		Module.set_game_vector_data(i, game_data[i]);
+	}
+	
+	Module.start_emu();
+
+	// Hide the game selector, and enabled the full screen button
+	$('#button_full_screen').disabled = false;
+	$('#button_zoom_out').disabled = false;
+	$('#button_zoom_in').disabled = false;
+	$('#button_toggle_sound').disabled = false;
+	hide('#select_game');
+	hide('#fileupload');
+}
+
 var Module = {
 	preRun: [],
 	postRun: [],
@@ -170,19 +188,23 @@ $('#button_zoom_out').addEventListener('click', function() {
 $('#select_game').addEventListener('change', function(event) {
 	// Save the file name in the module args
 	Module.setStatus('Downloading ...');
-	Module.arguments = [ $('#select_game').value ];
+	let file_name = $('#select_game').value;
+	Module.arguments = [ file_name ];
+	fetch(file_name)
+		.then(response => response.arrayBuffer())
+		.then(data => {
+			 let game_data = new Uint8Array(data);
+			 play_game(game_data);
+		});
+}, false);
 
-	// Load the wasm boot strapper
-	let script = document.createElement('script');
-	script.setAttribute('src', 'static/index.js');
-	document.head.appendChild(script);
-
-	// Hide the game selector, and enabled the full screen button
-	$('#button_full_screen').disabled = false;
-	$('#button_zoom_out').disabled = false;
-	$('#button_zoom_in').disabled = false;
-	$('#button_toggle_sound').disabled = false;
-	hide('#select_game');
+$('#fileupload').addEventListener('change', function(event) {
+	let fileReader = new FileReader();
+	fileReader.onload = function() {
+	 let game_data  = new Uint8Array(this.result);
+	 play_game(game_data);
+	};
+	fileReader.readAsArrayBuffer(this.files[0]);
 }, false);
 
 $('#screen').addEventListener('contextmenu', function(event) {

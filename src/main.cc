@@ -10,27 +10,39 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 using namespace std;
 
 SaltyNES salty_nes;
+vector<uint8_t> g_game_data;
+string g_game_file_name;
 
 #ifdef WEB
 
+// FIXME: Change this function to use EMSCRIPTEN_BINDINGS
 extern "C" int toggle_sound() {
 	shared_ptr<PAPU> papu = salty_nes.nes->papu;
 	papu->_is_muted = ! papu->_is_muted;
 	return (papu->_is_muted ? 0 : 1);
 }
 
-void onGameDownloaded(void* userData, void* buffer, int size) {
-	printf("!!! onGameDownloaded\n");
+void set_game_vector_size(size_t size) {
+	g_game_data.resize(size);
+	std::fill(g_game_data.begin(), g_game_data.end(), 0);
+}
 
+void set_game_vector_data(size_t index, uint8_t data) {
+	g_game_data[index] = data;
+}
+
+void start_emu() {
 	// Run the emulator
-	salty_nes.init_data((uint8_t*)buffer, size);
-	salty_nes.pre_run_setup(nullptr);
+	salty_nes.init();
+	salty_nes.load_rom(g_game_file_name, &g_game_data, nullptr);
 	salty_nes.run();
 }
 
-void onGameFailed(void* userData) {
-	printf("!!! onGameFailed\n");
-}
+EMSCRIPTEN_BINDINGS(Wrappers) {
+	emscripten::function("set_game_vector_size", &set_game_vector_size);
+	emscripten::function("set_game_vector_data", &set_game_vector_data);
+	emscripten::function("start_emu", &start_emu);
+};
 
 void onMainLoop() {
 	if (salty_nes.nes && ! salty_nes.nes->getCpu()->stopRunning) {
@@ -45,11 +57,7 @@ void onMainLoop() {
 	}
 }
 
-void runMainLoop(string file_name) {
-	// Start downloading the game file
-	emscripten_async_wget_data(file_name.c_str(), nullptr, onGameDownloaded, onGameFailed);
-
-	// Run the main loop
+void runMainLoop() {
 	emscripten_set_main_loop(onMainLoop, 0, true);
 }
 
@@ -57,9 +65,26 @@ void runMainLoop(string file_name) {
 
 #ifdef DESKTOP
 
-void runMainLoop(string file_name) {
-	salty_nes.init(file_name);
-	salty_nes.pre_run_setup(nullptr);
+void set_game_vector_data_from_file(string file_name) {
+	ifstream reader(file_name.c_str(), ios::in|ios::binary);
+	if(reader.fail()) {
+		fprintf(stderr, "Error while loading rom '%s': %s\n", file_name.c_str(), strerror(errno));
+		exit(1);
+	}
+
+	reader.seekg(0, ios::end);
+	size_t length = reader.tellg();
+	reader.seekg(0, ios::beg);
+	assert(length > 0);
+	g_game_data.resize(length);
+	reader.read(reinterpret_cast<char*>(g_game_data.data()), g_game_data.size());
+	reader.close();
+	g_game_file_name = file_name;
+}
+
+void runMainLoop() {
+	salty_nes.init();
+	salty_nes.load_rom(g_game_file_name, &g_game_data, nullptr);
 	salty_nes.run();
 
 	while (! salty_nes.nes->getCpu()->stopRunning) {
@@ -84,11 +109,16 @@ int main(int argc, char* argv[]) {
 	printf("%s\n", "");
 
 	// Make sure there is a rom file name
-	if (argc < 2) {
-		fprintf(stderr, "No rom file argument provided. Exiting ...\n");
-		return -1;
-	}
-	std::string file_name = argv[1];
+	#ifdef DESKTOP
+		if (argc < 2) {
+			fprintf(stderr, "No rom file argument provided. Exiting ...\n");
+			return -1;
+		}
+		set_game_vector_data_from_file(argv[1]);
+	#endif
+	#ifdef WEB
+		g_game_file_name = "rom_from_browser.nes";
+	#endif
 
 	// Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
@@ -126,7 +156,6 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	runMainLoop(file_name);
-
+	runMainLoop();
 	return 0;
 }
