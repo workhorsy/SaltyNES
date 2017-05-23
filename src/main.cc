@@ -20,7 +20,6 @@ bool toggle_sound() {
 }
 
 void start_emu() {
-	// Run the emulator
 	salty_nes.init();
 	salty_nes.load_rom(g_game_file_name, &g_game_data, nullptr);
 	salty_nes.run();
@@ -88,9 +87,7 @@ void runMainLoop() {
 #ifdef DESKTOP
 
 void runMainLoop() {
-	salty_nes.init();
-	salty_nes.load_rom(g_game_file_name, &g_game_data, nullptr);
-	salty_nes.run();
+	start_emu();
 
 	while (! salty_nes.nes->getCpu()->stopRunning) {
 		while (! salty_nes.nes->getCpu()->emulate()) {
