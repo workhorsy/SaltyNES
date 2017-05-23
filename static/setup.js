@@ -6,39 +6,95 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 */
 
 
-const main = (function() {
-	let g_zoom = 1;
-	let g_mouse_move_timeout = null;
+let g_zoom = 1;
+let g_mouse_move_timeout = null;
 
-	let statusElement = $('#status');
-	let progressElement = $('#progress');
+let statusElement = $('#status');
+let progressElement = $('#progress');
+var Module = null;
 
-	function onReady() {
-		show('#select_game');
-		show('#fileupload');
-		show('#screen');
-		hide('#progress');
-		Module.setStatus('');
+function onReady() {
+	show('#select_game');
+	show('#fileupload');
+	show('#screen');
+	hide('#progress');
+	Module.setStatus('');
+}
+
+function play_game(game_data) {
+	Module.set_game_vector_size(game_data.length);
+
+	for (let i=0; i<game_data.length; ++i) {
+		Module.set_game_vector_data(i, game_data[i]);
 	}
 
-	function play_game(game_data) {
-		Module.set_game_vector_size(game_data.length);
+	Module.start_emu();
 
-		for (let i=0; i<game_data.length; ++i) {
-			Module.set_game_vector_data(i, game_data[i]);
+	// Hide the game selector, and enabled the full screen button
+	$('#button_full_screen').disabled = false;
+	$('#button_zoom_out').disabled = false;
+	$('#button_zoom_in').disabled = false;
+	$('#button_toggle_sound').disabled = false;
+	Module.setStatus('');
+}
+
+function downloadBlobWithProgress(url, cb_progress, cb_done, cb_error) {
+	let oReq = new XMLHttpRequest();
+	oReq.open('GET', url, true);
+	oReq.responseType = 'blob';
+
+	oReq.addEventListener("progress", function(event) {
+		if (event.lengthComputable) {
+			let percent_complete = event.loaded / event.total;
+			cb_progress(percent_complete);
 		}
-		
-		Module.start_emu();
+	}, false);
+	oReq.addEventListener("load", function(event) {
+		if (this.status === 200) {
+			let blob = new Blob([this.response]);
+			cb_done(blob);
+		} else {
+			cb_error(this.status);
+		}
+	}, false);
+	oReq.addEventListener("error", function(event) {
+		console.warn(event);
+	}, false);
+	oReq.addEventListener("abort", function(event) {
+		console.warn(event);
+	}, false);
 
-		// Hide the game selector, and enabled the full screen button
-		$('#button_full_screen').disabled = false;
-		$('#button_zoom_out').disabled = false;
-		$('#button_zoom_in').disabled = false;
-		$('#button_toggle_sound').disabled = false;
-		Module.setStatus('');
-	}
+	oReq.timeout = 30000;
+	oReq.send();
+}
 
-	var Module = {
+function downloadAndLoadScript(url, mime_type, cb) {
+	downloadBlobWithProgress(url,
+		function(percent_complete) {
+			//console.log(percent_complete);
+			progressElement.value = percent_complete * 100;
+		},
+		function(blob) {
+			//console.log(blob);
+			let obj_url = URL.createObjectURL(blob);
+			let script = document.createElement('script');
+			script.type = mime_type;
+			script.onload = function() {
+				//URL.revokeObjectURL(obj_url);
+				//console.log('Revoking url: ' + url + ',  ' + obj_url);
+			};
+			script.setAttribute('src', obj_url);
+			document.head.appendChild(script);
+			cb();
+		},
+		function(status) {
+			console.warn(status);
+		}
+	);
+}
+
+let main = (function() {
+	Module = {
 		preRun: [],
 		postRun: [],
 		print: (function() {
@@ -212,61 +268,6 @@ const main = (function() {
 	$('#screen').addEventListener('contextmenu', function(event) {
 		event.preventDefault();
 	}, false);
-
-	function downloadBlobWithProgress(url, cb_progress, cb_done, cb_error) {
-		let oReq = new XMLHttpRequest();
-		oReq.open('GET', url, true);
-		oReq.responseType = 'blob';
-
-		oReq.addEventListener("progress", function(event) {
-		  if (event.lengthComputable) {
-		    let percent_complete = event.loaded / event.total;
-				cb_progress(percent_complete);
-		  }
-		}, false);
-		oReq.addEventListener("load", function(event) {
-			if (this.status === 200) {
-				let blob = new Blob([this.response]);
-				cb_done(blob);
-			} else {
-				cb_error(this.status);
-			}
-		}, false);
-		oReq.addEventListener("error", function(event) {
-			console.warn(event);
-		}, false);
-		oReq.addEventListener("abort", function(event) {
-			console.warn(event);
-		}, false);
-
-		oReq.timeout = 30000;
-		oReq.send();
-	}
-
-	function downloadAndLoadScript(url, mime_type, cb) {
-		downloadBlobWithProgress(url,
-			function(percent_complete) {
-				//console.log(percent_complete);
-				progressElement.value = percent_complete * 100;
-			},
-			function(blob) {
-				//console.log(blob);
-				let obj_url = URL.createObjectURL(blob);
-				let script = document.createElement('script');
-				script.type = mime_type;
-				script.onload = function() {
-					//URL.revokeObjectURL(obj_url);
-					//console.log('Revoking url: ' + url + ',  ' + obj_url);
-				};
-				script.setAttribute('src', obj_url);
-				document.head.appendChild(script);
-				cb();
-			},
-			function(status) {
-				console.warn(status);
-			}
-		);
-	}
 
 	// Load the large files and show progress
 	documentOnReady(() => {
