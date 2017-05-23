@@ -28,7 +28,7 @@ function play_game(game_data) {
 		Module.set_game_data_index(i, game_data[i]);
 	}
 
-	Module.start_emu();
+	Module.on_emultor_start();
 
 	// Hide the game selector, and enabled the full screen button
 	$('#button_full_screen').disabled = false;

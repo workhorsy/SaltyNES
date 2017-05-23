@@ -24,7 +24,6 @@ TODO
 * tetris has no backgrounds
 
 * Try using opengl for the screen to see if it makes painting faster.
-* make main loops for desktop and web not have nested while loops
 * make fps show in html
 * Make it so the emulator can be restarted without reloading the page
 * Add gamepad support

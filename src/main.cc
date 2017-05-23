@@ -19,10 +19,42 @@ bool toggle_sound() {
 	return !papu->_is_muted;
 }
 
-void start_emu() {
+void on_emultor_start() {
 	salty_nes.init();
 	salty_nes.load_rom(g_game_file_name, &g_game_data, nullptr);
 	salty_nes.run();
+}
+
+void on_emultor_loop() {
+	if (salty_nes.nes) {
+		salty_nes.nes->getCpu()->emulate_frame();
+
+		if (salty_nes.nes->getCpu()->stopRunning) {
+			#ifdef WEB
+				emscripten_cancel_main_loop();
+			#endif
+		}
+	}
+}
+
+void start_main_loop() {
+	#ifdef DESKTOP
+		while (! salty_nes.nes->getCpu()->stopRunning) {
+			on_emultor_loop();
+		}
+	#endif
+
+	#ifdef WEB
+		// Tell the web app that everything is loaded
+		EM_ASM_ARGS({
+			onReady();
+		}, 0);
+
+		emscripten_set_main_loop(on_emultor_loop, 0, true);
+	#endif
+
+	// Cleanup the SDL resources then exit
+	SDL_Quit();
 }
 
 void set_game_data_size(size_t size) {
@@ -56,46 +88,9 @@ void set_game_data_from_file(string file_name) {
 EMSCRIPTEN_BINDINGS(Wrappers) {
 	emscripten::function("set_game_data_size", &set_game_data_size);
 	emscripten::function("set_game_data_index", &set_game_data_index);
-	emscripten::function("start_emu", &start_emu);
+	emscripten::function("on_emultor_start", &on_emultor_start);
 	emscripten::function("toggle_sound", &toggle_sound);
 };
-
-void on_main_loop() {
-	if (salty_nes.nes && ! salty_nes.nes->getCpu()->stopRunning) {
-		salty_nes.nes->getCpu()->emulate_frame();
-
-		if (salty_nes.nes->getCpu()->stopRunning) {
-			// Clanup the SDL resources then exit
-			SDL_Quit();
-			emscripten_cancel_main_loop();
-		}
-	}
-}
-
-void run_main_loop() {
-	// Tell the web app that everything is loaded
-	EM_ASM_ARGS({
-		onReady();
-	}, 0);
-
-	emscripten_set_main_loop(on_main_loop, 0, true);
-}
-
-#endif
-
-#ifdef DESKTOP
-
-void run_main_loop() {
-	start_emu();
-
-	while (! salty_nes.nes->getCpu()->stopRunning) {
-		salty_nes.nes->getCpu()->emulate_frame();
-	}
-	if (salty_nes.nes->getCpu()->stopRunning) {
-		// Clanup the SDL resources then exit
-		SDL_Quit();
-	}
-}
 
 #endif
 
@@ -155,6 +150,9 @@ int main(int argc, char* argv[]) {
 		return -1;
 	}
 
-	run_main_loop();
+	#ifdef DESKTOP
+		on_emultor_start();
+	#endif
+	start_main_loop();
 	return 0;
 }
