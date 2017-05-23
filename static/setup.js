@@ -136,11 +136,21 @@ $('#button_toggle_sound').addEventListener('click', function() {
 }, false);
 
 $('#button_full_screen').addEventListener('click', function() {
+	// Go full screen
 	Module.requestFullscreen(
 		false,
 		false
 	);
 	g_zoom = 1;
+
+	// Set the background color of the screen holder elements to black.
+	// This will prevent the white line on the bottom of the screen in Chrome.
+	let holder = $('#screen_holder');
+	let children = holder.children;
+	for (let i = 0; i < children.length; ++i) {
+		children[i].style.backgroundColor = 'black';
+	}
+
 }, false);
 
 $('#button_zoom_in').addEventListener('click', function() {
