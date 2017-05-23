@@ -30,6 +30,7 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #ifdef WEB
 	#include <emscripten.h>
+	#include <emscripten/bind.h>
 #endif
 
 using namespace std;
@@ -903,7 +904,7 @@ public:
 	shared_ptr<Memory> getSprMemory();
 	shared_ptr<ROM> getRom();
 	shared_ptr<MapperDefault> getMemoryMapper();
-	bool load_rom_from_data(string rom_name, uint8_t* data, size_t length, array<uint16_t, 0x2000>* save_ram);
+	bool load_rom_from_data(string rom_name, vector<uint8_t>* data, array<uint16_t, 0x2000>* save_ram);
 	void reset();
 	void enableSound(bool enable);
 //	void setFramerate(int rate);
@@ -1335,7 +1336,7 @@ public:
 	~ROM();
 	string sha256sum(uint8_t* data, size_t length);
 	string getmapperName();
-	void load_from_data(string file_name, uint8_t* data, size_t length, array<uint16_t, 0x2000>* save_ram);
+	void load_from_data(string file_name, vector<uint8_t>* data, array<uint16_t, 0x2000>* save_ram);
 	bool isValid();
 	int getRomBankCount();
 	int getVromBankCount();
@@ -1364,14 +1365,11 @@ public:
 	int progress;
 	shared_ptr<NES> nes;
 	string _rom_name;
-	uint8_t* _rom_data;
-	size_t _rom_data_length;
 
 	SaltyNES();
 	~SaltyNES();
-	void init(string rom_name);
-	void init_data(uint8_t* rom_data, size_t length);
-	void pre_run_setup(array<uint16_t, 0x2000>* save_ram);
+	void init();
+	void load_rom(string rom_name, vector<uint8_t>* rom_data, array<uint16_t, 0x2000>* save_ram);
 	void run();
 	void stop();
 	void readParams();

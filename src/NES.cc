@@ -249,7 +249,7 @@ shared_ptr<MapperDefault> NES::getMemoryMapper() {
 	return memMapper;
 }
 
-bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length, array<uint16_t, 0x2000>* save_ram) {
+bool NES::load_rom_from_data(string rom_name, vector<uint8_t>* data, array<uint16_t, 0x2000>* save_ram) {
 	// Can't load ROM while still running.
 	if(_isRunning) {
 		stopEmulation();
@@ -259,7 +259,7 @@ bool NES::load_rom_from_data(string rom_name, uint8_t* data, size_t length, arra
 		// Load ROM file:
 
 		rom = make_shared<ROM>()->Init(shared_from_this());
-		rom->load_from_data(rom_name, data, length, save_ram);
+		rom->load_from_data(rom_name, data, save_ram);
 
 		if(rom->isValid()) {
 

@@ -13,8 +13,6 @@ SaltyNES::SaltyNES() {
 	samplerate = 0;
 	progress = 0;
 	nes = nullptr;
-	_rom_data = nullptr;
-	_rom_data_length = 0;
 }
 
 SaltyNES::~SaltyNES() {
@@ -23,59 +21,22 @@ SaltyNES::~SaltyNES() {
 	_rom_name.clear();
 }
 
-void SaltyNES::init(string rom_name) {
-	//Logger::init("logs/log");
+void SaltyNES::init() {
+	initKeyCodes();
+	readParams();
+
+	Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
+
+	auto joy1 = make_shared<InputHandler>(0);
+	auto joy2 = make_shared<InputHandler>(1);
+	nes = make_shared<NES>()->Init(joy1, joy2);
+	nes->enableSound(true);
+	nes->reset();
+}
+
+void SaltyNES::load_rom(string rom_name, vector<uint8_t>* rom_data, array<uint16_t, 0x2000>* save_ram) {
 	_rom_name = rom_name;
-	initKeyCodes();
-	readParams();
-
-	Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
-
-	auto joy1 = make_shared<InputHandler>(0);
-	auto joy2 = make_shared<InputHandler>(1);
-	nes = make_shared<NES>()->Init(joy1, joy2);
-	nes->enableSound(true);
-	nes->reset();
-}
-
-void SaltyNES::init_data(uint8_t* rom_data, size_t length) {
-	_rom_data = rom_data;
-	_rom_data_length = length;
-	initKeyCodes();
-	readParams();
-
-	Globals::memoryFlushValue = 0x00; // make SMB1 hacked version work.
-
-	auto joy1 = make_shared<InputHandler>(0);
-	auto joy2 = make_shared<InputHandler>(1);
-	nes = make_shared<NES>()->Init(joy1, joy2);
-	nes->enableSound(true);
-	nes->reset();
-}
-
-void SaltyNES::pre_run_setup(array<uint16_t, 0x2000>* save_ram) {
-	// Load ROM file:
-	if(_rom_data == nullptr) {
-		log_to_browser("Loading ROM from file.");
-
-		ifstream reader(_rom_name.c_str(), ios::in|ios::binary);
-		if(reader.fail()) {
-			fprintf(stderr, "Error while loading rom '%s': %s\n", _rom_name.c_str(), strerror(errno));
-			exit(1);
-		}
-
-		reader.seekg(0, ios::end);
-		size_t length = reader.tellg();
-		reader.seekg(0, ios::beg);
-		assert(length > 0);
-		auto bdata = vector<uint8_t>(length);
-		reader.read(reinterpret_cast<char*>(bdata.data()), bdata.size());
-		nes->load_rom_from_data(_rom_name.c_str(), bdata.data(), bdata.size(), save_ram);
-		reader.close();
-	} else {
-		log_to_browser("Loading ROM from data.");
-		nes->load_rom_from_data("rom_from_browser.nes", _rom_data, _rom_data_length, save_ram);
-	}
+	nes->load_rom_from_data(rom_name, rom_data, save_ram);
 }
 
 void SaltyNES::run() {

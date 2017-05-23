@@ -335,16 +335,16 @@ string ROM::getmapperName() {
 	return ss.str();
 }
 
-void ROM::load_from_data(string file_name, uint8_t* data, size_t length, array<uint16_t, 0x2000>* save_ram) {
+void ROM::load_from_data(string file_name, vector<uint8_t>* data, array<uint16_t, 0x2000>* save_ram) {
 	fileName = file_name;
-	auto sdata = vector<uint16_t>(length);
+	auto sdata = vector<uint16_t>(data->size());
 	for(size_t i=0; i<sdata.size(); ++i) {
-		sdata[i] = static_cast<uint16_t>(data[i] & 255);
+		sdata[i] = static_cast<uint16_t>(data->data()[i] & 255);
 	}
 	log_to_browser("log: rom::load_from_data");
 
 	// Get sha256 of the rom
-	_sha256 = sha256sum(data, length);
+	_sha256 = sha256sum(data->data(), data->size());
 	log_to_browser("log: rom::sha256sum");
 
 	// Read header:
@@ -421,7 +421,7 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, array<u
 	size_t offset = 16;
 	for(size_t i = 0; i < romCount; ++i) {
 		for(size_t j = 0; j < 16384; ++j) {
-			if(offset + j >= length) {
+			if(offset + j >= data->size()) {
 				break;
 			}
 			rom[i][j] = sdata[offset + j];
@@ -432,7 +432,7 @@ void ROM::load_from_data(string file_name, uint8_t* data, size_t length, array<u
 	// Load CHR-ROM banks:
 	for(size_t i = 0; i < vromCount; ++i) {
 		for(size_t j = 0; j < 4096; ++j) {
-			if(offset + j >= length) {
+			if(offset + j >= data->size()) {
 				break;
 			}
 			vrom[i][j] = sdata[offset + j];
