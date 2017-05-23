@@ -27,9 +27,9 @@
 		</div>
 
 		<div id="screen_holder">
-			<canvas id="screen"></canvas>
+			<canvas id="screen" class="hidden"></canvas>
 
-			<div id="status">Downloading ...</div>
+			<div id="status">Loading ...</div>
 
 			<div>
 				<progress value="0" max="100" id="progress" hidden=1></progress>
@@ -37,13 +37,13 @@
 		</div>
 
 		<div id="game_holder">
-			<select id="select_game" class="ui_select">
+			<select id="select_game" class="ui_select hidden">
 				<option>Select a Game ...</option>
 				<option value="roms/Megaman II (U) [!].nes">Megaman II</option>
 				<option value="roms/Ninja Gaiden (U) [!].nes">Ninja Gaiden</option>
 				<option value="roms/Super Mario Bros. (JU) [!].nes">Super Mario Bros.</option>
 			</select>
-			<input id="fileupload" type="file" />
+			<input id="fileupload" type="file" class="hidden" />
 		</div>
 
 		<h3>Controls</h3>

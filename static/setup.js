@@ -15,6 +15,13 @@ if (! ('WebAssembly' in window)) {
 	alert('This browser does not support WebAssembly.');
 }
 
+function onReady() {
+	show('#select_game');
+	show('#fileupload');
+	show('#screen');
+	Module.setStatus('');
+}
+
 function play_game(game_data) {
 	Module.set_game_vector_size(game_data.length);
 
@@ -29,8 +36,7 @@ function play_game(game_data) {
 	$('#button_zoom_out').disabled = false;
 	$('#button_zoom_in').disabled = false;
 	$('#button_toggle_sound').disabled = false;
-	hide('#select_game');
-	hide('#fileupload');
+	Module.setStatus('');
 }
 
 var Module = {
@@ -184,8 +190,11 @@ $('#button_zoom_out').addEventListener('click', function() {
 }, false);
 
 $('#select_game').addEventListener('change', function(event) {
-	// Save the file name in the module args
+	hide('#select_game');
+	hide('#fileupload');
 	Module.setStatus('Downloading ...');
+
+	// Save the file name in the module args
 	let file_name = $('#select_game').value;
 	Module.arguments = [ file_name ];
 	fetch(file_name)
@@ -197,10 +206,13 @@ $('#select_game').addEventListener('change', function(event) {
 }, false);
 
 $('#fileupload').addEventListener('change', function(event) {
+	hide('#select_game');
+	hide('#fileupload');
+
 	let fileReader = new FileReader();
 	fileReader.onload = function() {
-	 let game_data  = new Uint8Array(this.result);
-	 play_game(game_data);
+		let game_data  = new Uint8Array(this.result);
+		play_game(game_data);
 	};
 	fileReader.readAsArrayBuffer(this.files[0]);
 }, false);
@@ -210,5 +222,5 @@ $('#screen').addEventListener('contextmenu', function(event) {
 }, false);
 
 documentOnReady(() => {
-	Module.setStatus('Ready ...');
+
 });

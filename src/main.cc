@@ -58,6 +58,11 @@ void onMainLoop() {
 }
 
 void runMainLoop() {
+	// Tell the web app that everything is loaded
+	EM_ASM_ARGS({
+		onReady();
+	}, 0);
+
 	emscripten_set_main_loop(onMainLoop, 0, true);
 }
 
