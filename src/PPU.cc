@@ -374,17 +374,104 @@ void PPU::startVBlank() {
 
 	startFrame();
 
-	// Check for quiting
-	SDL_Event sdl_event;
-	while(SDL_PollEvent(&sdl_event) == 1) {
-		if(sdl_event.type == SDL_QUIT) {
+	// Check for key presses
+	//nes->_joy1->poll_for_key_events();
+	//nes->_joy2->poll_for_key_events();
+
+	// Check for events
+	SDL_Event event;
+	while (SDL_PollEvent(&event)) {
+		if (event.type == SDL_QUIT) {
 			nes->cpu->stopRunning = true;
+#ifdef WEB
+		} else if (event.type == SDL_JOYBUTTONDOWN || event.type == SDL_JOYBUTTONUP) {
+			//printf("?????????? event.cbutton.button: %d\n", event.cbutton.button);
+			bool is_down = (event.type == SDL_JOYBUTTONDOWN);
+			switch (event.cbutton.button) {
+				case 7://SDL_CONTROLLER_BUTTON_START:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_START]] = is_down;
+					break;
+				case 6://SDL_CONTROLLER_BUTTON_BACK:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_SELECT]] = is_down;
+					break;
+				case 0://SDL_CONTROLLER_BUTTON_A:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_B]] = is_down;
+					break;
+				case 1://SDL_CONTROLLER_BUTTON_B:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_A]] = is_down;
+					break;
+				case 13://SDL_CONTROLLER_BUTTON_DPAD_UP:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_UP]] = is_down;
+					break;
+				case 14://SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_DOWN]] = is_down;
+					break;
+				case 12://SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_RIGHT]] = is_down;
+					break;
+				case 11://SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_LEFT]] = is_down;
+					break;
+				default:
+					break;
+			}
+#endif
+#ifdef DESKTOP
+		} else if (event.type == SDL_CONTROLLERBUTTONDOWN || event.type == SDL_CONTROLLERBUTTONUP) {
+			//printf("!!! event.cbutton.button: %d\n", event.cbutton.button);
+			bool is_down = (event.type == SDL_CONTROLLERBUTTONDOWN);
+			switch (event.cbutton.button) {
+				case SDL_CONTROLLER_BUTTON_START:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_START]] = is_down;
+					break;
+				case SDL_CONTROLLER_BUTTON_BACK:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_SELECT]] = is_down;
+					break;
+				case SDL_CONTROLLER_BUTTON_A:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_B]] = is_down;
+					break;
+				case SDL_CONTROLLER_BUTTON_B:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_A]] = is_down;
+					break;
+				case SDL_CONTROLLER_BUTTON_DPAD_UP:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_UP]] = is_down;
+					break;
+				case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_DOWN]] = is_down;
+					break;
+				case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_RIGHT]] = is_down;
+					break;
+				case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+					nes->_joy1->_keys[nes->_joy1->_map[InputHandler::KEY_LEFT]] = is_down;
+					break;
+				default:
+					break;
+			}
+#endif
+		} else if (event.type == SDL_CONTROLLERDEVICEADDED) {
+			int id = event.cdevice.which;
+			if (SDL_IsGameController(id)) {
+				SDL_GameController* pad = SDL_GameControllerOpen(id);
+
+				if (pad) {
+					SDL_Joystick* joy = SDL_GameControllerGetJoystick(pad);
+					int instanceID = SDL_JoystickInstanceID(joy);
+					Globals::controllers[id] = pad;
+				}
+
+				printf("Controller added: %d\n", id);
+			}
+		} else if (event.type == SDL_CONTROLLERDEVICEREMOVED) {
+			int id = event.cdevice.which;
+			SDL_GameController* pad = Globals::controllers[id];
+			SDL_GameControllerClose(pad);
+			Globals::controllers.erase(id);
+
+			printf("Controller removed: %d\n", id);
+
 		}
 	}
-
-	// Check for key presses
-	nes->_joy1->poll_for_key_events();
-	//nes->_joy2->poll_for_key_events();
 
 	// Figure out how much time we spent, and how much we have left
 	gettimeofday(&_frame_end, nullptr);

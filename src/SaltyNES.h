@@ -121,6 +121,7 @@ public:
 
 	static std::map<string, uint32_t> keycodes; //Java key codes
 	static std::map<string, string> controls; //vNES controls codes
+	static std::map<int, SDL_GameController*> controllers;
 };
 
 class ByteBuffer {
@@ -1291,7 +1292,7 @@ public:
 	int number;
 	bool is_supported;
 	string name;
-	
+
 	MapperStatus(int number, bool is_supported, string name) {
 		this->number = number;
 		this->is_supported = is_supported;
