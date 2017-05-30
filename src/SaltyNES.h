@@ -121,7 +121,7 @@ public:
 
 	static std::map<string, uint32_t> keycodes; //Java key codes
 	static std::map<string, string> controls; //vNES controls codes
-	static std::map<int, SDL_GameController*> controllers;
+	static std::map<int, SDL_Joystick*> controllers;
 };
 
 class ByteBuffer {

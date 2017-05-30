@@ -47,6 +47,7 @@ void InputHandler::mapKey(int padKey, int kbKeycode) {
 }
 
 void InputHandler::poll_for_key_events() {
+	// Check for keyboard input
 	int numberOfKeys;
 	const uint8_t* keystate = SDL_GetKeyboardState(&numberOfKeys);
 
@@ -58,6 +59,37 @@ void InputHandler::poll_for_key_events() {
 	_keys[_map[InputHandler::KEY_SELECT]] = keystate[SDL_SCANCODE_RSHIFT];
 	_keys[_map[InputHandler::KEY_B]] =      keystate[SDL_SCANCODE_J];
 	_keys[_map[InputHandler::KEY_A]] =      keystate[SDL_SCANCODE_K];
+
+	bool is_using_keyboard = (
+		keystate[SDL_SCANCODE_W] |
+		keystate[SDL_SCANCODE_S] |
+		keystate[SDL_SCANCODE_D] |
+		keystate[SDL_SCANCODE_A] |
+		keystate[SDL_SCANCODE_RETURN] |
+		keystate[SDL_SCANCODE_RSHIFT] |
+		keystate[SDL_SCANCODE_J] |
+		keystate[SDL_SCANCODE_K]) != 0;
+
+	// Check for gamepad input
+	if (! is_using_keyboard) {
+		SDL_Joystick* pad;
+		for (int i=0; i<SDL_NumJoysticks(); ++i) {
+			pad = SDL_JoystickOpen( i );
+
+			if (pad != nullptr && SDL_JoystickGetAttached(pad)) {
+				//printf("????????????? pad attached i: %d\n", SDL_JoystickGetAttached(pad));
+
+				_keys[_map[InputHandler::KEY_START]] = SDL_JoystickGetButton(pad, 7);
+				_keys[_map[InputHandler::KEY_SELECT]] = SDL_JoystickGetButton(pad, 6);
+				_keys[_map[InputHandler::KEY_B]] = SDL_JoystickGetButton(pad, 0);
+				_keys[_map[InputHandler::KEY_A]] = SDL_JoystickGetButton(pad, 1);
+				_keys[_map[InputHandler::KEY_UP]] = SDL_JoystickGetButton(pad, 13);
+				_keys[_map[InputHandler::KEY_DOWN]] = SDL_JoystickGetButton(pad, 14);
+				_keys[_map[InputHandler::KEY_RIGHT]] = SDL_JoystickGetButton(pad, 12);
+				_keys[_map[InputHandler::KEY_LEFT]] = SDL_JoystickGetButton(pad, 11);
+			}
+		}
+	}
 
 	// Can't hold both left & right or up & down at same time:
 	if(_keys[_map[InputHandler::KEY_LEFT]]) {
