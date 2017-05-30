@@ -27,3 +27,5 @@ bool Globals::enableSound = true;
 
 std::map<string, uint32_t> Globals::keycodes; //Java key codes
 std::map<string, string> Globals::controls; //vNES controls codes
+std::map<int, SDL_Joystick*> Globals::joysticks;
+bool Globals::is_windows = false;

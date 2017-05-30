@@ -374,17 +374,50 @@ void PPU::startVBlank() {
 
 	startFrame();
 
-	// Check for quiting
-	SDL_Event sdl_event;
-	while(SDL_PollEvent(&sdl_event) == 1) {
-		if(sdl_event.type == SDL_QUIT) {
-			nes->cpu->stopRunning = true;
-		}
-	}
-
 	// Check for key presses
 	nes->_joy1->poll_for_key_events();
 	//nes->_joy2->poll_for_key_events();
+
+	// Check for events
+	SDL_Event event;
+	while (SDL_PollEvent(&event) == 1) {
+		switch (event.type) {
+#ifdef DESKTOP
+			case SDL_QUIT:
+				nes->cpu->stopRunning = true;
+				break;
+#endif
+			case SDL_JOYDEVICEADDED:
+				if (event.jdevice.which > -1) {
+					int id = event.jdevice.which;
+					SDL_Joystick* joy = SDL_JoystickOpen(id);
+					if (joy) {
+						Globals::joysticks[id] = joy;
+
+						printf("Joystick added: %d\n", id);
+					}
+				}
+				break;
+			case SDL_JOYDEVICEREMOVED:
+				if (event.jdevice.which > -1) {
+					int id = event.jdevice.which;
+					SDL_Joystick* joy = Globals::joysticks[id];
+					SDL_JoystickClose(joy);
+					Globals::joysticks.erase(id);
+
+					printf("Joystick removed: %d\n", id);
+				}
+				break;
+/*
+			case SDL_JOYBUTTONDOWN:
+				printf("!!! JOY down: %d\n", event.cbutton.button);
+				break;
+			case SDL_JOYBUTTONUP:
+				printf("!!! JOY up: %d\n", event.cbutton.button);
+				break;
+*/
+		}
+	}
 
 	// Figure out how much time we spent, and how much we have left
 	gettimeofday(&_frame_end, nullptr);

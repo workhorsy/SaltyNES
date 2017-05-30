@@ -47,6 +47,7 @@ void InputHandler::mapKey(int padKey, int kbKeycode) {
 }
 
 void InputHandler::poll_for_key_events() {
+	// Check for keyboard input
 	int numberOfKeys;
 	const uint8_t* keystate = SDL_GetKeyboardState(&numberOfKeys);
 
@@ -58,6 +59,49 @@ void InputHandler::poll_for_key_events() {
 	_keys[_map[InputHandler::KEY_SELECT]] = keystate[SDL_SCANCODE_RSHIFT];
 	_keys[_map[InputHandler::KEY_B]] =      keystate[SDL_SCANCODE_J];
 	_keys[_map[InputHandler::KEY_A]] =      keystate[SDL_SCANCODE_K];
+
+	bool is_using_keyboard = (
+		keystate[SDL_SCANCODE_W] |
+		keystate[SDL_SCANCODE_S] |
+		keystate[SDL_SCANCODE_D] |
+		keystate[SDL_SCANCODE_A] |
+		keystate[SDL_SCANCODE_RETURN] |
+		keystate[SDL_SCANCODE_RSHIFT] |
+		keystate[SDL_SCANCODE_J] |
+		keystate[SDL_SCANCODE_K]) != 0;
+
+	// Check for gamepad input
+	if (! is_using_keyboard) {
+		for (auto const& pair : Globals::joysticks) {
+			int id = pair.first;
+			SDL_Joystick* joy = pair.second;
+			//printf("????????????? joy id: %d\n", id);
+
+			if (joy != nullptr && SDL_JoystickGetAttached(joy)) {
+				//printf("????????????? joy attached i: %d\n", SDL_JoystickGetAttached(joy));
+
+				if (Globals::is_windows) {
+					_keys[_map[InputHandler::KEY_START]] = SDL_JoystickGetButton(joy, 9);
+					_keys[_map[InputHandler::KEY_SELECT]] = SDL_JoystickGetButton(joy, 8);
+					_keys[_map[InputHandler::KEY_B]] = SDL_JoystickGetButton(joy, 0);
+					_keys[_map[InputHandler::KEY_A]] = SDL_JoystickGetButton(joy, 1);
+					_keys[_map[InputHandler::KEY_UP]] = SDL_JoystickGetButton(joy, 12);
+					_keys[_map[InputHandler::KEY_DOWN]] = SDL_JoystickGetButton(joy, 13);
+					_keys[_map[InputHandler::KEY_RIGHT]] = SDL_JoystickGetButton(joy, 15);
+					_keys[_map[InputHandler::KEY_LEFT]] = SDL_JoystickGetButton(joy, 14);
+				} else {
+					_keys[_map[InputHandler::KEY_START]] = SDL_JoystickGetButton(joy, 7);
+					_keys[_map[InputHandler::KEY_SELECT]] = SDL_JoystickGetButton(joy, 6);
+					_keys[_map[InputHandler::KEY_B]] = SDL_JoystickGetButton(joy, 0);
+					_keys[_map[InputHandler::KEY_A]] = SDL_JoystickGetButton(joy, 1);
+					_keys[_map[InputHandler::KEY_UP]] = SDL_JoystickGetButton(joy, 13);
+					_keys[_map[InputHandler::KEY_DOWN]] = SDL_JoystickGetButton(joy, 14);
+					_keys[_map[InputHandler::KEY_RIGHT]] = SDL_JoystickGetButton(joy, 12);
+					_keys[_map[InputHandler::KEY_LEFT]] = SDL_JoystickGetButton(joy, 11);
+				}
+			}
+		}
+	}
 
 	// Can't hold both left & right or up & down at same time:
 	if(_keys[_map[InputHandler::KEY_LEFT]]) {
