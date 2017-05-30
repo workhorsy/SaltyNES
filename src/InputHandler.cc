@@ -72,21 +72,22 @@ void InputHandler::poll_for_key_events() {
 
 	// Check for gamepad input
 	if (! is_using_keyboard) {
-		SDL_Joystick* pad;
-		for (int i=0; i<SDL_NumJoysticks(); ++i) {
-			pad = SDL_JoystickOpen( i );
+		for (auto const& pair : Globals::joysticks) {
+			int id = pair.first;
+			SDL_Joystick* joy = pair.second;
+			//printf("????????????? joy id: %d\n", id);
 
-			if (pad != nullptr && SDL_JoystickGetAttached(pad)) {
-				//printf("????????????? pad attached i: %d\n", SDL_JoystickGetAttached(pad));
+			if (joy != nullptr && SDL_JoystickGetAttached(joy)) {
+				//printf("????????????? joy attached i: %d\n", SDL_JoystickGetAttached(joy));
 
-				_keys[_map[InputHandler::KEY_START]] = SDL_JoystickGetButton(pad, 7);
-				_keys[_map[InputHandler::KEY_SELECT]] = SDL_JoystickGetButton(pad, 6);
-				_keys[_map[InputHandler::KEY_B]] = SDL_JoystickGetButton(pad, 0);
-				_keys[_map[InputHandler::KEY_A]] = SDL_JoystickGetButton(pad, 1);
-				_keys[_map[InputHandler::KEY_UP]] = SDL_JoystickGetButton(pad, 13);
-				_keys[_map[InputHandler::KEY_DOWN]] = SDL_JoystickGetButton(pad, 14);
-				_keys[_map[InputHandler::KEY_RIGHT]] = SDL_JoystickGetButton(pad, 12);
-				_keys[_map[InputHandler::KEY_LEFT]] = SDL_JoystickGetButton(pad, 11);
+				_keys[_map[InputHandler::KEY_START]] = SDL_JoystickGetButton(joy, 7);
+				_keys[_map[InputHandler::KEY_SELECT]] = SDL_JoystickGetButton(joy, 6);
+				_keys[_map[InputHandler::KEY_B]] = SDL_JoystickGetButton(joy, 0);
+				_keys[_map[InputHandler::KEY_A]] = SDL_JoystickGetButton(joy, 1);
+				_keys[_map[InputHandler::KEY_UP]] = SDL_JoystickGetButton(joy, 13);
+				_keys[_map[InputHandler::KEY_DOWN]] = SDL_JoystickGetButton(joy, 14);
+				_keys[_map[InputHandler::KEY_RIGHT]] = SDL_JoystickGetButton(joy, 12);
+				_keys[_map[InputHandler::KEY_LEFT]] = SDL_JoystickGetButton(joy, 11);
 			}
 		}
 	}

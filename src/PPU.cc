@@ -382,8 +382,37 @@ void PPU::startVBlank() {
 	SDL_Event event;
 	while (SDL_PollEvent(&event) == 1) {
 		switch (event.type) {
+#ifdef DESKTOP
 			case SDL_QUIT:
 				nes->cpu->stopRunning = true;
+				break;
+#endif
+			case SDL_JOYDEVICEADDED:
+				if (event.jdevice.which > -1) {
+					int id = event.jdevice.which;
+					SDL_Joystick* joy = SDL_JoystickOpen(id);
+					if (joy) {
+						Globals::joysticks[id] = joy;
+
+						printf("Joystick added: %d\n", id);
+					}
+				}
+				break;
+			case SDL_JOYDEVICEREMOVED:
+				if (event.jdevice.which > -1) {
+					int id = event.jdevice.which;
+					SDL_Joystick* joy = Globals::joysticks[id];
+					SDL_JoystickClose(joy);
+					Globals::joysticks.erase(id);
+
+					printf("Joystick removed: %d\n", id);
+				}
+				break;
+			case SDL_JOYBUTTONDOWN:
+				printf("!!! JOY down: %d\n", event.cbutton.button);
+				break;
+			case SDL_JOYBUTTONUP:
+				printf("!!! JOY up: %d\n", event.cbutton.button);
 				break;
 		}
 	}
