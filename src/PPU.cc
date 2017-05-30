@@ -377,8 +377,6 @@ void PPU::startVBlank() {
 	// Check for key presses
 	nes->_joy1->poll_for_key_events();
 	//nes->_joy2->poll_for_key_events();
-	int id = -1;
-	bool is_down = false;
 
 	// Check for events
 	SDL_Event event;
