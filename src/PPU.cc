@@ -408,12 +408,14 @@ void PPU::startVBlank() {
 					printf("Joystick removed: %d\n", id);
 				}
 				break;
+/*
 			case SDL_JOYBUTTONDOWN:
 				printf("!!! JOY down: %d\n", event.cbutton.button);
 				break;
 			case SDL_JOYBUTTONUP:
 				printf("!!! JOY up: %d\n", event.cbutton.button);
 				break;
+*/
 		}
 	}
 

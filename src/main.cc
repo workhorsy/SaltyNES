@@ -13,6 +13,10 @@ SaltyNES salty_nes;
 vector<uint8_t> g_game_data;
 string g_game_file_name;
 
+void set_is_windows() {
+	Globals::is_windows = true;
+}
+
 bool toggle_sound() {
 	shared_ptr<PAPU> papu = salty_nes.nes->papu;
 	papu->_is_muted = ! papu->_is_muted;
@@ -90,6 +94,7 @@ EMSCRIPTEN_BINDINGS(Wrappers) {
 	emscripten::function("set_game_data_index", &set_game_data_index);
 	emscripten::function("on_emultor_start", &on_emultor_start);
 	emscripten::function("toggle_sound", &toggle_sound);
+	emscripten::function("set_is_windows", &set_is_windows);
 };
 
 #endif

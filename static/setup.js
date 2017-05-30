@@ -273,7 +273,9 @@ let main = (function() {
 	documentOnReady(() => {
 		downloadAndLoadScript("index.wasm", "application/octet-binary", function() {
 			downloadAndLoadScript("static/index.js", "text/javascript", function() {
-
+				if (navigator.userAgent.includes('windows')) {
+					Module.set_is_windows();
+				}
 			});
 		});
 	});

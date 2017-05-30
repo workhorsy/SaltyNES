@@ -80,14 +80,25 @@ void InputHandler::poll_for_key_events() {
 			if (joy != nullptr && SDL_JoystickGetAttached(joy)) {
 				//printf("????????????? joy attached i: %d\n", SDL_JoystickGetAttached(joy));
 
-				_keys[_map[InputHandler::KEY_START]] = SDL_JoystickGetButton(joy, 7);
-				_keys[_map[InputHandler::KEY_SELECT]] = SDL_JoystickGetButton(joy, 6);
-				_keys[_map[InputHandler::KEY_B]] = SDL_JoystickGetButton(joy, 0);
-				_keys[_map[InputHandler::KEY_A]] = SDL_JoystickGetButton(joy, 1);
-				_keys[_map[InputHandler::KEY_UP]] = SDL_JoystickGetButton(joy, 13);
-				_keys[_map[InputHandler::KEY_DOWN]] = SDL_JoystickGetButton(joy, 14);
-				_keys[_map[InputHandler::KEY_RIGHT]] = SDL_JoystickGetButton(joy, 12);
-				_keys[_map[InputHandler::KEY_LEFT]] = SDL_JoystickGetButton(joy, 11);
+				if (Globals::is_windows) {
+					_keys[_map[InputHandler::KEY_START]] = SDL_JoystickGetButton(joy, 9);
+					_keys[_map[InputHandler::KEY_SELECT]] = SDL_JoystickGetButton(joy, 8);
+					_keys[_map[InputHandler::KEY_B]] = SDL_JoystickGetButton(joy, 0);
+					_keys[_map[InputHandler::KEY_A]] = SDL_JoystickGetButton(joy, 1);
+					_keys[_map[InputHandler::KEY_UP]] = SDL_JoystickGetButton(joy, 12);
+					_keys[_map[InputHandler::KEY_DOWN]] = SDL_JoystickGetButton(joy, 13);
+					_keys[_map[InputHandler::KEY_RIGHT]] = SDL_JoystickGetButton(joy, 15);
+					_keys[_map[InputHandler::KEY_LEFT]] = SDL_JoystickGetButton(joy, 14);
+				} else {
+					_keys[_map[InputHandler::KEY_START]] = SDL_JoystickGetButton(joy, 7);
+					_keys[_map[InputHandler::KEY_SELECT]] = SDL_JoystickGetButton(joy, 6);
+					_keys[_map[InputHandler::KEY_B]] = SDL_JoystickGetButton(joy, 0);
+					_keys[_map[InputHandler::KEY_A]] = SDL_JoystickGetButton(joy, 1);
+					_keys[_map[InputHandler::KEY_UP]] = SDL_JoystickGetButton(joy, 13);
+					_keys[_map[InputHandler::KEY_DOWN]] = SDL_JoystickGetButton(joy, 14);
+					_keys[_map[InputHandler::KEY_RIGHT]] = SDL_JoystickGetButton(joy, 12);
+					_keys[_map[InputHandler::KEY_LEFT]] = SDL_JoystickGetButton(joy, 11);
+				}
 			}
 		}
 	}

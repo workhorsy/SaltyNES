@@ -104,6 +104,7 @@ public:
 	static SDL_Window* g_window;
 	static SDL_Renderer* g_renderer;
 	static SDL_Texture* g_screen;
+	static bool is_windows;
 
 	//static shared_ptr<NES> nes;
 	static double CPU_FREQ_NTSC;
