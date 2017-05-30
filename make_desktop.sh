@@ -6,6 +6,8 @@ set -e
 CC="g++"
 CFLAGS="-O3 -g -std=c++14 -lSDL2 -lSDL2_mixer -lpthread -DDESKTOP=true"
 
+touch src/build_date.cc
+
 rm -f nes
 #rm -f *.o
 #rm -f -rf build/desktop

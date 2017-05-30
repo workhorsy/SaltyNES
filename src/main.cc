@@ -6,7 +6,8 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 */
 
 #include "SaltyNES.h"
-#include "build_date.h"
+
+std::string get_build_date();
 
 using namespace std;
 

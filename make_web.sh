@@ -12,6 +12,8 @@ CFLAGS="-O3 -std=c++14 --bind -lpthread -DWEB=true -s WASM=1 -s USE_SDL=2"
 # Setup Emscripten/WebAssembly SDK
 source ../emsdk/emsdk_env.sh
 
+touch src/build_date.cc
+
 # Delete generated files
 rm -f static/*.wasm
 rm -f static/index.js
