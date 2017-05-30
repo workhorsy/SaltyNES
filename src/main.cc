@@ -6,6 +6,7 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 */
 
 #include "SaltyNES.h"
+#include "build_date.h"
 
 using namespace std;
 
@@ -105,7 +106,7 @@ int main(int argc, char* argv[]) {
 	printf("%s\n", "vNES 2.14 (C) 2006-2011 Jamie Sanders thatsanderskid.com");
 	printf("%s\n", "This program is licensed under GPLV3 or later");
 	printf("%s\n", "https://github.com/workhorsy/SaltyNES");
-	printf("%s\n", "");
+	printf("%s\n", get_build_date().c_str());
 
 	// Make sure there is a rom file name
 	#ifdef DESKTOP
