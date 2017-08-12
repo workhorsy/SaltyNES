@@ -24,25 +24,25 @@ const array<MapperStatus, 255> ROM::_mapperStatus = {
 	MapperStatus(2, true, "UxROM"),
 	MapperStatus(3, true, "CNROM"),
 	MapperStatus(4, true, "Nintendo MMC3"),
-	MapperStatus(5, false, "Nintendo MMC5"),
-	MapperStatus(6, false, "FFE F4xxx"),
+	MapperStatus(5, false, "Nintendo MMC5"), // 5 games
+	MapperStatus(6, false, "FFE F4xxx"),     // 6 games
 	MapperStatus(7, true, "AxROM"),
-	MapperStatus(8, false, "FFE F3xxx"),
+	MapperStatus(8, false, "FFE F3xxx"),     // 8 games
 	MapperStatus(9, true, "Nintendo MMC2"),
-	MapperStatus(10, false, "Nintendo MMC4"),
+	MapperStatus(10, false, "Nintendo MMC4"),  // 2 games
 	MapperStatus(11, true, "Color Dreams"),
 	MapperStatus(12, false, "FFE F6xxx"),
 	MapperStatus(13, false, "CPROM"),
 	MapperStatus(14, false, ""),
-	MapperStatus(15, false, "iNES Mapper #015"),
+	MapperStatus(15, false, "iNES Mapper #015"), // 3 games
 	MapperStatus(16, false, "Bandai"),
 	MapperStatus(17, false, "FFE F8xxx"),
-	MapperStatus(18, false, "Jaleco SS8806"),
+	MapperStatus(18, false, "Jaleco SS8806"), // 9 games
 	MapperStatus(19, false, "Namcot 106"),
 	MapperStatus(20, false, "(Hardware) Famicom Disk System"),
-	MapperStatus(21, false, "Konami VRC4a, VRC4c"),
-	MapperStatus(22, false, "Konami VRC2a"),
-	MapperStatus(23, false, "Konami VRC2b, VRC4e, VRC4f"),
+	MapperStatus(21, false, "Konami VRC4a, VRC4c"), // 2 games
+	MapperStatus(22, false, "Konami VRC2a"), // 1 games
+	MapperStatus(23, false, "Konami VRC2b, VRC4e, VRC4f"), // 5 games
 	MapperStatus(24, false, "Konami VRC6a"),
 	MapperStatus(25, false, "Konami VRC4b, VRC4d"),
 	MapperStatus(26, false, "Konami VRC6b"),
@@ -51,9 +51,9 @@ const array<MapperStatus, 255> ROM::_mapperStatus = {
 	MapperStatus(29, false, ""),
 	MapperStatus(30, false, ""),
 	MapperStatus(31, false, ""),
-	MapperStatus(32, false, "Irem G-101"),
-	MapperStatus(33, false, "Taito TC0190, TC0350"),
-	MapperStatus(34, false, "BxROM, NINA-001"),
+	MapperStatus(32, false, "Irem G-101"),  // 4 games
+	MapperStatus(33, false, "Taito TC0190, TC0350"), // 6 games
+	MapperStatus(34, false, "BxROM, NINA-001"), // 6 games
 	MapperStatus(35, false, ""),
 	MapperStatus(36, false, ""),
 	MapperStatus(37, false, ""),
@@ -67,7 +67,7 @@ const array<MapperStatus, 255> ROM::_mapperStatus = {
 	MapperStatus(45, false, ""),
 	MapperStatus(46, false, "Rumblestation 15-in-1"),
 	MapperStatus(47, false, "Nintendo MMC3 Multicart (Super Spike V'Ball + Nintendo World Cup)"),
-	MapperStatus(48, false, "iNES Mapper #048"),
+	MapperStatus(48, false, "iNES Mapper #048"), // 1 games
 	MapperStatus(49, false, ""),
 	MapperStatus(50, false, ""),
 	MapperStatus(51, false, ""),
@@ -83,14 +83,14 @@ const array<MapperStatus, 255> ROM::_mapperStatus = {
 	MapperStatus(61, false, ""),
 	MapperStatus(62, false, ""),
 	MapperStatus(63, false, ""),
-	MapperStatus(64, false, "Tengen RAMBO-1"),
+	MapperStatus(64, false, "Tengen RAMBO-1"), // 3 games
 	MapperStatus(65, false, "Irem H-3001"),
-	MapperStatus(66, false, "GxROM"),
+	MapperStatus(66, false, "GxROM"), // 7 games
 	MapperStatus(67, false, "Sunsoft 3"),
-	MapperStatus(68, false, "Sunsoft 4"),
+	MapperStatus(68, false, "Sunsoft 4"), // 3 games
 	MapperStatus(69, false, "Sunsoft FME-7"),
 	MapperStatus(70, false, "iNES Mapper #070"),
-	MapperStatus(71, false, "Camerica"),
+	MapperStatus(71, false, "Camerica"), // 12 games
 	MapperStatus(72, false, "iNES Mapper #072"),
 	MapperStatus(73, false, "Konami VRC3"),
 	MapperStatus(74, false, ""),
@@ -98,7 +98,7 @@ const array<MapperStatus, 255> ROM::_mapperStatus = {
 	MapperStatus(76, false, "iNES Mapper #076 (Digital Devil Monogatari - Megami Tensei)"),
 	MapperStatus(77, false, "iNES Mapper #077 (Napoleon Senki)"),
 	MapperStatus(78, false, "Irem 74HC161/32"),
-	MapperStatus(79, false, "American Game Cartridges"),
+	MapperStatus(79, false, "American Game Cartridges"), // 9 games
 	MapperStatus(80, false, "iNES Mapper #080"),
 	MapperStatus(81, false, ""),
 	MapperStatus(82, false, "iNES Mapper #082"),
