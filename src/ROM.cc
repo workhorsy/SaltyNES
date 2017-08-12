@@ -30,7 +30,7 @@ const array<MapperStatus, 255> ROM::_mapperStatus = {
 	MapperStatus(8, false, "FFE F3xxx"),
 	MapperStatus(9, true, "Nintendo MMC2"),
 	MapperStatus(10, false, "Nintendo MMC4"),
-	MapperStatus(11, false, "Color Dreams"),
+	MapperStatus(11, true, "Color Dreams"),
 	MapperStatus(12, false, "FFE F6xxx"),
 	MapperStatus(13, false, "CPROM"),
 	MapperStatus(14, false, ""),
@@ -578,7 +578,9 @@ shared_ptr<MapperDefault> ROM::createMapper() {
 			case 9: return make_shared<Mapper009>()->Init(this->nes);
 /*
 			case 10: return new Mapper010();
-			case 11: return new Mapper011();
+*/
+			case 11: return make_shared<Mapper011>()->Init(this->nes);
+/*
 			case 15: return new Mapper015();
 			case 18: return new Mapper018();
 			case 21: return new Mapper021();

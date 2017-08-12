@@ -53,6 +53,7 @@ class Mapper003;
 class Mapper004;
 class Mapper007;
 class Mapper009;
+class Mapper011;
 class MapperDefault;
 class Memory;
 class Misc;
@@ -831,6 +832,13 @@ public:
 	void mapperInternalStateLoad(ByteBuffer* buf);
 	void mapperInternalStateSave(ByteBuffer* buf);
 	virtual void reset();
+};
+
+class Mapper011 : public MapperDefault {
+public:
+	Mapper011();
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
+	virtual void write(int address, uint16_t value);
 };
 
 class Misc {
