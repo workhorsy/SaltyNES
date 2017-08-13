@@ -37,7 +37,7 @@ const array<MapperStatus, 255> ROM::_mapperStatus = {
 	MapperStatus(15, false, "iNES Mapper #015"), // 3 games
 	MapperStatus(16, false, "Bandai"),
 	MapperStatus(17, false, "FFE F8xxx"),
-	MapperStatus(18, false, "Jaleco SS8806"), // 9 games
+	MapperStatus(18, true, "Jaleco SS8806"),
 	MapperStatus(19, false, "Namcot 106"),
 	MapperStatus(20, false, "(Hardware) Famicom Disk System"),
 	MapperStatus(21, false, "Konami VRC4a, VRC4c"), // 2 games
@@ -555,10 +555,7 @@ string ROM::getFileName() {
 }
 
 bool ROM::mapperSupported() {
-	if(mapperType < getmapperName().length()) {
-		return ROM::_mapperStatus[mapperType].is_supported;
-	}
-	return false;
+	return ROM::_mapperStatus[mapperType].is_supported;
 }
 
 shared_ptr<MapperDefault> ROM::createMapper() {
@@ -582,7 +579,9 @@ shared_ptr<MapperDefault> ROM::createMapper() {
 			case 11: return make_shared<Mapper011>()->Init(this->nes);
 /*
 			case 15: return new Mapper015();
-			case 18: return new Mapper018();
+			*/
+			case 18: return make_shared<Mapper018>()->Init(this->nes);
+			/*
 			case 21: return new Mapper021();
 			case 22: return new Mapper022();
 			case 23: return new Mapper023();

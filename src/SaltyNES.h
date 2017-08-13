@@ -54,6 +54,7 @@ class Mapper004;
 class Mapper007;
 class Mapper009;
 class Mapper011;
+class Mapper018;
 class MapperDefault;
 class Memory;
 class Misc;
@@ -839,6 +840,25 @@ public:
 	Mapper011();
 	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
 	virtual void write(int address, uint16_t value);
+};
+
+class Mapper018 : public MapperDefault {
+public:
+	int irq_counter;
+	int irq_latch;
+	bool irq_enabled;
+	int regs[11];
+	int num_8k_banks;
+	int patch;
+
+	Mapper018();
+	virtual shared_ptr<MapperDefault> Init(shared_ptr<NES> nes);
+	void mapperInternalStateLoad(ByteBuffer* buf);
+	void mapperInternalStateSave(ByteBuffer* buf);
+	virtual void write(int address, short value);
+	virtual void loadROM(ROM* rom);
+	virtual int syncH(int scanline);
+	virtual void reset();
 };
 
 class Misc {
