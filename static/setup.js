@@ -93,6 +93,15 @@ function downloadAndLoadScript(url, mime_type, cb) {
 	);
 }
 
+function fetchOctetStream(fileName) {
+	return fetch(fileName)
+		.then(response => {
+			if (response.status >= 200 && response.status < 400)
+				return response.arrayBuffer()
+			throw new Error('Network error: ' + response.statusText + ', ' + response.status);
+		})
+}
+
 let main = (function() {
 	Module = {
 		preRun: [],
@@ -245,12 +254,16 @@ let main = (function() {
 		// Save the file name in the module args
 		let file_name = $('#select_game').value;
 		Module.arguments = [ file_name ];
-		fetch(file_name)
-			.then(response => response.arrayBuffer())
+		fetchOctetStream(file_name)
 			.then(data => {
 				 let game_data = new Uint8Array(data);
 				 play_game(game_data);
-			});
+			})
+			.catch((error) => {
+				show('#select_game');
+				show('#fileupload');
+				Module.setStatus(error.toString())
+			})
 	}, false);
 
 	$('#fileupload').addEventListener('change', function(event) {
@@ -271,8 +284,8 @@ let main = (function() {
 
 	// Load the large files and show progress
 	documentOnReady(() => {
-		downloadAndLoadScript("index.wasm", "application/octet-binary", function() {
-			downloadAndLoadScript("static/index.js", "text/javascript", function() {
+		downloadAndLoadScript("SaltyNES.wasm", "application/octet-binary", function() {
+			downloadAndLoadScript("SaltyNES.js", "text/javascript", function() {
 				if (navigator.userAgent.includes('windows')) {
 					Module.set_is_windows();
 				}

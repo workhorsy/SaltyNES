@@ -2,39 +2,28 @@
 # Stop and exit on error
 set -e
 
+if [ "$1" == "debug" ]; then
+	echo "Building debug version"
+	BUILD_DIR="build_emscripten_debug"
+	BUILD_TYPE=Debug
+else
+	echo "Building release version by default"
+	BUILD_DIR="build_emscripten_release"
+	BUILD_TYPE=Release
+fi
+
 # Setup compiler build flags
-CC="em++"
-CFLAGS="-O3 -std=c++14 --bind -lpthread -DWEB=true -s WASM=1 -s USE_SDL=2"
+if [ ! -f ./emsdk/emsdk_env.sh ]; then
+	echo "File emsdk_env.sh not found, run init.sh first"
+	exit 1
+fi
+source ./emsdk/emsdk_env.sh
 
-# FIXME: If we didn't have to source emscripten sdk this way, we
-# Could change to building with an incremental build system such
-# as Cmake, Raise, or even a Makefile.
-# Setup Emscripten/WebAssembly SDK
-source ../emsdk/emsdk_env.sh
+if [ ! -d $BUILD_DIR ]; then
+	mkdir $BUILD_DIR
+fi
 
-touch src/build_date.cc
+cd $BUILD_DIR
+emcmake cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+make -j 4
 
-# Delete generated files
-rm -f static/*.wasm
-rm -f static/index.js
-
-#rm -f *.o
-#rm -f -rf build/web
-mkdir -p build/web
-
-# FIXME: This wont rebuild if any of the header files changed
-# Build each C++ file into an object file. But only if the C++ file is newer.
-for entry in src/*.cc; do
-	filename=$(basename "$entry")
-	filename=$(echo $filename | cut -f 1 -d '.')
-
-	if [[ src/"$filename".cc -nt build/web/"$filename".o ]]; then
-		echo Building "$entry" ...
-		$CC src/"$filename".cc $CFLAGS -c -o build/web/"$filename".o
-	fi
-done
-
-# Build the wasm file
-echo Building WASM ...
-$CC build/web/*.o $CFLAGS -o static/index.js
-mv static/index.wasm index.wasm
