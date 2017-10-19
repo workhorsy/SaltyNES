@@ -16,7 +16,6 @@ if [ ! -d $BUILD_DIR ]; then
 fi
 
 cd $BUILD_DIR
-cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+cmake .. -DMY_TYPE=$BUILD_TYPE
 make -j 4
-
 
