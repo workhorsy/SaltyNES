@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 2.8)
 project (SaltyNES)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
@@ -11,13 +11,12 @@ message(STATUS "system name: " ${CMAKE_SYSTEM_NAME} ", build: " ${MY_TYPE})
 
 if ({MY_TYPE} MATCHES "Debug")
 	set(MORE_FLAGS_NATIVE="-g -DDEBUG")
-	set(MORE_FLAGS_WEB="-O0 -DDEBUG -g4 -s SAFE_HEAP=1 -s ASSERTIONS=1 -s SAFE_HEAP_LOG=1 -s STACK_OVERFLOW_CHECK=2") # add addition debug emscripten flags ?
+	set(MORE_FLAGS_WEB="-O0 -DDEBUG -g4 -s SAFE_HEAP=1 -s ASSERTIONS=1 -s SAFE_HEAP_LOG=1 -s STACK_OVERFLOW_CHECK=2") # add additional debug emscripten flags ?
 endif ()
-# -s SAFE_HEAP=1 -DDEBUG
-# -s SAFE_HEAP_LOG=1 -s STACK_OVERFLOW_CHECK=2
+
 if ({MY_TYPE} MATCHES "Release")
 	set(MORE_FLAGS_NATIVE="")
-	set(MORE_FLAGS_WEB="-O3") # add addition debug emscripten flags ?
+	set(MORE_FLAGS_WEB="-O3")
 endif ()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
