@@ -25,4 +25,4 @@ fi
 
 cd $BUILD_DIR
 emcmake cmake .. -DMY_TYPE=$BUILD_TYPE
-make -j 4
+make -j 1
