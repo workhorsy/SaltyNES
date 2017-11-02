@@ -17,7 +17,7 @@ if [ ! -f ./emsdk/emsdk_env.sh ]; then
 	echo "File emsdk_env.sh not found, run init_web.sh first"
 	exit 1
 fi
-source ./emsdk/emsdk_env.sh
+source ./emsdk/emsdk_env.sh --build=Release
 
 if [ ! -d $BUILD_DIR ]; then
 	mkdir $BUILD_DIR
