@@ -1,6 +1,8 @@
 # Stop and exit on error
 set -e
 
+touch src/build_date.cc
+
 if [ "$1" == "debug" ]; then
 	echo "Building debug version"
 	BUILD_DIR="build_desktop_debug"
@@ -18,4 +20,3 @@ fi
 cd $BUILD_DIR
 cmake .. -DMY_TYPE=$BUILD_TYPE
 make -j 4
-

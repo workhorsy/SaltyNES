@@ -2,6 +2,8 @@
 # Stop and exit on error
 set -e
 
+touch src/build_date.cc
+
 if [ "$1" == "debug" ]; then
 	echo "Building debug version"
 	BUILD_DIR="build_emscripten_debug"
