@@ -5,16 +5,24 @@ Forked from the NaCl C++ version: https://github.com/workhorsylegacy/SaltyNESLeg
 
 Which is based on vNES: https://github.com/workhorsylegacy/vNES
 
+# Build requirements
+cmake 3.4.3 or greater
+
+python 2
+
+SDL2
+
 # Build and run in browser
-```
+```bash
+./init_web.sh
 ./make_web.sh
-python3 -m http.server 9999
+python -m SimpleHTTPServer 9999
 ```
 
 # Build and run in desktop
-```
+```bash
 ./make_desktop.sh
-./saltynes game.nes
+./SaltyNES game.nes
 ```
 
 TODO
