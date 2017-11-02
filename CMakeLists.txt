@@ -32,3 +32,4 @@ if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
 endif ()
 
 add_executable(SaltyNES ${SOURCES})
+target_link_libraries(SaltyNES ${SDL2_LIBRARIES})
