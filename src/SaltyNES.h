@@ -27,6 +27,7 @@ Hosted at: https://github.com/workhorsy/SaltyNES
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_audio.h>
+#include <SDL2/SDL_joystick.h>
 
 #ifdef WEB
 	#include <emscripten.h>

@@ -1,6 +1,14 @@
 
 roms/
-build/
+build*/
 index.wasm
 static/index.js
 saltynes
+
+Makefile
+
+SaltyNES.js
+SaltyNES.wasm
+SaltyNES.wasm.pre
+SaltyNES.wast
+SaltyNES
