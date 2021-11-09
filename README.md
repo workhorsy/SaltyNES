@@ -3,7 +3,7 @@ A NES emulator in WebAssembly. Try it live:  http://workhorsy.org/SaltyNES/
 
 Forked from the NaCl C++ version: https://github.com/workhorsylegacy/SaltyNESLegacy
 
-Which is based on vNES: https://github.com/workhorsylegacy/vNES
+Which is based on vNES: https://github.com/WorkhorsyForks/vNES
 
 # Build requirements
 cmake 3.4.3 or greater
